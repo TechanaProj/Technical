@@ -2,8 +2,33 @@
 
 <script src="~/js/Common.js"></script>
 <script src="~/js/TechnicalReporting.js"></script>
-
+<script src="~/js/TechnicalReporting.js"></script>
+@{
+    var rights = ViewBag.rights;
+}
 <script>
+       $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+         }
+                    })
+    var g_target_id;
     $(".ctrlbtn").click(function (e) {
 
         $(".modalLoader").css("display", "block");
@@ -25,28 +50,43 @@
 
     })
 
-    function Refresh() {
-        CommonAjax('/M1/GASCV/Execute', "GET", false, "application/json", false, GetResponse, "",
-            {
 
-                FromDate: $("#txtDate").val(),
-                Shift: $("#txtShift").val(),
-                OperationType: op
+    function PostResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+            return;
+        }
 
-            });
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+
     }
-
     $(document).on("change", ".ammonia", function (e) {
-
+        debugger;
         var name = $(this).attr("id");
         var val = $(this).val();
         var op = $(this).data("operation");
         var type = $(this).attr("type");
+        g_target_id = "#" + name;
 
+
+        if (!parseFloat(val) > 0 && $(g_target_id).attr("type")=="number") {
+            $(g_target_id).notify(
+                "Value must be greater than zero",
+                { position: "top", className: "error" }
+            );
+            return;
+        }
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
-            CommonAjax('/M1/GASCV/PostData', "GET", false, "application/json", false, "", "",
+            CommonAjax('/M1/GASCV/PostData', "GET", false, "application/json", false, PostResponse, "",
                 {
                     Input_Name: name,
                     Input_Value: val,
@@ -63,10 +103,22 @@
 
 
     })
-    function GetResponse(data) {
-        $("#mainDiv").empty().append(data);
-    }
 
+
+
+
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.errorMessage, data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+        $("#mainDiv").empty().append(data);
+
+    }
 
 </script>
 
@@ -146,112 +198,112 @@
             {
                 var AmmProd = data.Where(e => e.Category == head).ToList();
                 int i = 0;
-              <div class="content-box">
-                <h3 class="sub-heading1"><span>@head</span></h3>
-                <div class="m-form">
-                    <div class="m-form-bx">
+                <div class="content-box">
+                    <h3 class="sub-heading1"><span>@head</span></h3>
+                    <div class="m-form">
+                        <div class="m-form-bx">
 
 
-                        <div class="row form-sm">
+                            <div class="row form-sm">
 
 
-                            @foreach (var item in AmmProd)
-                            {
+                                @foreach (var item in AmmProd)
+                                {
 
-                                  if (i == 0)
-                                  {    
-                                       i = i + 1;
-                                       <div class="col-sm-2 col-md-2">
-                                          <div>
-                                             <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
-                                           </div>
+                                    if (i == 0)
+                                    {
+                                        i = i + 1;
+                                        <div class="col-sm-2 col-md-2">
+                                            <div>
+                                                <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                                            </div>
                                         </div>
+                                    }
+                                    else if (i < 4)
+                                    {
+                                        i = i + 1;
+                                    }
+                                    else
+                                    {
+                                        i = 0;
+                                    }
+
+
+                                    <div class="col-sm-2 col-md-2">
+                                        <div>
+                                            @if (item.InputType.ToLower() != "label")
+                                            {
+
+
+
+                                                @if (item.InputType.ToLower() == "number")
+                                                {
+                                                    if (item.Readonly.ToLower() == "yes")
+                                                    {
+                                                        <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                                    }
+                                                    else
+                                                    {
+                                                        <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                                    }
+                                                }
+                                                else if (item.InputType.ToLower() == "datetime-local")
+                                                {
+                                                    string v = "";
+                                                    if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                    {
+                                                        v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                                    }
+
+
+                                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                                }
+                                                else if (item.InputType.ToLower() == "date")
+                                                {
+                                                    string v = "";
+                                                    if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                    {
+                                                        v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                                    }
+
+
+                                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                                                }
+                                                else
+                                                {
+                                                    string sel = "";
+                                                    if (item.InputValue.Trim().ToUpper() == "0")
+                                                    {
+                                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                                            <option selected="selected" value="0">NO</option>
+                                                            <option value="1">YES</option>
+                                                        </select>
+                                                    }
+                                                    else
+                                                    {
+                                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                                            <option value="0">NO</option>
+                                                            <option selected="selected" value="1">YES</option>
+                                                        </select>
+                                                    }
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <label class="m-lbl1" style="font-size:110%;color:crimson !important;margin-bottom:10px;">@item.InputText</label>
+                                            }
+
+
+                                        </div>
+                                    </div>
+
                                 }
-                                else if(i<4)
-                                {
-                                    i = i + 1;
-                                }
-                                else
-                                {
-                                    i=0;
-                                }
 
-
-                             <div class="col-sm-2 col-md-2">
-                                 <div>
-                                     @if (item.InputType.ToLower() != "label")
-                                     {
-
-
-
-                                         @if (item.InputType.ToLower() == "number")
-                                         {
-                                             if (item.Readonly.ToLower() == "yes")
-                                             {
-                                                 <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
-                                             }
-                                             else
-                                             {
-                                                 <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
-
-                                             }
-                                         }
-                                         else if (item.InputType.ToLower() == "datetime-local")
-                                         {
-                                             string v = "";
-                                             if (!string.IsNullOrEmpty(item.InputValue.Trim()))
-                                             {
-                                                 v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
-                                             }
-
-
-                                             <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
-                                         }
-                                         else if (item.InputType.ToLower() == "date")
-                                         {
-                                             string v = "";
-                                             if (!string.IsNullOrEmpty(item.InputValue.Trim()))
-                                             {
-                                                 v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
-                                             }
-
-
-                                             <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
-                                         }
-                                         else
-                                         {
-                                             string sel = "";
-                                             if (item.InputValue.Trim().ToUpper() == "0")
-                                             {
-                                                 <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
-                                                     <option selected="selected" value="0">NO</option>
-                                                     <option value="1">YES</option>
-                                                 </select>
-                                             }
-                                             else
-                                             {
-                                                 <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
-                                                     <option value="0">NO</option>
-                                                     <option selected="selected" value="1">YES</option>
-                                                 </select>
-                                             }
-                                         }
-                                     }
-                                     else
-                                     {
-                                         <label class="m-lbl1" style="font-size:110%;color:crimson !important;margin-bottom:10px;">@item.InputText</label>
-                                     }
-
-
-                                 </div>
                             </div>
-
-                             }
-                            
                         </div>
                     </div>
                 </div>
-              </div>
             }
         </div>
     </form>

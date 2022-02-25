@@ -9,6 +9,7 @@
     <Compile Remove="Areas\FOREIGNTRAVEL\**" />
     <Compile Remove="Areas\HOTELBOOKING\Data\**" />
     <Compile Remove="Areas\HOTELBOOKING\Models\**" />
+    <Compile Remove="Areas\M1\Views\NewFolder\**" />
     <Compile Remove="Areas\PENSION\**" />
     <Compile Remove="Areas\SCHOLARSHIP\**" />
     <Compile Remove="Areas\VIGILANCE\**" />
@@ -20,6 +21,7 @@
     <Content Remove="Areas\FOREIGNTRAVEL\**" />
     <Content Remove="Areas\HOTELBOOKING\Data\**" />
     <Content Remove="Areas\HOTELBOOKING\Models\**" />
+    <Content Remove="Areas\M1\Views\NewFolder\**" />
     <Content Remove="Areas\PENSION\**" />
     <Content Remove="Areas\SCHOLARSHIP\**" />
     <Content Remove="Areas\VIGILANCE\**" />
@@ -31,6 +33,7 @@
     <EmbeddedResource Remove="Areas\FOREIGNTRAVEL\**" />
     <EmbeddedResource Remove="Areas\HOTELBOOKING\Data\**" />
     <EmbeddedResource Remove="Areas\HOTELBOOKING\Models\**" />
+    <EmbeddedResource Remove="Areas\M1\Views\NewFolder\**" />
     <EmbeddedResource Remove="Areas\PENSION\**" />
     <EmbeddedResource Remove="Areas\SCHOLARSHIP\**" />
     <EmbeddedResource Remove="Areas\VIGILANCE\**" />
@@ -42,6 +45,7 @@
     <None Remove="Areas\FOREIGNTRAVEL\**" />
     <None Remove="Areas\HOTELBOOKING\Data\**" />
     <None Remove="Areas\HOTELBOOKING\Models\**" />
+    <None Remove="Areas\M1\Views\NewFolder\**" />
     <None Remove="Areas\PENSION\**" />
     <None Remove="Areas\SCHOLARSHIP\**" />
     <None Remove="Areas\VIGILANCE\**" />
@@ -85,7 +89,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Areas\M1\Views\NewFolder\" />
     <Folder Include="wwwroot\js\datatables\" />
     <Folder Include="wwwroot\pdf\" />
   </ItemGroup>
