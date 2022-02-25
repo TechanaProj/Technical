@@ -1074,8 +1074,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
 
 
-        //----------------------TARGET MASTER ----------------//
-        public List<CommonData> GetRecordsTARGET(string formName, string shift, string pno, DateTime dt1, DateTime dt2)
+        //----------------------SPTARGET MASTER ----------------//
+        public List<CommonData> GetRecordsSPTARGET(string formName, string shift, string pno, DateTime dt1, DateTime dt2)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
@@ -1085,7 +1085,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
-            var data = _context.ExecuteProcedureForRefCursor("TARGET_QUERY", oracleParameterCollecion);
+            var data = _context.ExecuteProcedureForRefCursor("SPECIFIC_EN_TARGET_QUERY", oracleParameterCollecion);
 
             OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
 
@@ -1109,7 +1109,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return cd;
 
         }
-        public string PostRecordsTARGET(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name, string op)
+        public string PostRecordsSPTARGET(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name, string op)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
@@ -1118,12 +1118,12 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
-            var data = _context.ExecuteProcedureForRefCursor("TARGET_POST", oracleParameterCollecion);
+            var data = _context.ExecuteProcedureForRefCursor("SPECIFIC_EN_TARGET_POST", oracleParameterCollecion);
             string alert = oracleParameterCollecion[5].Value.ToString();
             return alert;
 
         }
-        public string ApproveRecordsTARGET( DateTime dt1, DateTime dt2)
+        public string ApproveRecordsSPTARGET( DateTime dt1, DateTime dt2)
         {
             string query = "UPDATE specific_en_TARGET_MASTER SET FREEZE='Y' WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "' and revised = 'N' AND FREEZE='N'";
             var i = _context.insertUpdateToDB(query);
@@ -1132,6 +1132,73 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                 return "Data Freezed";
             }
             return "Something went worng";
+        }
+
+
+        //----------------------TARGET MASTER ----------------//
+        public List<CommonData> GetRecordsTARGET(string pno, string MonthYear, string FYear)
+        {
+            string moyear = MonthYear.Split('-')[1] + MonthYear.Split('-')[0];
+            string fy = FYear.Split('-')[0] + "-" + FYear.Split('-')[1].Substring(2);
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FYEAR", OracleDbType = OracleDbType.VarChar, Value = fy });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_MONTHYEAR", OracleDbType = OracleDbType.VarChar, Value = moyear });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("TARGET_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[3].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    SubLabel = reader.GetString(reader.GetOrdinal("SUB_LABEL")),
+                    DataType = reader.GetString(reader.GetOrdinal("DATA_TYPE")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsTARGET(string pno, string MonthYear, string FYear,string DataType, string Input_Value, string Input_Name)
+        {
+            string moyear = MonthYear.Split('-')[1] + MonthYear.Split('-')[0];
+            string fy = FYear.Split('-')[0] + "-" + FYear.Split('-')[1].Substring(2);
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FYEAR", OracleDbType = OracleDbType.VarChar, Value = fy });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_MONTHYEAR", OracleDbType = OracleDbType.VarChar, Value = moyear });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATA_TYPE", OracleDbType = OracleDbType.VarChar, Value = DataType });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("TARGET_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[6].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsTARGET(string MonthYear, string FYear)
+        {
+            string moyear = MonthYear.Split('-')[1] + MonthYear.Split('-')[0];
+            string fy = FYear.Split('-')[0] + "-" + FYear.Split('-')[1].Substring(2);
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FYEAR", OracleDbType = OracleDbType.VarChar, Value = fy });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_MONTHYEAR", OracleDbType = OracleDbType.VarChar, Value = moyear });            
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("TARGET_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[2].Value.ToString();
+            return alert;
         }
 
         public List<CommonData> GetRecordsGASCV(string pno, DateTime fdt, DateTime tdt)

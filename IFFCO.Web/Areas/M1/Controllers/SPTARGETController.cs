@@ -13,19 +13,19 @@ using System.Collections.Generic;
 namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 {
     [Area("M1")]
-    public class TARGETController : BaseController<TARGETViewModel>
+    public class SPTARGETController : BaseController<SPTARGETViewModel>
     {
         private readonly ModelContext _context;
         private readonly TechnicalCommonService TechnicalCommonService = null;
         private readonly DropDownListBindWeb dropDownListBindWeb = null;
         private readonly ReportRepositoryWithParameters reportRepository = null;
         private readonly PrimaryKeyGen primaryKeyGen = null;
-        CommonException<TARGETViewModel> commonException = null;
+        CommonException<SPTARGETViewModel> commonException = null;
 
-        public TARGETController(ModelContext context)
+        public SPTARGETController(ModelContext context)
         {
             _context = context;
-            commonException = new CommonException<TARGETViewModel>();
+            commonException = new CommonException<SPTARGETViewModel>();
             dropDownListBindWeb = new DropDownListBindWeb();
             TechnicalCommonService = new TechnicalCommonService();
             reportRepository = new ReportRepositoryWithParameters();
@@ -38,7 +38,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsTARGET(EMP_ID.ToString(), "2022-02", "2021-2022");
+                List<CommonData> data = TechnicalCommonService.GetRecordsSPTARGET(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1), DateTime.Now);
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.records = data;
             }
@@ -56,7 +56,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
             return View(CommonViewModel);
         }
-        public IActionResult Execute(string OperationType, string pno, string MonthYear, string FYear)
+        public IActionResult Execute(string OperationType, string Shift, DateTime FromDate, DateTime ToDate)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
@@ -66,7 +66,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 switch (OperationType)
                 {
                     case "query":
-                        List<CommonData> data = TechnicalCommonService.GetRecordsTARGET(EMP_ID.ToString(), MonthYear, FYear);
+                        List<CommonData> data = TechnicalCommonService.GetRecordsSPTARGET(controller, Shift, EMP_ID.ToString(), FromDate, ToDate);                       
                         ViewBag.records = data;
 
                         break;
@@ -74,10 +74,10 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         CommonViewModel.alert = "Data Saved";
                         return Json(CommonViewModel);
                     case "approve":
-                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsTARGET(MonthYear,FYear);
+                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsSPTARGET(FromDate, ToDate);
                         return Json(CommonViewModel);
 
-
+                       
                     default:
                         break;
                 }
@@ -95,9 +95,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-            return PartialView("_partialTARGET");
+            return PartialView("_partialSPTARGET");
         }
-        public IActionResult PostData(string MonthYear, string FYear, string DataType, string Input_Name, string Input_Value, string InputType)
+        public IActionResult PostData(string OperationType, string Shift, DateTime FromDate, DateTime ToDate, string Input_Name, string Input_Value, string InputType)
         {
             try
             {
@@ -117,7 +117,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-                CommonViewModel.alert = TechnicalCommonService.PostRecordsTARGET(EMP_ID.ToString(),MonthYear,FYear, DataType, Input_Value, Input_Name);
+                CommonViewModel.alert = TechnicalCommonService.PostRecordsSPTARGET(EMP_ID.ToString(), FromDate, ToDate, Input_Value, Input_Name, OperationType);
                 return Json(CommonViewModel);
             }
             catch (Exception ex)

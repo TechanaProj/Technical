@@ -19,6 +19,7 @@ namespace IFFCO.TECHPROD.Web.Models
         public string OperationType { get; set; }
         public string Layout { get; set; }
         public string SubLabel { get; set; }
+        public string DataType { get; set; }
         
     }
 }

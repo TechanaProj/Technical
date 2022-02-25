@@ -25,22 +25,8 @@
              $('input[type="button"]:not(.non)').removeClass("btn-disable");
              $('select').removeClass("sel-disable");
 
-           }
-
-           var fyear = getCurrentFinancialYear(new Date());
-           $("#txtFYear").val(fyear);
-
-
-       })
-
-    $("#txtMonthYear").change(function () {
-        debugger;
-        var d = $(this).val();
-        d = d + "-01";
-        $("#txtFYear").val(getCurrentFinancialYear(new Date(d)));
-
-    })
-
+         }
+                    })
     var g_target_id;
     $(".ctrlbtn").click(function (e) {
 
@@ -48,11 +34,12 @@
         var op = $(this).data("type");
 
         setTimeout(function () {
-            CommonAjax('/M1/TARGET/Execute', "GET", false, "application/json", false, GetResponse, "",
+            CommonAjax('/M1/SPTARGET/Execute', "GET", false, "application/json", false, GetResponse, "",
                 {
 
-                    MonthYear: $("#txtMonthYear").val(),
-                    Fyear: $("#txtFYear").val(),                    
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate: $("#txtToDate").val(),
+                    Shift: $("#txtShift").val(),
                     OperationType: op
 
                 });
@@ -83,7 +70,7 @@
         debugger;
         var name = $(this).attr("id");
         var val = $(this).val();
-        var dtype = $(this).data("type");
+        var op = $(this).data("operation");
         var type = $(this).attr("type");
         g_target_id = "#" + name;
 
@@ -98,13 +85,14 @@
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
-            CommonAjax('/M1/TARGET/PostData', "GET", false, "application/json", false, PostResponse, "",
+            CommonAjax('/M1/SPTARGET/PostData', "GET", false, "application/json", false, PostResponse, "",
                 {
                     Input_Name: name,
                     Input_Value: val,
-                    DataType: dtype,
-                    MonthYear: $("#txtMonthYear").val(),
-                    Fyear: $("#txtFYear").val(),  
+                    OperationType: op,
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate: $("#txtToDate").val(),
+                    Shift: $("#txtShift").val(),
                     InputType: type,
 
 
@@ -131,20 +119,6 @@
 
     }
 
-
-
-    function getCurrentFinancialYear(date) {
-        var financial_year = "";
-        var today = date;
-        if ((today.getMonth() + 1) <= 3) {
-            financial_year = (today.getFullYear() - 1) + "-" + today.getFullYear()
-        } else {
-            financial_year = today.getFullYear() + "-" + (today.getFullYear() + 1)
-        }
-        return financial_year;
-    }
-  
-
 </script>
 
 <div class="plcholder-cn">
@@ -153,41 +127,53 @@
             List<CommonData> data = ViewBag.records;
 
             var Arrheader = data.Select(e => e.Category).Distinct().ToArray();
-
+            
         }
         <div class="content-box">
             <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">TARGET MASTER </span></h3>
             <div class="m-form">
                 <div class="m-form-bx">
                     <div class="row form-sm">
-                        <div class="col-sm-2 col-md-3">
+                        <div class="col-sm-2 col-md-2">
                         </div>
                         <div class="col-sm-2 col-md-1">
                             <div>
-                                <label class="m-lbl1 m-lbl2">Month Year</label>
+                                <label class="m-lbl1 m-lbl2">From Date</label>
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-2">
                             <div>
                                 @{
                                     DateTime dt;
-                                    dt = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                    dt = new DateTime(2014, 02, 01);
                                 }
-                                <input class="form-control" value="@dt.ToString("yyyy-MM")" id="txtMonthYear" type="month" />
+                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtFromDate" type="date" />
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-1">
                             <div>
-                                <label class="m-lbl1 m-lbl2">Fiscal Year</label>
+                                <label class="m-lbl1 m-lbl2">To Date</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                @{
+                                    DateTime dt1;
+                                    dt1 = new DateTime(2014, 02, 28);
+                                }
+                                <input class="form-control" value="@dt1.ToString("yyyy-MM-dd")" id="txtToDate" type="date" />
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-1">
                             <div>
-                                
-                                <input class="form-control" value="" id="txtFYear" type="text" readonly="readonly" />
+                                <label class="m-lbl1 m-lbl2"> Shift</label>
                             </div>
                         </div>
-                       
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                <input class="form-control" id="txtShift" type="text" value="G" />
+                            </div>
+                        </div>
                         <div class="col-sm-6 col-md-3">
                         </div>
                     </div>
@@ -240,11 +226,11 @@
                                                 {
                                                     if (item.Readonly.ToLower() == "yes")
                                                     {
-                                                        <input data-type="@item.DataType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                                        <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
                                                     }
                                                     else
                                                     {
-                                                        <input data-type="@item.DataType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                                        <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
 
                                                     }
                                                 }
@@ -257,7 +243,7 @@
                                                     }
 
 
-                                                    <input data-type="@item.DataType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
                                                 }
                                                 else if (item.InputType.ToLower() == "date")
                                                 {
@@ -268,21 +254,21 @@
                                                     }
 
 
-                                                    <input data-type="@item.DataType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                                 }
-                                                else if(item.InputType.ToLower() == "ddl")
+                                                else
                                                 {
                                                     string sel = "";
                                                     if (item.InputValue.Trim().ToUpper() == "0")
                                                     {
-                                                        <select id="@item.InputText" data-type="@item.DataType" class="form-control ammonia">
+                                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
                                                             <option selected="selected" value="0">NO</option>
                                                             <option value="1">YES</option>
                                                         </select>
                                                     }
                                                     else
                                                     {
-                                                        <select id="@item.InputText" data-type="@item.DataType" class="form-control ammonia">
+                                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
                                                             <option value="0">NO</option>
                                                             <option selected="selected" value="1">YES</option>
                                                         </select>
@@ -320,7 +306,7 @@
                 </div>
 
             }
-
+      
 
         </div>
     </form>
