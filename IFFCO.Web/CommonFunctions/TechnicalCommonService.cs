@@ -1,0 +1,1172 @@
+﻿using Devart.Data.Oracle;
+using IFFCO.HRMS.Entities.AppConfig;
+using IFFCO.HRMS.Repository.Pattern.Core.Factories;
+using IFFCO.HRMS.Repository.Pattern.UnitOfWork;
+using IFFCO.HRMS.Service;
+using IFFCO.TECHPROD.Web.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Collections.Generic;
+using System.Data;
+using System.Linq;
+
+
+namespace IFFCO.TECHPROD.Web.CommonFunctions
+{
+    public class TechnicalCommonService : CommonService
+    {
+        private readonly IRepositoryProvider _repositoryProvider = new RepositoryProvider(new RepositoryFactories());
+
+        private readonly IUnitOfWorkAsync _unitOfWork;
+
+        //IDataContextAsync context;
+        private readonly ModelContext _context;
+        private readonly string ProjectId = string.Empty;
+
+        DataTable _dt = new DataTable();
+
+        public TechnicalCommonService()
+        {
+            _context = new ModelContext();
+            ProjectId = new AppConfiguration().ProjectId;
+        }
+
+        /// <summary>
+        /// /SELECT COUNT(*) FROM DAILY_PLANT_INPUT WHERE TRUNC(DATE_TIME)='18-OCT-2017' AND SHIFT='G' AND FREEZE='Y' AND PR_CODE LIKE 'A1%'
+        /// </summary>
+        /// <returns></returns>
+        public List<SelectListItem> GetReason()
+        {
+            var data = _context.GetSQLQuery("SELECT ALL SDN_REASON_MASTER.SD_CODE, SDN_REASON_MASTER.REASON FROM SDN_REASON_MASTER");
+            return data.AsEnumerable().Select(e => new SelectListItem
+            {
+                Text = e.Field<string>("REASON"),
+                Value = e.Field<string>("SD_CODE"),
+            }).ToList();
+
+        }
+        public string GetScreenAccess(int pno, string formName, DateTime dt)
+        {
+            return _context.GetCharScalerFromDB("SELECT TECHANA.Get_Time_Based_Screen_Acess(" + pno + ", '" + formName + "','" + dt.Date() + "') FROM DUAL ");
+        }
+        public double GetFrValue(DateTime dt)
+        {
+            return Convert.ToDouble(_context.GetCharScalerFromDB(@"SELECT FR_VALUE FROM FACTOR_MASTER WHERE FR_CODE = 'AMSTF' AND '" + dt.Date() + "' BETWEEN NVL(EFFECTIVE_FROM_DATE, '01/JAN/1900') AND NVL(EFFECTIVE_TO_DATE, SYSDATE) "));
+        }
+        //---------AMMSC01----------------------//
+        public List<CommonData> GetRecordsAMMSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC01_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsAMMSC01(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC01_POST", oracleParameterCollecion);
+
+            string alert = oracleParameterCollecion[7].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsAMMSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC01_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string SaveRecordsAMMSC01(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_54", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_58", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_62", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_66", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC01_SAVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string PostShutdownAMMSC01(string Shift, DateTime DataDate, string Reason, string ReasonCode, string sd_plant, DateTime? FromDate, DateTime? ToDate, string FormName, string Pno, string InputType)
+        {
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = DataDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_TYPE", OracleDbType = OracleDbType.VarChar, Value = InputType });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = Pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARK_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonCode });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_PLANT", OracleDbType = OracleDbType.VarChar, Value = sd_plant });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = Reason });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_FROM", OracleDbType = OracleDbType.VarChar, Value = FromDate != null ? FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : "NULL" });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_TO", OracleDbType = OracleDbType.VarChar, Value = ToDate != null ? ToDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC01_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[9].Value.ToString();
+            return alert;
+        }
+        public string PostTechRemarkAMMSC01(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
+        {
+
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = DataDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REASON_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = RemarksValue });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC01_TECH_REMARK_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[5].Value.ToString();
+            return alert;
+        }
+
+
+        //---------AMMSC02----------------------//
+
+
+        public List<CommonData> GetRecordsAMMSC02(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC02_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsAMMSC02(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC02_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsAMMSC02(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC02_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string SaveRecordsAMMSC02(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_54", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_58", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_62", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_A1_66", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC02_SAVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string PostShutdownAMMSC02(string Shift, DateTime DataDate, string Reason, string ReasonCode, string sd_plant, DateTime? FromDate, DateTime? ToDate, string FormName, string Pno, string InputType)
+        {
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = DataDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_TYPE", OracleDbType = OracleDbType.VarChar, Value = InputType });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = Pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARK_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonCode });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_PLANT", OracleDbType = OracleDbType.VarChar, Value = sd_plant });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = Reason });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_FROM", OracleDbType = OracleDbType.VarChar, Value = FromDate != null ? FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : "NULL" });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_TO", OracleDbType = OracleDbType.VarChar, Value = ToDate != null ? ToDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC02_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[7].Value.ToString();
+            return "";
+        }
+        public string PostTechRemarkAMMSC02(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
+        {
+
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = DataDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REASON_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = RemarksValue });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            var data = _context.ExecuteProcedureForRefCursor("AMMSC02_TECH_REMARK_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[3].Value.ToString();
+            return "";
+        }
+
+
+
+
+
+        //---------PHSC01----------------------//
+        public List<CommonData> GetRecordsPHSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("PHSC01_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsPHSC01(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            var data = _context.ExecuteProcedureForRefCursor("PHSC01_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsPHSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            var data = _context.ExecuteProcedureForRefCursor("PHSC01_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
+
+
+        //---------PHSC02----------------------//
+        public List<CommonData> GetRecordsPHSC02(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("PHSC02_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsPHSC02(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            var data = _context.ExecuteProcedureForRefCursor("PHSC02_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsPHSC02(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            var data = _context.ExecuteProcedureForRefCursor("PHSC02_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
+
+
+        //------------------ELECTRICAL1---------------------------//
+        public List<CommonData> GetRecordsELECTRICAL1(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("ELECTRICAL_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            return cd;
+
+        }
+
+
+
+
+
+        public string PostRecordsELECTRICAL1(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            var data = _context.ExecuteProcedureForRefCursor("ELECTRICAL_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsELECTRICAL1(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            var data = _context.ExecuteProcedureForRefCursor("ELECTRICAL_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
+
+
+
+        //-----------OSSC01-------------------//
+
+        public List<CommonData> GetRecordsOSSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("OSSC01_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsOSSC01(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("OSSC01_POST", oracleParameterCollecion);
+
+            string alert = oracleParameterCollecion[7].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsOSSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("OSSC01_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
+
+
+        //----------------------GASALL----------------//
+        public List<CommonData> GetRecordsGASALL(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("GASALL_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsGASALL(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name.Substring(0, 3) != "A2-" ? Input_Name.Split('-')[0] : Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME1", OracleDbType = OracleDbType.VarChar, Value = Input_Name.Substring(0, 3) != "A2-" ? Input_Name.Split('-')[1] : null });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("GASALL_POST", oracleParameterCollecion);
+
+            string query = "";
+            if (Input_Name.Substring(0, 3) != "A2-")
+            {
+                if ((int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM DAILYTECH_OUTPUT WHERE DATA_DATE='" + dt.Date() + "'") == 0)
+                {
+                    query = "INSERT INTO DAILYTECH_OUTPUT(DATA_DATE," + Input_Name.Split('-')[1] + " ,CREATED_BY,CREATION_DATETIME) values('" + dt.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE)";
+                    var i = _context.insertUpdateToDB(query);
+                }
+                else
+                {
+                    query = "update DAILYTECH_OUTPUT SET " + Input_Name.Split('-')[1] + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',CREATION_DATETIME=SYSDATE where Data_Date='" + dt.Date() + "'";
+                    var i = _context.insertUpdateToDB(query);
+                }
+            }
+            string alert = oracleParameterCollecion[8].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsGASALL(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("GASALL_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
+
+
+        //----------------NG ANALYSIS----------------//
+
+        public List<CommonData> GetRecordsNGANALYSIS(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("NGANALYSIS_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsNGANALYSIS(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+
+            string query = "";
+            string alert = "";
+
+            if ((int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0)
+            {
+                query = "INSERT INTO TEMP_NGLHV(DATA_DATE," + Input_Name + " ,CREATED_BY,CREATION_DATE,INPUT_TYPE) values('" + dt.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'D')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update TEMP_NGLHV SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',CREATION_DATE=SYSDATE where Data_Date='" + dt.Date() + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
+
+
+            return alert;
+
+        }
+
+
+        public string SaveRecordsNGANALYSIS(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("NGANALYSIS_SAVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[1].Value.ToString();
+            return alert;
+
+        }
+
+        public bool ISRecordsSavedToNHLHV(string formName, string shift, string pno, DateTime dt)
+        {
+            if ((int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0)
+            {
+                return false;
+
+            }
+            else if ((int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0)
+            {
+                return false;
+            }
+            else if (Convert.ToDateTime(_context.GetCharScalerFromDB("SELECT CREATION_DATE FROM NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'")) != Convert.ToDateTime(_context.GetCharScalerFromDB("SELECT CREATION_DATE FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'")))
+            {
+                return false;
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        //----------------------POWER ----------------//
+        public TotalSDPower GetRecordsPWRSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR1", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+
+            var data = _context.ExecuteProcedureForRefCursor("PWRSC01_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+            OracleDataReader reader1 = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            List<ShutDownPower> cd1 = new List<ShutDownPower>();
+            while (reader1.Read())
+            {
+                cd1.Add(new ShutDownPower()
+                {
+
+                    InputLabel = reader1.GetString(reader1.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader1.GetString(reader1.GetOrdinal("INPUT_VALUE")),
+                    Heading = reader1.GetString(reader1.GetOrdinal("HEADING")),
+                    InputText = reader1.GetString(reader1.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader1.GetString(reader1.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader1.GetString(reader1.GetOrdinal("READONLY")),
+                    Category = reader1.GetString(reader1.GetOrdinal("CATEGORY")),
+                    Readonly = reader1.GetString(reader1.GetOrdinal("READONLY")),
+                    OperationType = reader1.GetString(reader1.GetOrdinal("OPERATION_TYPE")),
+
+                });
+            }
+
+            TotalSDPower totalSDPower = new TotalSDPower();
+            totalSDPower.CommonData = cd;
+            totalSDPower.ShutDownPower = cd1;
+            return totalSDPower;
+
+        }
+        public string PostRecordsPWRSC01(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("PWRSC01_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[7].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsPWRSC01(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            var data = _context.ExecuteProcedureForRefCursor("PWRSC01_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
+        public string PostShutdownPWRSC01(string Shift, DateTime DataDate, string Reason, string ReasonCode, string sd_plant, DateTime? FromDate, DateTime? ToDate, string FormName, string Pno, string InputType)
+        {
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = DataDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_TYPE", OracleDbType = OracleDbType.VarChar, Value = InputType });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = Pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARK_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonCode });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_PLANT", OracleDbType = OracleDbType.VarChar, Value = sd_plant });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = Reason });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_FROM", OracleDbType = OracleDbType.VarChar, Value = FromDate != null ? FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : "NULL" });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_TO", OracleDbType = OracleDbType.VarChar, Value = ToDate != null ? ToDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            var data = _context.ExecuteProcedureForRefCursor("PWRSC01_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[7].Value.ToString();
+            return "";
+        }
+
+        public string PostTechRemarkPWRSC01(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
+        {
+
+
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = DataDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REASON_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = RemarksValue });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            var data = _context.ExecuteProcedureForRefCursor("PWRSC01_TECH_REMARK_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[3].Value.ToString();
+            return "";
+        }
+
+
+
+
+        //----------------------SPECIFIC ENERGY ----------------//
+        public List<CommonData> GetRecordsSPENERGY(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("SPENERGY_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsSPENERGY(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("SPENERGY_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[6].Value.ToString();
+            return alert;
+
+        }
+
+        //----------------------XIIAB ----------------//
+        public List<CommonData> GetRecordsXIIAB(string formName, string shift, string pno, DateTime dt1, DateTime dt2)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("XII_AB_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    SubLabel = reader.GetString(reader.GetOrdinal("SUB_LABEL")),
+
+                });
+            }
+
+            return cd;
+
+        }
+
+
+        public string PostRecordsXIIAB(string formName, string shift, string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name, string op)
+        {
+
+            string query = "";
+            string alert = "";
+
+            if ((int)_context.GetScalerFromDB("SELECT COUNT(FROM_DATE) FROM XIIAB_DATA WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'") == 0)
+            {
+                query = "INSERT INTO XIIAB_DATA(FROM_DATE,TO_DATE," + Input_Name + " ,CREATED_BY,CREATION_TIME) values('" + dt1.Date() + "','" + dt2.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE)";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update XIIAB_DATA SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',CREATION_TIME=SYSDATE  WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
+
+
+            return alert;
+
+        }
+
+        //----------------------NONPLANT ----------------//
+        public List<CommonData> GetRecordsNONPLANT(string formName, string shift, string pno, DateTime dt1, DateTime dt2)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("NONPLANT_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+
+
+                });
+            }
+
+            return cd;
+
+        }
+
+
+        public string PostRecordsNONPLANT(string formName, string shift, string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name, string op)
+        {
+
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(FROM_DATE) FROM MONTHLY_TECH_INPUT WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'  AND REVISED = 'N' and type_of_gas = 'COMPOSITE' AND INPUT_TYPE = 'M'";
+            if ((int)_context.GetScalerFromDB(query) == 0)
+            {
+                query = "INSERT INTO MONTHLY_TECH_INPUT(FROM_DATE,TO_DATE," + Input_Name + " ,CREATED_BY,creation_date,INPUT_TYPE) values('" + dt1.Date() + "','" + dt2.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'M')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update MONTHLY_TECH_INPUT SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_date=SYSDATE  WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "' AND REVISED = 'N' and type_of_gas = 'COMPOSITE' AND INPUT_TYPE = 'M'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    query = "update MONTHLY_TECH_INPUT SET UR1_NPPP = 0, UR2_NPPP = 0 WHERE TYPE_OF_GAS not IN('COMPOSITE','NG') AND FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+                    i = _context.insertUpdateToDB(query);
+                    alert = "Updated";
+                }
+            }
+
+
+            return alert;
+
+        }
+        public string ApproveRecordsNONPLANT(string formName, string shift, string pno, DateTime dt1, DateTime dt2)
+        {
+           string query = "UPDATE MONTHLY_TECH_INPUT SET FREEZE='Y' WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "' and revised = 'N'";
+            var i = _context.insertUpdateToDB(query);
+            if (i>0)
+            {
+                return "Data Freezed";
+            }
+            return "Something went worng";
+        }
+
+
+        //----------------------TARGET MASTER ----------------//
+        public List<CommonData> GetRecordsTARGET(string formName, string shift, string pno, DateTime dt1, DateTime dt2)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("TARGET_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    SubLabel= reader.GetString(reader.GetOrdinal("SUB_LABEL")),
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsTARGET(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("TARGET_POST", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[5].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsTARGET( DateTime dt1, DateTime dt2)
+        {
+            string query = "UPDATE specific_en_TARGET_MASTER SET FREEZE='Y' WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "' and revised = 'N' AND FREEZE='N'";
+            var i = _context.insertUpdateToDB(query);
+            if (i > 0)
+            {
+                return "Data Freezed";
+            }
+            return "Something went worng";
+        }
+
+        public List<CommonData> GetRecordsGASCV(string pno, DateTime fdt, DateTime tdt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = fdt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = tdt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("GASCV_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[3].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+                });
+            }
+
+            return cd;
+
+        }
+
+
+
+    }
+}

@@ -1,0 +1,98 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+   // CommonAlert("Alert", "Enter Date  ", null, null, "Warning");
+
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+
+        setTimeout(function () {
+            CommonAjax('/M1/TECHCC01/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate: $("#txtToDate").val(),
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+
+    function GetResponse(data) {
+
+    CommonAlert(data.name, data.message, null, null, data.type)
+
+
+    }
+
+</script>
+
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>Daily Computation</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+
+
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                @{
+                                    var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                }
+                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-12 text-center">
+                                <div>
+                                    <hr style="margin-bottom:6px;margin-top:0" />
+                                    <input type="button" data-report-type="0" class="m-btn-1 execute ctrlbtn" value="Execute">
+
+                                </div>
+                            </div>
+                        </div>
+
+
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

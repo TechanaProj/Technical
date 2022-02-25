@@ -1,0 +1,108 @@
+﻿@*@{
+        ViewData["Title"] = "Index";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }*@
+<script src="~/js/custom.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+<script>
+    $(".ctrlbtn").click(function (e) {
+        var dt1 = new Date($("#txtFromDate").val());
+        var dt2 = new Date($("#txtToDate").val());
+        if (dt1 > dt2) {
+            CommonAlert("Warning", "From Date can not be greater than To Date", null, null, "warning")
+            return;
+        }
+        if (dt1 > new Date()) {
+            CommonAlert("Warning", "From Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        if (dt2 > new Date()) {
+            CommonAlert("Warning", "To Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        CommonReportGenerateJS('M1/TECHSCR13/GenerateReport', {
+            FromDate: $("#txtFromDate").val(),
+            ToDate: $("#txtToDate").val(),
+            ReportType: $("#txtReportType").val()
+
+        })
+
+        $(".modalLoader").hide();
+    })
+</script>
+
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>Monthly Report</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+
+
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input class="form-control" id="txtFromDate" type="date" value="@DateTime.Now.AddMonths(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="m-lbl1 m-lbl2">Report<span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <select id="txtReportType" class="form-control">
+                                    <option value="M1">Monthly Report13</option>
+                                    <option value="M2">Monthly Report2</option>
+                                    <option value="M4">Monthly Report4</option>
+                                    <option value="M5">Monthly Report5</option>
+                                    <option value="SNAP">Steam and Naph Data</option>
+                                    <option value="W">Plant data Report</option>
+                                    <option value="E">Electrical Report</option>
+                                    <option value="R">Raw Water Report</option>
+                                    <option value="NP">Naphtha Report</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="m-lbl1 m-lbl2">&nbsp;<span style="color:red;"></span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input type="button" id="execute" class="m-btn-1 execute ctrlbtn" value="Execute">
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

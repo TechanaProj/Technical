@@ -1,0 +1,121 @@
+﻿
+
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+
+
+    $(".ctrlbtn").click(function (e) {
+        var dt1 = new Date($("#txtFromDate").val());
+        var dt2 = new Date($("#txtToDate").val());
+        if (dt1 > dt2) {
+            CommonAlert("Warning", "From Date can not be greater than To Date", null, null, "warning")
+            return;
+        }
+        if (dt1 > new Date()) {
+            CommonAlert("Warning", "From Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        if (dt2 > new Date()) {
+            CommonAlert("Warning", "To Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        CommonReportGenerateJS('M1/TECHSCR16/GenerateReport', {
+            FromDate: $("#txtFromDate").val(),
+            ToDate: $("#txtToDate").val(),
+            ReportType: $('#txtReportType').val(),
+
+        })
+    })
+
+</script>
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>F1 Reports</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+
+
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">Previous Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                @{
+                                    var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                }
+                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">Current Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            @*<div class="row ">
+            <div class="col-sm-6 col-md-2">
+                <label class="m-lbl1 m-lbl2">Report Input <span style="color:red;">*</span></label>
+            </div>
+            <div class="col-sm-6 col-md-3">
+                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+            </div>
+        </div>*@
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">Report <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                <select id="txtReportType" class="form-control">
+                                    <option value="T">Technical</option>
+                                    <option value="F">Finance</option>
+
+
+                                </select>
+                            </div>
+                            </div>
+                            <hr style="margin-top:2px;margin-bottom:7px" />
+                            <div class="row ">
+                                <div class="col-sm-6 col-md-12 text-center">
+
+                                    <input type="button" data-report-type="1" class="m-btn-1 save ctrlbtn" value="Execute">
+
+                                </div>
+                            </div>
+
+                        </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

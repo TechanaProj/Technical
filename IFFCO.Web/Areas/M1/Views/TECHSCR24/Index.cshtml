@@ -1,0 +1,225 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+
+    var RName;
+    $(".ctrlbtn").click(function (e) {
+        debugger;
+        var dt1 = new Date($("#txtFromDate").val());
+        var dt2 = new Date($("#txtToDate").val());
+        if (dt1 > dt2) {
+            CommonAlert("Warning", "From Date can not be greater than To Date", null, null, "warning")
+            return;
+        }
+        if (dt1 > new Date()) {
+            CommonAlert("Warning", "From Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        if (dt2 > new Date()) {
+            CommonAlert("Warning", "To Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        $(".cat").each(function () {
+            if ($(this).val() != "") {
+                RName = $(this).find("option:selected").data("report");
+            }
+        })
+        CommonReportGenerateJS('M1/TECHSCR24/GenerateReport', {
+            FromDate: $("#txtFromDate").val(),
+            ToDate: $("#txtToDate").val(),
+            ReportName: RName,
+           
+
+        })
+    })
+
+    $(".cat").change(function () {
+        var v = $(this).val();
+        $(".cat").prop("selectedIndex", 0);
+        $(this).val(v);
+    })
+
+
+
+
+</script>
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>TOP Reports </span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+
+
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                @{
+                                    var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                }
+                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <hr style="margin:0" />
+                        <h5 class="text-center">Plants</h5>
+                        <hr style="margin:8px" />
+
+                        <div class="row ">
+
+                            <div class="col-sm-6 col-md-3">
+                                <select id="txtCat1" class="form-control cat">
+                                    <option value="">---Select---</option>
+                                    <option data-report="TOP11_A1.rep" value="TP1A1">Top-1(Aonla-I)</option>
+                                    <option data-report="TOP8_A2.rep" value="TP1A2">Top-1(Aonla-II)</option>
+                                    <option data-report="TOP7_A1.rep" value="TP2A1">Top-2(Aonla-I)</option>
+                                    <option data-report="TOP7_A2.rep" value="TP2A2">Top-2(Aonla-II)</option>
+                                    <option data-report="TOP8_A1.rep" value="TP4A1">Top-4(Aonla-I)</option>
+                                    <option data-report="TOP10_A2_GAS.rep" value="TP4A2">Top-4(Aonla-II)</option>
+                                    <option data-report="TOP10_A2_NAP.rep" value="TP5A1">Top-5(Aonla-I)</option>
+                                    <option data-report="TOP10_A2_PP.rep" value="TP5A2">Top-5(Aonla-I|)</option>
+                                    <option data-report="TOP12_A2_GAS.rep" value="T7A1">Top-7(Aonla-I)</option>
+                                    <option data-report="TOP12_A2_NAP.rep" value="T7A2">Top-7(Aonla-I|)</option>
+                                    <option data-report="TOP12_A2_AMM.rep" value="T8">Top-8(Aonla-I)</option>
+                                    <option data-report="TOP10_A1_GAS.rep" value="TP86A1">Top-8_6yrs(Aonla-I)</option>
+                                    <option data-report="TOP10_A1_FO.rep" value="T8A2">Top-8(Aonla-I|)</option>
+                                    <option data-report="TOP12_A1_FO.rep" value="TP86A2">Top-8_6yrs(Aonla-I)</option>
+                                    <option data-report="TOP10_A1_NAP.rep" value="T9A1">Top-9(Aonla-I)</option>
+                                    <option data-report="TOP10_A1_PP.rep" value="T9A2">Top-9(Aonla-I|)</option>
+
+
+                                </select>
+
+
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <select id="txtCat1" class="form-control cat">
+                                    <option value="">---Select---</option>
+                                    <option data-report="TOP12_A1_GAS.rep" value="T10G">Top-10_GAS(Aonla-I)</option>
+                                    <option data-report="TOP12_A1_NAP.rep" value="T10N">Top-10_NAP(Aonla-I)</option>
+                                    <option data-report="TOP12_A1_AMM.rep" value="T10FO">Top-10_FO(Aonla-I) </option>
+                                    <option data-report="TOP11_A2.rep" value="T10PP">Top-10_Pur.Power(Aonla-I)</option>
+                                    <option data-report="TOP14_A1.rep" value="T10G2">Top-10_GAS(Aonla-II)     </option>
+                                    <option data-report="TOP15_A1.rep" value="T10N2">Top-10_NAP(Aonla-II)     </option>
+                                    <option data-report="TOP15_A2.rep" value="T10PP2">Top-10_Pur.Power(Aonla-II)</option>
+                                    <option data-report="TOP16_A1.rep" value="A1">Top-11(Aonla-I)  </option>
+                                    <option data-report="TOP16_A2.rep" value="A2">Top-11(Aonla-II) </option>
+                                    <option data-report="TOP13_A1.rep" value="T12G">Top-12_GAS(Aonla-I) </option>
+                                    <option data-report="TOP13_A2.rep" value="T12N">Top-12_NAP(Aonla-I) </option>
+                                    <option data-report="WATER_NP.rep" value="T12FO">Top-12_FO(Aonla-I)</option>
+                                    <option data-report="ELECT_NP.rep" value="T12A">Top-12_Amm(Aonla-I) </option>
+                                    <option data-report="FICC_ESC1.rep" value="T12G2">Top-12_GAS(Aonla-II)</option>
+                                    <option data-report="FICC_ESC2.rep" value="T12N2">Top-12_NAP(Aonla-II)</option>
+                                    <option data-report="FAI_ENG.rep" value="T12A2">Top-12_Amm(Aonla-II </option>
+                                    <option data-report="FICC_QTYAM1.rep" value="T13A1">Top-13(Aonla-I)     </option>
+
+
+
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <select id="txtCat1" class="form-control cat">
+                                    <option value="">---Select---</option>
+                                    <option data-report="TOP14_A2.rep" value="T13A2">Top-13(Aonla-II)</option>
+                                    <option data-report="TOP19_A1.rep" value="T14">Top-14(Aonla-I) </option>
+                                    <option data-report="TOP19_U1.rep" value="T14A2">Top-14(Aonla-II)</option>
+                                    <option data-report="TOP19_CPP1.rep" value="T15">Top-15(Aonla-I) </option>
+                                    <option data-report="TOP19_SG.rep" value="T15A2">Top-15(Aonla-II)</option>
+                                    <option data-report="TOP19_RW1.rep" value="T16">Top-16(Aonla-I) </option>
+                                    <option data-report="TOP19_DM1.rep" value="T16A2">Top-16(Aonla-II)</option>
+                                    <option data-report="TOP19_A2.rep" value="T17A1">Top-17(Aonla-I) </option>
+                                    <option data-report="TOP19_U2.rep" value="T17A2">Top-17(Aonla-II)</option>
+                                    <option data-report="TOP19_CPP2.rep" value="T18A1">Top-18(Aonla-I) </option>
+                                    <option data-report="TOP19_SG2.rep" value="T18A2">Top-18(Aonla-II)</option>
+                                    <option data-report="TOP19_RW2.rep" value="T19A1">Top-19(AMM-I)   </option>
+                                    <option data-report="TOP19_DM2.rep" value="T19U1">Top-19(UREA-I)  </option>
+                                    <option data-report="TOP20_A2.rep" value="T19S">Top-19(SG-I)    </option>
+                                    <option data-report="TOP20_A1.rep" value="T19C1">Top-19(CPP-I    </option>
+                                    <option data-report="TOP21_A1.rep" value="T19D1">Top-19(DM-I)    </option>
+                                    <option data-report="TOP21_A2.rep" value="T19R1">Top-19(RW-I)    </option>
+
+
+                                </select>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <select class="form-control cat">
+                                    <option value="">---Select---</option>
+                                    <option data-report="DAILY_REP.rep" value="T19A2">Top-19(AMM-II)  </option>
+                                    <option data-report="TOP11AM_INS.rep" value="T19U2">Top-19(UREA-II) </option>
+                                    <option data-report="TOP11UR_INS.rep" value="T19S2">Top-19(SG-II)   </option>
+                                    <option data-report="TOP9_A1.rep" value="T19C2">Top-19(CPP-II)  </option>
+                                    <option data-report="TOP9_A2.rep" value="T19D2">Top-19(DM-II)   </option>
+                                    <option data-report="TOP1_A2.rep" value="T19R2">Top-19(RW-II)   </option>
+                                    <option data-report="TOP1_A1.rep" value="T20A1">Top-20(Aonla-I) </option>
+                                    <option data-report="TOP2_A1.rep" value="T20A2">Top-20(Aonla-II)</option>
+                                    <option data-report="TOP2_A2.rep" value="T21A1">Top-21(Aonla-I) </option>
+                                    <option data-report="TOP3_A1.rep" value="T21A2">Top-21(Aonla-II)</option>
+                                    <option data-report="TOP3_A2.rep" value="NPW">Non plant water cons        </option>
+                                    <option data-report="TOP4_A1.rep" value="NPE">Non plant elect. cons.      </option>
+                                    <option data-report="TOP4_A2.rep" value="FE1">FICC Escalation (Inputs)    </option>
+                                    <option data-report="TOP5_A1.rep" value="FE2">FICC Escalation (Production)</option>
+                                    <option data-report="TOP5_A2.rep" value="FQA1">FICC Qtrly Report (Amm1)         </option>
+                                    <option data-report="TOP17_A1.rep" value="FA">FAI Energy Report                </option>
+                                    <option data-report="TOP17_A2.rep" value="DI">Day-wise Report (Insurance)      </option>
+                                    <option data-report="TOP18_A1.rep" value="AI">Amm-II Report (Insurance)        </option>
+                                    <option data-report="TOP18_A2.rep" value="UI">Urea-II Report (Insurance)       </option>
+                                    <option data-report="OP8_6YR_A2.rep" value="FA1A2">FICC Escalation (Inputs A-I&A-II)</option>
+
+
+
+                                </select>
+                            </div>
+                        </div>
+                        <hr style="margin:8px" />
+                        <div class="row ">
+
+                            <div class="col-sm-6 col-md-12 text-center pb-3">
+
+                                <input type="button" data-report-type="1" class="m-btn-1 execute ctrlbtn" value="Execute">
+
+                            </div>
+                        </div>
+
+                    </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    var maxYear = new Date().addD;
+    var minDate = 2017;
+    var d =[];
+    for (var i = 2017; i <= maxYear; i++) {
+        d.push()
+    }
+</script>
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

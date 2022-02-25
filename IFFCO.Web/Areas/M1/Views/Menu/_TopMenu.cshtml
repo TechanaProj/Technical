@@ -1,0 +1,62 @@
+﻿@model TopMenuViewModel
+
+@{
+    string controllerName = this.ViewContext.RouteData.Values["controller"].ToString();
+    string areaName = this.ViewContext.RouteData.Values["area"].ToString();
+}
+
+
+<div class="header">
+    <div class="logo full-width"><img src="images/logo.jpg"></div>
+    <div class="header-title"><span class="dst">Human Resource Management System</span><span class="mobt">HRMS</span></div>
+    <div class="hdr-right">
+        <div class="user-txt">Welcome<span>@Model.UserName (@Model.PersonalNo)</span></div>
+        <div class="user-image full-width"><img src="@Model.Image"></div>
+    </div>
+    <div class="clearfix"></div>
+    <hr class="head-lln"></hr>
+    <div class="header-btn">
+        <ul>
+            <li onclick="RedirectHomeNLogout('@areaName/Home/Index')"  class="home" data-toggle="tooltip" data-placement="bottom" title="Home">
+                <a asp-controller="Home" asp-action="Index"><i class="fas fa-home"></i>
+                
+                </a>
+
+            </li>
+            <li class="logoff" onclick="RedirectHomeNLogout('Account/Logout')" data-toggle="tooltip" data-placement="bottom" title="Logout">
+                <a href="/Account/Logout"><i class="fas fa-power-off"></i></a>
+                @*@if (controllerName == "Home")
+                    {
+                    <a asp-controller="Account" asp-action="Logout"><i class="fas fa-power-off"></i></a>
+                    }
+                    else
+                    {
+                    <a asp-controller="@controllerName" asp-action="Logout"><i class="fas fa-power-off"></i></a>
+                    }*@
+            </li>
+        </ul>
+    </div>
+    <div class="header-box1">
+        <div class="userb-img full-width"><img src="@Model.Image"></div>
+        <div class="info">
+            <span class="usernme1">@Model.UserName</span>
+            <span class="userunit">Unit: @Model.Unit (@Model.UnitCode)</span>
+            <span class="userdesig">@Model.Designation</span>
+            <span class="userdept">@Model.WorkSection</span>
+            @*<span>&nbsp;(@Model.WorkUnit)</span>*@
+            <span class="logoff " title="Logout"><a href="/Account/Logout" class="logout_clr"><i class="fas fa-power-off "></i>Logout</a></span>
+
+        </div>
+    </div>
+</div>
+<script>
+  
+    $(".header .hdr-right").hover(function () {
+        $(".header-box1").stop(true, true).delay(500).show(0);
+    }, $("body").click(function (event) {
+        if ($(event.target).attr('class') != '1' && $(event.target).attr('class') != '#accountPopup') {
+            $(".header-box1").hide();
+        }
+    }));
+    function RedirectHomeNLogout(url) { localStorage.setItem("currentUrl", url);   window.location.href = url; }
+</script>

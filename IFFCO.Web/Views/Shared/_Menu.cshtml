@@ -1,0 +1,320 @@
+﻿@model LeftMenuViewModel
+@using Microsoft.AspNetCore.Http;
+
+
+
+@*<link href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap-toggle.min.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/lib/jquery/dist/bootstrap-toggle.min.js")"></script>*@
+<script>
+
+    $(document).ready(function () {
+        $.ajax({
+            url: "/Home/GetMouldeResult",
+            type: "GET",
+            async: false,
+            contentType: "application/json",
+            cache: false,
+            success: function (data) {
+                var strHtml = "<option value=''>Select Modules</option>"
+                $.each(data.modules, function (index, value) {
+                    strHtml += "<option value=" + value.moduleid + ">" + value.modulename + "</option>"
+                })
+                $("#ddlModules").append(strHtml);
+
+                strHtml = "<option value='0'>Select Units</option>"
+                $.each(data.units, function (index, value) {
+                    strHtml += "<option value=" + value.unitCode + ">" + value.description + "</option>"
+                })
+                $("#ddlUnits").append(strHtml);
+
+                strHtml = "<ul class='nav nav-list mn-menu'>";
+                $.each(data.modulesMenu, function (index, value) {
+                    if (value.menulevel == "1") {
+                        strHtml += "<li><label class='tree-toggler nav-header' id=" + value.menuId + ">" + value.menuName + "<span class='tree-icne fa fa-angle-down'></span></label>";
+                        if (value.hasChile == "Y") {
+
+                            $.each(data.modulesMenu, function (index, data1) {
+                                if (data1.parentMenuId == value.menuId) {
+                                    strHtml += "<ul class='nav nav-list tree'>";
+                                    if (data1.hasChile == "Y") {
+
+                                        strHtml += "<li><label class='tree-toggler nav-header' id=" + data1.menuId + ">" + data1.menuName + "<span class='tree-icne fa fa-angle-down'></span></label>";
+                                        strHtml += "<ul class='nav nav-list tree'>";
+                                        $.each(data.modulesMenu, function (index, data2) {
+                                            if (data2.parentMenuId == data1.menuId) {
+
+                                                if (data2.hasChile == "Y") {
+                                                    strHtml += "<li><label class='tree-toggler nav-header' id=" + data2.menuId + ">" + data2.menuName + "<span class='tree-icne fa fa-angle-down'></span></label>";
+                                                    strHtml += "<ul class='nav nav-list tree'>";
+                                                    $.each(data.modulesMenu, function (index, data3) {
+                                                        if (data3.parentMenuId == data2.menuId) {
+                                                            strHtml += "<li><a id=" + data3.menuId + " href='../" + data3.moduleId + "/" + data3.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data3.menuName + " </a></li>";
+                                                        }
+
+                                                    });
+
+                                                    strHtml += "</ul>";
+                                                }
+                                                else {
+                                                    strHtml += "<li><a id=" + data2.menuId + " href='../" + data2.moduleId + "/" + data2.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data2.menuName + " </a></li>";
+                                                }
+                                            }
+                                        });
+                                        strHtml += "</ul>";
+                                        strHtml += "</li >";
+                                    }
+                                    else {
+                                        strHtml += "<li><a id=" + data1.menuId + " href='../" + data1.moduleId + "/" + data1.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data1.menuName + "</a></li>";
+                                    }
+
+                                    strHtml += "</ul>";
+                                }
+                            });
+                        }
+
+                        strHtml += "</li>";
+                    }
+                });
+                strHtml += "</ul>";
+                $("#ParentUL").append(strHtml);
+            }
+        });
+
+    });
+
+</script>
+
+<div class="menu-area">
+    <div class="menu-bar1" id="menu-bar1"><i class="fa fa-chevron-left" style="margin-top: 8px;" aria-hidden="true"></i></div>
+    <div class="pj-side-nav">
+        <div class="input-slt-mn">
+            <div class="input-slt">
+                <div class="row">
+                    <select id="ddlModules" class="form-control"></select>
+                </div>
+                <div class="row">
+                    <select class="form-control" id="ddlUnits"></select>
+                </div>
+            </div>
+        </div>
+        <div class="my-nav-list" id="ParentUL">
+
+
+
+
+            @*<ul class="nav nav-list mn-menu">
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1<span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li>
+                        <label class="tree-toggler nav-header"> Menu1  <span class="tree-icne fa fa-angle-down"></span></label>
+                        <ul class="nav nav-list tree">
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                            <li>
+                                <label class="tree-toggler nav-header"> Menu1 .1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                <ul class="nav nav-list tree">
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                    <li>
+                                        <label class="tree-toggler nav-header"> Menu1 .1.1 <span class="tree-icne fa fa-angle-down"></span></label>
+                                        <ul class="nav nav-list tree">
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                            <li><a href="#"><span class="glyphicon glyphicon-triangle-right"></span> Item</a></li>
+                                        </ul>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>*@
+        </div>
+    </div>
+</div>

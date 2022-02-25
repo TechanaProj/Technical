@@ -1,0 +1,95 @@
+﻿@model IFFCO.TECHPROD.Web.ViewModels.TECHSCR22ViewModel
+@{
+    //ViewData["Title"] = "Index";
+    //Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<script src="~/js/Common.js"></script>
+<script>
+
+    function Validate() {
+        debugger;
+        var dt1 = new Date($("#FromDate").val());
+        var dt2 = new Date($("#ToDate").val());
+        if (dt1 > dt2) {
+            CommonAlert("Warning", "From Date can not be greater than To Date", null, null, "warning")
+            return false;
+        }
+        if (dt1 > new Date()) {
+            CommonAlert("Warning", "From Date can not be greater than Current Date", null, null, "warning")
+            return false;
+        }
+        if (dt2 > new Date()) {
+            CommonAlert("Warning", "To Date can not be greater than Current Date", null, null, "warning")
+            return false;
+        }
+        return true;
+
+    }
+
+
+</script>
+
+<form asp-area="M1" asp-controller="TECHSCR22" asp-action="GenerateReport" method="post" onsubmit="return Validate();">
+    <div class="plcholder-cn">
+        <div class="small-frm">
+            <h3 class="sub-heading1"><span>Report Section</span></h3>
+            <div class="m-form">
+                <div class="m-form">
+                    <div class="m-form-bx">
+                        <div class="row form-sm">
+                            <div class="col-sm-1 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">From Date :</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <input type="date" class="form-control" asp-for="@Model.FromDate" id="FromDate" />
+                                </div>
+                            </div>
+                            <div class="col-sm-1 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">To Date :</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <input type="date" class="form-control" asp-for="@Model.ToDate" id="ToDate" />
+                                </div>
+                            </div>
+                            <div class="row form-sm">
+                                <div class="col-sm-1 col-md-2">
+                                    <div>
+                                        <label class="m-lbl1 m-lbl2">Report Name :</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-md-2">
+                                    <div>
+                                        <select class="form-control" asp-for="@Model.PlantType" id="CallingReport" asp-items="@(new SelectList(ViewBag.PlantLOVList,"Value","Text"))"></select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="btn-area1">
+                            <input type="submit" id="execute" class="m-btn-1 execute report" value="Execute">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

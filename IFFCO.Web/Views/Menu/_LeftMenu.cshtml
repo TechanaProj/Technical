@@ -1,0 +1,810 @@
+﻿@model LeftMenuViewModel
+@{
+    ViewData["Title"] = "_LeftMenu";
+
+}
+
+@*<link href="@Url.Content("~/lib/bootstrap/dist/css/bootstrap-toggle.min.css")" rel="stylesheet" />
+    <script src="@Url.Content("~/lib/jquery/dist/bootstrap-toggle.min.js")"></script>*@
+
+
+@*<script src="~/js/jquery-3.2.1.min.js"></script
+    <script src="~/js/custom.js"></script>>*@
+
+<div class="menu-overlay"></div>
+<div class="mbl-mnu"><i class="fas fa-chevron-left"></i></div>
+<div class="selection">
+    <div class="row"><select class="form-control" id="ddlModules" asp-items="Model.Modules"></select></div>
+    <div class="row"><select class="form-control" id="ddlUnits" asp-items="Model.Units"></select></div>
+</div>
+<div class="menu-area">
+    <div class="main-menu">
+        <ul class="mn-menu active">
+            @{ int counter = 1;
+                foreach (var value in Model.ModulesMenu)
+                {
+                    var img = "images/menue-level1-" + counter + ".png";
+                    if (counter == 1)
+                    {
+                        //<li class="active" getmenu="@value.MenuId"><span class="icn1 full-width"><img src="@img"></span><span class="nme">@value.MenuName</span></li>
+                        <li class="active" onclick="GetMenu('@value.MenuId')"><span class="icn1 full-width"><img src="@img"></span><span class="nme">@value.MenuName</span></li>
+                    }
+                    else
+                    {
+                        //<li getmenu="@value.MenuId"><span class="icn1 full-width"><img src="@img"></span><span class="nme">@value.MenuName</span></li>
+                        <li onclick="GetMenu('@value.MenuId')"><span class="icn1 full-width"><img src="@img"></span><span class="nme">@value.MenuName</span></li>
+                    }
+                    counter++;
+                }
+            }
+        </ul>
+        <div class="mn-mnu-selected" id="ParentUL">
+            @*<ul class="sb-menu active">
+                   @foreach (var value in Model.FilterModulesMenu)
+                   {
+                       if (value.Menulevel == 2)
+                       {
+                   <li>
+                       <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@value.MenuName</span></span>
+                       @if (value.HasChile == "Y")
+                       {
+                           <ul class="sb-menu1">
+                               @foreach (var data1 in Model.FilterModulesMenu)
+                               {
+                                   if (data1.ParentMenuId == value.MenuId)
+                                   {
+                                       @if (data1.HasChile == "Y")
+                                       {
+                                           <li>
+                                               <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@data1.MenuName</span></span>
+                                               <ul class="sb-menu2">
+                                                   @foreach (var data2 in Model.FilterModulesMenu)
+                                                   {
+                                                       @if (data2.ParentMenuId == data1.MenuId)
+                                                       {
+                                                           @if (data2.HasChile == "Y")
+                                                           {
+                                                               <li>
+                                                                   <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@data2.MenuName</span></span>
+                                                                   <ul class="sb-menu3">
+                                                                       @foreach (var data3 in Model.FilterModulesMenu)
+                                                                       {
+
+                                                                           if (data3.ParentMenuId == data2.MenuId)
+                                                                           {
+                                                                       <li>
+                                                                           @*<span class="selected-ar"><a href="/@data3.ModuleId/@data3.MenuId/Index"><span class="nme">@data3.MenuName</span></a></span>
+                                                                           <span class="selected-ar"><a href="javascript:void(0);" onclick="PageNotLoad('@data3.ModuleId/@data3.MenuId/Index',this);"><span class="nme">@data3.MenuName</span></a></span>
+                                                                       </li>
+                                                                           }
+
+                                                                       }
+                                                                   </ul>
+                                                               </li>
+                                                           }
+                                                           else
+                                                           {
+                                                               <li>
+                                                                   @*<span class="selected-ar"><a href="/@data2.ModuleId/@data2.MenuId/Index"><span class="nme">@data2.MenuName</span></a></span>
+                                                                   <span class="selected-ar"><a href="javascript:void(0);" onclick="PageNotLoad('@data2.ModuleId/@data2.MenuId/Index',this);"><span class="nme">@data2.MenuName</span></a></span>
+                                                               </li>
+                                                           }
+                                                       }
+
+
+                                                   }
+                                               </ul>
+                                           </li>
+                                       }
+                                       else
+                                       {
+                                           <li>
+                                               @*<span class="selected-ar"><a href="@data1.ModuleId/@data1.MenuId/Index"><span class="nme">@data1.MenuName</span></a></span>
+                                               <span class="selected-ar"><a href="javascript:void(0);" onclick="PageNotLoad('@data1.ModuleId/@data1.MenuId/Index',this);"><span class="nme">@data1.MenuName</span></a></span>
+                                           </li>
+                                       }
+                                   }
+                               }
+                           </ul>
+                       }
+                   </li>
+                       }
+                   }
+                </ul>*@
+            @*<ul class="sb-menu">
+                    @foreach (var value in Model.ModulesMenu)
+                    {
+                        if (value.Menulevel == 1)
+                        {
+                            if (value.MenuName == "Forms")
+                            {
+                    <li>
+                        <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@value.MenuName</span></span>
+                        @if (value.HasChile == "Y")
+                        {
+                            <ul class="sb-menu1">
+                                @foreach (var data1 in Model.ModulesMenu)
+                                {
+                                    if (data1.ParentMenuId == value.MenuId)
+                                    {
+                                        @if (data1.HasChile == "Y")
+                                        {
+                                            <li>
+                                                <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@data1.MenuName</span></span>
+                                                <ul class="sb-menu2">
+                                                    @foreach (var data2 in Model.ModulesMenu)
+                                                    {
+                                                        @if (data2.ParentMenuId == data1.MenuId)
+                                                        {
+                                                            @if (data2.HasChile == "Y")
+                                                            {
+                                                                <li>
+                                                                    <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@data2.MenuName</span></span>
+                                                                    <ul class="sb-menu3">
+                                                                        @foreach (var data3 in Model.ModulesMenu)
+                                                                        {
+
+                                                                            if (data3.ParentMenuId == data2.MenuId)
+                                                                            {
+                                                                                <li>
+                                                                                    <span class="selected-ar"><a href="/@data3.ModuleId/@data3.MenuId/Index"><span class="nme">@data3.MenuName</span></a></span>
+                                                                                </li>
+                                                                            }
+
+                                                                        }
+                                                                    </ul>
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li>
+                                                                    <span class="selected-ar"><a href="/@data2.ModuleId/@data2.MenuId/Index"><span class="nme">@data2.MenuName</span></a></span>
+                                                                </li>
+                                                            }
+                                                        }
+
+
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <span class="selected-ar"><a href="@data1.ModuleId/@data1.MenuId/Index"><span class="nme">@data1.MenuName</span></a></span>
+                                            </li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        }
+                    </li>
+                            }
+                        }
+                    }
+                </ul>*@
+            @*<ul class="sb-menu">
+                    @foreach (var value in Model.ModulesMenu)
+                    {
+                        if (value.Menulevel == 1)
+                        {
+                            if (value.MenuName == "Reports")
+                            {
+                    <li>
+                        <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@value.MenuName</span></span>
+                        @if (value.HasChile == "Y")
+                        {
+                            <ul class="sb-menu1">
+                                @foreach (var data1 in Model.ModulesMenu)
+                                {
+                                    if (data1.ParentMenuId == value.MenuId)
+                                    {
+                                        @if (data1.HasChile == "Y")
+                                        {
+                                            <li>
+                                                <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@data1.MenuName</span></span>
+                                                <ul class="sb-menu2">
+                                                    @foreach (var data2 in Model.ModulesMenu)
+                                                    {
+                                                        @if (data2.ParentMenuId == data1.MenuId)
+                                                        {
+                                                            @if (data2.HasChile == "Y")
+                                                            {
+                                                                <li>
+                                                                    <span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">@data2.MenuName</span></span>
+                                                                    <ul class="sb-menu3">
+                                                                        @foreach (var data3 in Model.ModulesMenu)
+                                                                        {
+
+                                                                            if (data3.ParentMenuId == data2.MenuId)
+                                                                            {
+                                                                                <li>
+                                                                                    <span class="selected-ar"><a href="/@data3.ModuleId/@data3.MenuId/Index"><span class="nme">@data3.MenuName</span></a></span>
+                                                                                </li>
+                                                                            }
+
+                                                                        }
+                                                                    </ul>
+                                                                </li>
+                                                            }
+                                                            else
+                                                            {
+                                                                <li>
+                                                                    <span class="selected-ar"><a href="/@data2.ModuleId/@data2.MenuId/Index"><span class="nme">@data2.MenuName</span></a></span>
+                                                                </li>
+                                                            }
+                                                        }
+
+
+                                                    }
+                                                </ul>
+                                            </li>
+                                        }
+                                        else
+                                        {
+                                            <li>
+                                                <span class="selected-ar"><a href="@data1.ModuleId/@data1.MenuId/Index"><span class="nme">@data1.MenuName</span></a></span>
+                                            </li>
+                                        }
+                                    }
+                                }
+                            </ul>
+                        }
+                    </li>
+                            }
+                        }
+                    }
+                </ul>*@
+        </div>
+    </div>
+</div>
+
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+       // localStorage.setItem("currentUrl", "");
+        $(".active").click();
+
+    });
+
+    $(".mbl-mnu").click(function() {
+        //$(".left-cn").toggleClass("active");
+        //$(".right-cn").toggleClass("right-cn1");
+
+        $(this).toggleClass("active");
+        $(".left-cn").toggleClass("active");
+        $(".right-cn").toggleClass("right-cn1");
+        $(".menu-overlay").toggleClass("active");
+        $("body").toggleClass("active");
+    });
+
+
+    //       $(this).toggleClass("active");
+    //       $("body").toggleClass("active");
+    //       //$(".project-dashboard").toggleClass("hide-menu1");
+    //$(".left-cn").toggleClass("active");
+    //       $(".menu-overlay").toggleClass("active");
+
+
+
+    function GetMenu(MenuId) {        
+        $(".modalLoader").show();
+        CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetMenuResult?MenuId=' + MenuId, "GET", true, "application/json", false, BindMenue, "#ParentUL");
+    }
+    function BindMenue(data, Id) {
+        $(Id).html("");
+        //var strHtml = "<ul class='dasboard-accordion first-level'>";
+
+        var strHtml = '<ul class="sb-menu active">';
+        $.each(data.filterModulesMenu, function (index, value) {
+            
+            if (value.menulevel == "2") {
+                //strHtml += '<li>';
+                //strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + value.menuName + '</span></span>'
+                if (value.hasChile == "Y") {
+                    strHtml += '<li>';
+                    strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + value.menuName + '</span></span>'
+                    strHtml += '<ul class="sb-menu1">';
+                    $.each(data.filterModulesMenu, function (index, data1) {
+                        if (data1.parentMenuId == value.menuId) {
+                            if (data1.hasChile == "Y") {
+                                strHtml += '<li>';
+                                strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data1.menuName + '</span></span>';
+                                strHtml += '<ul class="sb-menu2">';
+                                $.each(data.filterModulesMenu, function (index, data2) {
+                                    if (data2.parentMenuId == data1.menuId) {
+                                        if (data2.hasChile == "Y") {
+                                            strHtml += '<li>';
+                                            strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data2.menuName + '</span></span>';
+                                            strHtml += '<ul class="sb-menu3">';
+                                            $.each(data.filterModulesMenu, function (index, data3) {
+
+                                                if (data3.parentMenuId == data2.menuId) {
+                                                    strHtml += '<li>';
+                                                    //strHtml += '<span class="selected-ar"><a href="/' + data3.moduleId + '/' + data3.menuId + '/Index"><span class="nme">' + data3.menuName + '</span></a></span>'
+                                                    var url = data3.moduleId + "/" + data3.menuId + "/Index";
+                                                    strHtml += "<span class='selected-ar'><a href='javascript:void(0);' onclick='PageNotLoad(\"" + url + "\",this)'><span class='nme'>" + data3.menuName + "</span></a></span>"
+
+                                                    strHtml += '</li>';
+                                                }
+
+                                            });
+                                            strHtml += '</ul>';
+                                            strHtml += '</li>';
+                                        }
+                                        else {
+                                            strHtml += '<li>';
+                                            //strHtml += '<span class="selected-ar"><a href="/' + data2.moduleId + '/' + data2.menuId+'/Index"><span class="nme">' + data2.menuName + '</span></a></span>'
+                                            var url = data2.moduleId + "/" + data2.menuId + "/Index";
+                                            strHtml += "<span class='selected-ar'><a href='javascript:void(0);' onclick='PageNotLoad(\"" + url + "\",this)'><span class='nme'>" + data2.menuName + "</span></a></span>"
+                                            strHtml += '</li>';
+                                        }
+                                    }
+                                });
+                                strHtml += '</ul>';
+                                strHtml += '</li>';
+                            }
+                            else {
+                                strHtml += '<li>';
+                                //strHtml += '<span class="selected-ar"><a href="/' + data1.moduleId+'/'+data1.menuId+'/Index"><span class="nme">' + data1.menuName + '</span></a></span>';
+                                var url = data1.moduleId + "/" + data1.menuId + "/Index";
+                                strHtml += "<span class='selected-ar'><a href='javascript:void(0);' onclick='PageNotLoad(\"" + url + "\",this)'><span class='nme'>" + data1.menuName + "</span></a></span>"
+                                //strHtml += "<input type='button' class='btn btn-primary m-btn' onclick='PopupOk(" + fn + ",\"" + data + "\");' data-dismiss='modal' value='OK'>";
+                                strHtml += '</li>';
+                            }
+                        }
+                    });
+
+                    strHtml += '</ul>';
+                    strHtml += '</li>';
+                }
+                else {
+                    strHtml += '<li>';
+                    //strHtml += '<span class="selected-ar"><a href="/' + data1.moduleId+'/'+data1.menuId+'/Index"><span class="nme">' + data1.menuName + '</span></a></span>';
+                    var url = value.moduleId + "/" + value.menuId + "/Index";
+                    strHtml += "<span class='selected-ar'><a href='javascript:void(0);' onclick='PageNotLoad(\"" + url + "\",this)'><span class='nme'>" + value.menuName + "</span></a></span>"
+                    //strHtml += "<input type='button' class='btn btn-primary m-btn' onclick='PopupOk(" + fn + ",\"" + data + "\");' data-dismiss='modal' value='OK'>";
+                    strHtml += '</li>';
+                }
+               
+            }
+        });
+        strHtml += '</ul>';
+        $(Id).append(strHtml);
+        var script = document.createElement('script');
+        script.src = "/js/custom.js";
+        document.body.appendChild(script);
+        var script = document.createElement('script');
+        script.src = "js/Common.js";
+        document.body.appendChild(script);
+        $(".modalLoader").hide();
+    }
+    $("#ddlModules").change(function () {        
+        $(".modalLoader").show();       
+        //CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetMouldeResult?ModuleId=' + $("#ddlModules option:selected").val(), "GET", true, "application/json", false, BindLeftMenu2, "#ParentUL");
+        
+        window.location.href = $(this).val() + '/@ViewContext.RouteData.Values["Controller"].ToString()/GetMouldeResult?ModuleId=' + $(this).val();
+    });
+    $("#ddlUnits").change(function () {       
+        $(".modalLoader").show();
+        CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetUnitResult?UnitId=' + $("#ddlUnits option:selected").val(), "GET", true, "application/json", false, RedirectDashboardOnUnits, "#ParentUL");
+    });
+
+    function BindLeftMenu2(data, Id) {
+        $("#ParentUL").html("");
+        //var strHtml = "<ul class='dasboard-accordion first-level'>";
+
+        var strHtml = '<ul class="sb-menu active">';
+        $.each(data.filterModulesMenu, function (index, value) {
+            if (value.menulevel == "2") {
+                strHtml += '<li>';
+                strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + value.MenuName + '</span></span>'
+                if (value.hasChile == "Y") {
+                    strHtml += '<ul class="sb-menu1">';
+                    $.each(data.filterModulesMenu, function (index, data1) {
+                        if (data1.parentMenuId == value.menuId) {
+                            if (data1.hasChile == "Y") {
+                                strHtml += '<li>';
+                                strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data1.MenuName + '</span></span>';
+                                strHtml += '<ul class="sb-menu2">';
+                                $.each(data.filterModulesMenu, function (index, data2) {
+                                    if (data2.parentMenuId == data1.menuId) {
+                                        if (data2.hasChile == "Y") {
+                                            strHtml += '<li>';
+                                            strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data2.MenuName + '</span></span>';
+                                            strHtml += '<ul class="sb-menu3">';
+                                            $.each(data.filterModulesMenu, function (index, data3) {
+
+                                                if (data3.parentMenuId == data2.menuId) {
+                                                    strHtml += '<li>';
+                                                    strHtml += '<span class="selected-ar"><a href="' + data3.moduleId + '/' + data3.menuId+'/Index"><span class="nme">' + data3.MenuName + '</span></a></span>'
+                                                    strHtml += '</li>';
+                                                }
+
+                                            });
+                                            strHtml += '</ul>';
+                                            strHtml += '</li>';
+                                        }
+                                        else {
+                                            strHtml += '<li>';
+                                            strHtml += '<span class="selected-ar"><a href="' + data2.moduleId + '/' + data2.menuId+'/Index"><span class="nme">' + data2.MenuName + '</span></a></span>'
+                                            strHtml += '</li>';
+                                        }
+                                    }
+                                });
+                                strHtml += '</ul>';
+                                strHtml += '</li>';
+                            }
+                            else {
+                                strHtml += '<li>';
+                                strHtml += '<span class="selected-ar"><a href="' + data1.moduleId + '/' + data1.menuId+'/Index"><span class="nme">' + data1.MenuName + '</span></a></span>';
+                                strHtml += '</li>';
+                            }
+                        }
+                    });
+
+                    strHtml += '</ul>';
+                }
+                strHtml += '</li>';
+            }
+        });
+        strHtml += '</ul>';
+
+        //strHtml += '<ul class="sb-menu active">';
+        //$.each(data.modulesMenu, function (index, value) {
+        //    if (value.Menulevel == "1") {
+        //        if (value.MenuName == "Forms") {
+        //            strHtml += '<li>';
+        //            strHtml += '<span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">' + value.MenuName + '</span></span>'
+        //            if (value.HasChile == "Y") {
+        //                strHtml += '<ul class="sb-menu1">';
+        //                $.each(data.modulesMenu, function (index, data1) {
+        //                    if (data1.ParentMenuId == value.MenuId) {
+        //                        if (data1.HasChile == "Y") {
+        //                            strHtml += '<li>';
+        //                            strHtml += '<span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data1.MenuName + '</span></span>';
+        //                            strHtml += '<ul class="sb-menu2">';
+        //                            $.each(data.modulesMenu, function (index, data2) {
+        //                                if (data2.ParentMenuId == data1.MenuId) {
+        //                                    if (data2.HasChile == "Y") {
+        //                                        strHtml += '<li>';
+        //                                        strHtml += '<span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data2.MenuName + '</span></span>';
+        //                                        strHtml += '<ul class="sb-menu3">';
+        //                                        $.each(data.modulesMenu, function (index, data3) {
+
+        //                                            if (data3.ParentMenuId == data2.MenuId) {
+        //                                                strHtml += '<li>';
+        //                                                strHtml += '<span class="selected-ar"><a href="/data3.ModuleId/data3.MenuId/Index"><span class="nme">' + data3.MenuName + '</span></a></span>'
+        //                                                strHtml += '</li>';
+        //                                            }
+
+        //                                        });
+        //                                        strHtml += '</ul>';
+        //                                        strHtml += '</li>';
+        //                                    }
+        //                                    else {
+        //                                        strHtml += '<li>';
+        //                                        strHtml += '<span class="selected-ar"><a href="/data2.ModuleId/data2.MenuId/Index"><span class="nme">' + data2.MenuName + '</span></a></span>'
+        //                                        strHtml += '</li>';
+        //                                    }
+        //                                }
+        //                            });
+        //                            strHtml += '</ul>';
+        //                            strHtml += '</li>';
+        //                        }
+        //                        else {
+        //                            strHtml += '<li>';
+        //                            strHtml += '<span class="selected-ar"><a href="data1.ModuleId/data1.MenuId/Index"><span class="nme">' + data1.MenuName + '</span></a></span>';
+        //                            strHtml += '</li>';
+        //                        }
+        //                    }
+        //                });
+
+        //                strHtml += '</ul>';
+        //            }
+        //            strHtml += '</li>';
+        //        }
+        //    }
+        //});
+        //strHtml += '</ul>';
+
+        //strHtml += '<ul class="sb-menu active">';
+        //$.each(data.modulesMenu, function (index, value) {
+        //    if (value.Menulevel == "1") {
+        //        if (value.MenuName == "Reports") {
+        //            strHtml += '<li>';
+        //            strHtml += '<span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">' + value.MenuName + '</span></span>'
+        //            if (value.HasChile == "Y") {
+        //                strHtml += '<ul class="sb-menu1">';
+        //                $.each(data.modulesMenu, function (index, data1) {
+        //                    if (data1.ParentMenuId == value.MenuId) {
+        //                        if (data1.HasChile == "Y") {
+        //                            strHtml += '<li>';
+        //                            strHtml += '<span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data1.MenuName + '</span></span>';
+        //                            strHtml += '<ul class="sb-menu2">';
+        //                            $.each(data.modulesMenu, function (index, data2) {
+        //                                if (data2.ParentMenuId == data1.MenuId) {
+        //                                    if (data2.HasChile == "Y") {
+        //                                        strHtml += '<li>';
+        //                                        strHtml += '<span class="selected-ar"><span class="icn1"><i class="fas fa-chevron-right"></i></span><span class="nme">' + data2.MenuName + '</span></span>';
+        //                                        strHtml += '<ul class="sb-menu3">';
+        //                                        $.each(data.modulesMenu, function (index, data3) {
+
+        //                                            if (data3.ParentMenuId == data2.MenuId) {
+        //                                                strHtml += '<li>';
+        //                                                strHtml += '<span class="selected-ar"><a href="/data3.ModuleId/data3.MenuId/Index"><span class="nme">' + data3.MenuName + '</span></a></span>'
+        //                                                strHtml += '</li>';
+        //                                            }
+
+        //                                        });
+        //                                        strHtml += '</ul>';
+        //                                        strHtml += '</li>';
+        //                                    }
+        //                                    else {
+        //                                        strHtml += '<li>';
+        //                                        strHtml += '<span class="selected-ar"><a href="/data2.ModuleId/data2.MenuId/Index"><span class="nme">' + data2.MenuName + '</span></a></span>'
+        //                                        strHtml += '</li>';
+        //                                    }
+        //                                }
+        //                            });
+        //                            strHtml += '</ul>';
+        //                            strHtml += '</li>';
+        //                        }
+        //                        else {
+        //                            strHtml += '<li>';
+        //                            strHtml += '<span class="selected-ar"><a href="data1.ModuleId/data1.MenuId/Index"><span class="nme">' + data1.MenuName + '</span></a></span>';
+        //                            strHtml += '</li>';
+        //                        }
+        //                    }
+        //                });
+
+        //                strHtml += '</ul>';
+        //            }
+        //            strHtml += '</li>';
+        //        }
+        //    }
+        //});
+        //strHtml += '</ul>';
+
+
+        $(Id).append(strHtml);
+        $(".modalLoader").hide();
+        window.location.href = "@ViewContext.RouteData.Values["area"].ToString()/Home/Index";
+        // $(document).load('/js/jquery-3.2.1.min.js').fadeIn("slow");
+
+        //document.write("../js/jquery-3.2.1.min.js");
+        // location.reload(true);
+        //var versionUpdate = (new Date()).getTime();
+        //var script = document.createElement("script");
+        //script.type = "text/javascript";
+        //script.src = "/js/jquery-3.2.1.min.js";
+        ////document.body.removeChild("/js/jquery-3.2.1.min.js");
+        //document.head.appendChild(script);
+    }
+    function BindLeftMenu1(data, Id) {
+        $("#ParentUL").html("");
+        var strHtml = "<ul class='dasboard-accordion first-level'>";
+
+
+
+
+        $.each(data.modulesMenu, function (index, value) {
+            if (value.menulevel == "1") {
+                strHtml +="<li class='accordion-list'>";
+                strHtml +="<a href='#' class='toggle'>";
+                strHtml +="<img src='~/images/masters-icon.png'>";
+                strHtml += "<label id='" + value.MenuId + "'>" + value.MenuName+"</label>";
+                strHtml +="</a>";
+                if (value.hasChile == "Y") {
+
+                    strHtml += "<div class='inner'>";
+                    strHtml += "<div class='inner-accordion'>";
+                    strHtml += "<ul class='dasboard-accordion second-level'>";
+                    $.each(data.modulesMenu, function (index, data1) {
+                        if (data1.parentMenuId == value.menuId) {
+                            if (data1.hasChile == "Y") {
+
+                                strHtml += "<li class='accordion-list'>";
+                                strHtml += "<a href='#' class='toggle'>";
+                                strHtml += "<label id='" + data1.MenuId + "'>" + data1.MenuName+"</label>";
+                                strHtml += "</a>";
+                                strHtml += "<div class='inner'>";
+                                strHtml += "<ul class='dasboard-accordion third-level'>";
+                                $.each(data.modulesMenu, function (index, data2) {
+                                    if (data2.parentMenuId == data1.menuId) {
+
+                                        if (data2.hasChile == "Y") {
+                                            strHtml += "<li class='accordion-list'>";
+                                            strHtml += "<a href='#' class='toggle'>";
+                                            strHtml += "<ul class='dasboard-accordion third-level'>";
+                                            strHtml += "<label id='" + data2.MenuId + "'>" + data2.MenuName + "</label>";
+                                            strHtml += "</a>";
+                                            strHtml += "<div class='inner'>";
+                                            $.each(data.modulesMenu, function (index, data3) {
+                                                if (data3.parentMenuId == data2.menuId) {
+                                                    strHtml += "<li>";
+                                                    strHtml += "<a style='color:black;' id='" + data3.MenuId + "' href='~/" + data3.ModuleId + "/" + data3.MenuId + "/Index' onclick='accessrights(/" + data3.PrivSelect + "," + data3.PrivInsert + "," + data3.PrivUpdate + "," + data3.PrivDelete + ")'>" + data3.MenuName+"</a>";
+                                                    strHtml += "</li>";
+                                                }
+
+                                            });
+                                            strHtml += "</ul></div></li>";
+                                        }
+                                        else {
+                                            //strHtml += "<li><a id=" + data2.menuId + " href='../" + data2.moduleId + "/" + data2.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data2.menuName + "</a></li>";
+                                            strHtml += "<li>";
+                                            strHtml += "<a style='color:black;' id='" + data2.MenuId + "' href='~/" + data2.ModuleId + "/" + data2.MenuId + "/Index' onclick='accessrights(/" + data2.PrivSelect + "," + data2.PrivInsert + "," + data2.PrivUpdate + "," + data2.PrivDelete + ")'>" + data2.MenuName+"</a>";
+                                            strHtml += "</li>";
+                                        }
+                                    }
+                                });
+                                strHtml += "</ul>";
+                                strHtml += "</li >";
+                            }
+                            else {
+                                strHtml += "<li><a id=" + data1.menuId + " href='../" + data1.moduleId + "/" + data1.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data1.menuName + "</a></li>";
+                            }
+
+                            strHtml += "</ul>";
+                        }
+                    });
+                    strHtml += "</ul></div></div>";
+                }
+                strHtml += "</li>";
+            }
+        });
+        strHtml += "</ul>";
+        $(Id).append(strHtml);
+
+        window.location.href = "/Home/Index";
+        // $(document).load('/js/jquery-3.2.1.min.js').fadeIn("slow");
+
+        //document.write("../js/jquery-3.2.1.min.js");
+        // location.reload(true);
+        //var versionUpdate = (new Date()).getTime();
+        //var script = document.createElement("script");
+        //script.type = "text/javascript";
+        //script.src = "/js/jquery-3.2.1.min.js";
+        ////document.body.removeChild("/js/jquery-3.2.1.min.js");
+        //document.head.appendChild(script);
+    }
+
+
+    function BindLeftMenu(data, Id) {
+        $("#ParentUL").html("");
+        var strHtml = "<ul class='nav nav-list mn-menu '>";
+        $.each(data.modulesMenu, function (index, value) {
+            if (value.menulevel == "1") {
+                strHtml += "<li><label onclick='CustomToggle(this)' class='tree-toggler nav-header' id=" + value.menuId + ">" + value.menuName + "<span class='tree-icne fa fa-angle-down'></span></label>";
+                if (value.hasChile == "Y") {
+
+                    $.each(data.modulesMenu, function (index, data1) {
+                        if (data1.parentMenuId == value.menuId) {
+                            strHtml += "<ul class='nav nav-list tree'>";
+                            if (data1.hasChile == "Y") {
+
+                                strHtml += "<li><label onclick='CustomToggle(this)' class='tree-toggler nav-header' id=" + data1.menuId + ">" + data1.menuName + "<span class='tree-icne fa fa-angle-down'></span></label>";
+                                strHtml += "<ul class='nav nav-list tree'>";
+                                $.each(data.modulesMenu, function (index, data2) {
+                                    if (data2.parentMenuId == data1.menuId) {
+
+                                        if (data2.hasChile == "Y") {
+                                            strHtml += "<li><label onclick='CustomToggle(this)' class='tree-toggler nav-header' id=" + data2.menuId + ">" + data2.menuName + "<span class='tree-icne fa fa-angle-down'></span></label>";
+                                            strHtml += "<ul class='nav nav-list tree'>";
+                                            $.each(data.modulesMenu, function (index, data3) {
+                                                if (data3.parentMenuId == data2.menuId) {
+                                                    strHtml += "<li><a id=" + data3.menuId + " href='../" + data3.moduleId + "/" + data3.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data3.menuName + "</a></li>";
+                                                }
+
+                                            });
+
+                                            strHtml += "</ul>";
+                                        }
+                                        else {
+                                            strHtml += "<li><a id=" + data2.menuId + " href='../" + data2.moduleId + "/" + data2.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data2.menuName + "</a></li>";
+                                        }
+                                    }
+                                });
+                                strHtml += "</ul>";
+                                strHtml += "</li >";
+                            }
+                            else {
+                                strHtml += "<li><a id=" + data1.menuId + " href='../" + data1.moduleId + "/" + data1.menuId + "/Index'><span class='glyphicon glyphicon-triangle-right'></span>" + data1.menuName + "</a></li>";
+                            }
+
+                            strHtml += "</ul>";
+                        }
+                    });
+                }
+
+                strHtml += "</li>";
+            }
+        });
+        strHtml += "</ul>";
+        $(Id).append(strHtml);
+
+        window.location.href = "/Home/Index";
+        // $(document).load('/js/jquery-3.2.1.min.js').fadeIn("slow");
+
+        //document.write("../js/jquery-3.2.1.min.js");
+        // location.reload(true);
+        //var versionUpdate = (new Date()).getTime();
+        //var script = document.createElement("script");
+        //script.type = "text/javascript";
+        //script.src = "/js/jquery-3.2.1.min.js";
+        ////document.body.removeChild("/js/jquery-3.2.1.min.js");
+        //document.head.appendChild(script);
+    }
+    function RedirectDashboardOnUnits(data, Id) {
+        ;
+        if (data == "Success") {
+            document.getElementById("page-wrapper").innerHTML = "";
+
+            if (localStorage.getItem("currentUrl").split("/")[1].toLowerCase() == "home") {
+                window.location.href = localStorage.getItem("currentUrl");
+            } else {
+                $('#page-wrapper').load(localStorage.getItem("currentUrl"));
+            }
+            
+            //location.reload(true);
+        }
+        $(".modalLoader").hide();
+    }
+    function CustomToggle(toggleId) {
+        $(toggleId).siblings().slideToggle("slow");
+        if ($(toggleId).children().hasClass("active")) {
+            $(toggleId).children().removeClass("active");
+        } else {
+            $(toggleId).children().addClass("active");
+        }
+    }
+    $(document).ready(function () {
+        $('.show-accordion').show();
+        $('.toggle').click(function (event) {
+            event.preventDefault();
+            var $this = $(this);
+            if ($this.next().hasClass('show-content')) {
+                $this.next().removeClass('show-content');
+                $this.next().slideUp(350);
+            }
+            else {
+                $this.parent().parent().find('li .inner').removeClass('show-content');
+                $this.parent().parent().find('li .inner').slideUp(350);
+                $this.next().toggleClass('show-content');
+                $this.next().slideToggle(350);
+            }
+        });
+        $('.toggle').click(function (event) {
+            event.preventDefault();
+            var $this = $(this);
+            if ($this.hasClass('icon')) {
+                $this.removeClass('icon');
+            } else {
+                $this.parent().parent().find('li a').removeClass('icon');
+                $this.toggleClass('icon');
+            }
+        });
+    });
+
+    $(function () {
+        $('#toggle-btn').click(function (event) {
+            $('.dashboard .dashboard-inner .row > .col-md-2').addClass('menu');
+            $('.overlay').addClass('overlay-show');
+        });
+        $('.overlay').click(function (event) {
+            $('.dashboard .dashboard-inner .row > .col-md-2').removeClass('menu');
+            $('.overlay').removeClass('overlay-show');
+        });
+    });
+    $(function () {
+        $('.toggle-arrow').click(function (event) {
+            $('.menu-roggle').toggleClass('slide-left');
+            $(this).toggleClass('rotate-arrow');
+        });
+    })
+    //$(function () {
+    //    $('[data-toggle="tooltip"]').tooltip()
+    //});
+</script>
+

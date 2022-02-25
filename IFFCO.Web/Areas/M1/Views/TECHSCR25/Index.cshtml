@@ -1,0 +1,269 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+
+
+    $(".ctrlbtn").click(function (e) {
+        var dt1 = new Date($("#txtFromDate").val());
+        var dt2 = new Date($("#txtToDate").val());
+        if (dt1 > dt2) {
+            CommonAlert("Warning", "From Date can not be greater than To Date", null, null, "warning")
+            return;
+        }
+        if (dt1 > new Date()) {
+            CommonAlert("Warning", "From Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        if (dt2 > new Date()) {
+            CommonAlert("Warning", "To Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        CommonReportGenerateJS('M1/TECHSCR25/GenerateReport', {
+            FromDate: $("#txtFromDate").val(),
+            ToDate: $("#txtToDate").val(),
+            R1: $('#txtR1').val(),
+            R2: $('#txtR2').val(),
+            R3: $('#txtR3').val(),
+            P1: $('#txtP1').val(),
+            P2: $('#txtP2').val(),
+            P3: $('#txtR3').val(),
+            Plant: $('#txtPlant').val(),
+
+        })
+    })
+
+</script>
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>TOP-06 Reports </span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+
+
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                @{
+                                    var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                }
+                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">Plant <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                <select id="txtPlant" class="form-control">
+                                    <option value="TP6A1">TOP-06(AONLA-I)</option>
+                                    <option value="TP6A2">TOP-06(AONLA-II</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <hr style="margin:0" />
+                        <h5 class="text-center">Ammonia(Reasons)</h5>
+                        <hr style="margin:8px" />
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">R-1 </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <select id="txtR1" class="form-control">
+                                        <option value="REASON1_HRS">PREVENTIVE MAINTANANCE/ANNUAL TURNAROUND</option>
+                                        <option value="REASON2_HRS">EQUIPMENT FAILURE/MECHANICAL FAIL</option>
+                                        <option value="REASON3_HRS">EXTERNAL/INTERNAL POWER INTERRUPTION</option>
+                                        <option value="REASON4_HRS">SHORTAGE OF RAW MATERIAL /INTERMEDIATES/UTIL.</option>
+                                        <option value="REASON5_HRS">STEAM LIMITATION</option>
+                                        <option value="REASON6_HRS"> INSTRUMENTATION PROBLEM</option>
+                                        <option value="REASON7_HRS">PIPE LINE LEAKE& FLANGE LEAKE</option>
+                                        <option value="REASON8_HRS">PROCESS UPSET</option>
+                                        <option value="REASON9_HRS"> FLANGE LEAKE</option>
+                                        <option value="REASON10_HRS">ELECTRICAL PROBLEM</option>
+                                        <option value="REASON11_HRS">HIGH UREA STOCK</option>
+
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+
+                            <div class="col-sm-6 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">R-2 </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <select id="txtR2" class="form-control">
+                                        <option value="REASON1_HRS">PREVENTIVE MAINTANANCE/ANNUAL TURNAROUND</option>
+                                        <option value="REASON2_HRS">EQUIPMENT FAILURE/MECHANICAL FAIL</option>
+                                        <option value="REASON3_HRS">EXTERNAL/INTERNAL POWER INTERRUPTION</option>
+                                        <option value="REASON4_HRS">SHORTAGE OF RAW MATERIAL /INTERMEDIATES/UTIL.</option>
+                                        <option value="REASON5_HRS">STEAM LIMITATION</option>
+                                        <option value="REASON6_HRS"> INSTRUMENTATION PROBLEM</option>
+                                        <option value="REASON7_HRS">PIPE LINE LEAKE& FLANGE LEAKE</option>
+                                        <option value="REASON8_HRS">PROCESS UPSET</option>
+                                        <option value="REASON9_HRS"> FLANGE LEAKE</option>
+                                        <option value="REASON10_HRS">ELECTRICAL PROBLEM</option>
+                                        <option value="REASON11_HRS">HIGH UREA STOCK</option>
+
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">R-3 </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <select id="txtR3" class="form-control">
+                                        <option value="REASON1_HRS">PREVENTIVE MAINTANANCE/ANNUAL TURNAROUND</option>
+                                        <option value="REASON2_HRS">EQUIPMENT FAILURE/MECHANICAL FAIL</option>
+                                        <option value="REASON3_HRS">EXTERNAL/INTERNAL POWER INTERRUPTION</option>
+                                        <option value="REASON4_HRS">SHORTAGE OF RAW MATERIAL /INTERMEDIATES/UTIL.</option>
+                                        <option value="REASON5_HRS">STEAM LIMITATION</option>
+                                        <option value="REASON6_HRS"> INSTRUMENTATION PROBLEM</option>
+                                        <option value="REASON7_HRS">PIPE LINE LEAKE& FLANGE LEAKE</option>
+                                        <option value="REASON8_HRS">PROCESS UPSET</option>
+                                        <option value="REASON9_HRS"> FLANGE LEAKE</option>
+                                        <option value="REASON10_HRS">ELECTRICAL PROBLEM</option>
+                                        <option value="REASON11_HRS">HIGH UREA STOCK</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <hr style="margin:0" />
+                        <h5 class="text-center">Urea(Reasons)</h5>
+                        <hr style="margin:8px" />
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">R-1 </label>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <select id="txtP1" class="form-control">
+
+                                        <option value="REASON8_HRS">PROCESS UPSET</option>
+                                        <option value="REASON9_HRS"> FLANGE LEAKE</option>
+                                        <option value="REASON10_HRS">ELECTRICAL PROBLEM</option>
+                                        <option value="REASON11_HRS">HIGH UREA STOCK</option>
+
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">R-2 </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <select id="txtP2" class="form-control">
+
+                                        <option value="REASON8_HRS">PROCESS UPSET</option>
+                                        <option value="REASON9_HRS"> FLANGE LEAKE</option>
+                                        <option value="REASON10_HRS">ELECTRICAL PROBLEM</option>
+                                        <option value="REASON11_HRS">HIGH UREA STOCK</option>
+
+
+
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-sm-6 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2">R-3 </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <select id="txtP3" class="form-control">
+
+                                        <option value="REASON8_HRS">PROCESS UPSET</option>
+                                        <option value="REASON9_HRS"> FLANGE LEAKE</option>
+                                        <option value="REASON10_HRS">ELECTRICAL PROBLEM</option>
+                                        <option value="REASON11_HRS">HIGH UREA STOCK</option>
+
+
+
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <hr style="margin-top:2px;margin-bottom:7px" />
+                        <div class="row">
+
+                            <div class="col-sm-6 col-md-12 text-center">
+
+                                <input type="button" data-report-type="1" class="m-btn-1 execute ctrlbtn" value="Execute">
+
+                            </div>
+                        </div>
+
+
+
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+<script>
+    var maxYear = new Date().addD;
+    var minDate = 2017;
+    var d =[];
+    for (var i = 2017; i <= maxYear; i++) {
+        d.push()
+    }
+</script>
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+

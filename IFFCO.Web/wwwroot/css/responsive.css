@@ -1,0 +1,146 @@
+@media(min-width: 992.01px) and (max-width: 1200px){
+    .top-menu .settings h3{
+        font-size: 18px;
+    }
+    .bottom_strip h3{
+        font-size: 18px;
+    }
+    .bottom_strip img {
+    vertical-align: text-bottom;
+    width: 30px;
+}
+ .dashboard .dashboard-inner .row .col-md-2{
+        flex:0 0 25%;
+        max-width: 25%;
+    }
+     .dashboard .dashboard-inner .row .col-md-10{
+        flex:0 0 75%;
+        max-width: 75%;
+    }
+    .bottom_strip {
+    padding: 10px 0 7px 15px;
+}
+}
+@media(min-width: 767.01px) and (max-width: 992px){
+    .dashboard .dashboard-inner .row .col-md-2{
+        flex:0 0 27%;
+        max-width: 27%;
+    }
+     .dashboard .dashboard-inner .row .col-md-10{
+        flex:0 0 73%;
+        max-width: 73%;
+    }
+    .pie-chart-section .row .col-sm-6{
+        flex:0 0 100%;
+        max-width: 100%;
+    }
+    .bottom_strip h3{
+        font-size: 24px;
+    }
+    .row-top-margin{
+        margin: 0;
+    }
+    .pie-chart-section .row .col-sm-6{
+        margin-bottom: 20px;
+    }
+    .top-menu .settings h3{
+        font-size: 14px;
+        padding: 15px 0 15px 10px;
+    }
+    .top-menu .profile .nav .nav-link{
+        padding:5px;
+    }
+    .top-menu .profile .nav-item .nav-link.dropdown-toggle > img{
+        margin-left: 0;
+    }
+    .top-menu .profile .nav-item .nav-link.dropdown-toggle{
+        font-size: 14px;
+        padding-right: 15px;
+    }
+    .top-menu .profile .nav-item .nav-link img{
+        width: 12px;
+            vertical-align: -webkit-baseline-middle;
+    }
+    .top-menu .settings a{
+        padding-bottom: 0;
+    }
+}
+@media(max-width: 767px){
+    table {
+        width: 100%;
+        display: block;
+        overflow-y: scroll;
+    }
+    #toggle-btn a i{
+        vertical-align: -webkit-baseline-middle;
+         color: #007d39;
+    font-size: 22px;
+    }
+    .dashboard .dashboard-inner{
+        margin: 0;
+    }
+    .dashboard .dashboard-inner .row > .col-md-2{
+    position: fixed;
+    background: white;
+    z-index: 99;
+    width: 250px;
+    height: 100%;
+    overflow-y: scroll;
+    box-shadow: none;
+    left: -250px;
+    transition: all 0.5s ease;
+    }
+    .dashboard .dashboard-inner .row > .col-md-2.menu{
+        left: 0;
+    }
+    .top-menu .settings h3{
+        font-size: 16px;
+    }
+.bottom_strip {
+    padding: 10px 0 7px 10px;
+}
+.bottom_strip img {
+   width: 30px;
+    vertical-align: text-bottom;
+}
+.bottom_strip h3{
+padding: 10px 10px 10px 15px;
+margin: 7px 0 10px 10px;
+font-size: 18px;    
+}
+}
+@media(min-width: 576.01px) and (max-width: 767px){
+.logo img {
+width: 45%;
+}
+.bottom_strip h3{
+    font-size: 16px;
+}
+}
+@media(max-width: 576px){ 
+.top-menu{
+	flex-direction: column;
+}	
+.top-menu .settings h3{
+	font-size: 14px;
+}
+.top-menu .profile .nav{
+justify-content:space-evenly;
+}
+.pie-chart-section .row .col-sm-6{
+	margin-bottom: 30px;
+}
+.row-top-margin{
+	margin: 0;
+}
+@media(max-width: 360px){
+.bottom_strip h3{
+   font-size: 14px; 
+}
+.top-menu .settings h3{
+    font-size: 13px;
+}
+.top-menu .profile .nav-link{
+    padding: 5px;
+}
+}

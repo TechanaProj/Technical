@@ -1,0 +1,447 @@
+CREATE OR REPLACE PACKAGE Pkg_login_dotnet
+IS
+
+
+PROCEDURE pc_validate_employee(i_Empid         IN  Adm_EmpOra_Map.Empid%TYPE,
+                               i_Emppwd        IN  Adm_EmpOra_Map.Emppwd%TYPE,
+                               i_Projectid     IN  Adm_Prg_Master.Projectid%TYPE,
+                               i_Moduleid      IN  Adm_Prg_Master.Moduleid%TYPE,                               
+                               o_status_code   OUT varchar2,
+                               o_error_code    OUT varchar2,
+                               o_error_message OUT varchar2);  
+
+                               
+
+PROCEDURE pc_global_values(i_empid            in  adm_empora_map.empid%type,
+                           i_Projectid     IN  Adm_Prg_Master.Projectid%TYPE,
+                           i_moduleid           in  adm_prg_master.moduleid%type,
+                           i_unit               in  eb_unit_msts.unit_code%type,
+                           i_event              in varchar2,
+                           o_unit_code          out eb_unit_msts.unit_code%type,
+                           o_unit_description   out eb_unit_msts.description%type, 
+                           o_unit_type          out eb_unit_msts.unit_type%type,
+                           o_process_unit_code  out eb_unit_msts.process_unit_code%type,
+                           o_orc_unit_code      out eb_unit_msts.orc_unit_code%type,
+                           o_area_unit_code     out eb_unit_msts.area_unit_code%type,
+                           o_employee_name      out v_eb_employee_complete_dtls.emp_name%type,
+                           o_work_unit          out eb_unit_msts.unit_code%type,                           
+                           o_all_dept_access    out varchar2,
+                           o_all_sec_access     out varchar2,
+                           o_hier_yn            out varchar2,
+                           o_moduleid           out adm_prg_master.moduleid%type,
+                           o_modulename         out ADM_PROJMOD_MASTER.MODULENAME%type,
+                           o_status_code        out varchar2,
+                           o_error_code         out varchar2,
+                           o_error_message      out varchar2);
+
+                           
+
+PROCEDURE pc_gen_menu_access(i_empid          in  adm_empora_map.empid%type,
+                           i_Projectid     IN  Adm_Prg_Master.Projectid%TYPE,
+                           i_moduleid           in  adm_prg_master.moduleid%type,                           
+                           o_status_code        out varchar2,
+                           o_error_code         out varchar2,
+                           o_error_message      out varchar2);
+                           
+                           
+PROCEDURE pc_session_log (i_Empid              IN  Adm_EmpOra_Map.Empid%TYPE,
+                               i_Projectid     IN  Adm_Prg_Master.Projectid%TYPE,
+                               i_Moduleid      IN  Adm_Prg_Master.Moduleid%TYPE,
+                               i_clientip      IN  varchar2,
+                               o_status_code   OUT varchar2,
+                               o_error_code    OUT varchar2,
+                               o_error_message OUT varchar2);                            
+
+end Pkg_login_dotnet;
+/
+
+
+
+------------------------------------------------------------------------------------------------------------------------------------
+
+CREATE OR REPLACE PACKAGE BODY Pkg_login_dotnet
+IS
+
+procedure pc_validate_employee(i_empid         in  adm_empora_map.empid%type,
+                               i_emppwd        in  adm_empora_map.emppwd%type,
+                               i_projectid     in  adm_prg_master.projectid%type,
+                               i_moduleid      in  adm_prg_master.moduleid%type,                               
+                               o_status_code   out varchar2,
+                               o_error_code    out varchar2,
+                               o_error_message out varchar2) is
+    v_exists number;  
+    v_emppwd varchar2(500);                            
+
+begin
+    o_status_code := 0; o_error_code := 0; o_error_message := null;
+    v_exists := 0;
+    if i_empid <> 0     then
+      select count(*)
+      into v_exists
+      from v_eb_employee_complete_dtls       
+      where personal_no = i_empid and emp_status = 'A';
+        if v_exists <= 0     then
+           v_exists := 0;
+           select count(*)
+           into v_exists
+           from adm_access_spl_approval 
+           where personal_no = i_empid 
+           and trunc(sysdate) between effective_from and nvl(effective_to,sysdate);
+           if v_exists <= 0 then
+               o_status_code := 1;
+               o_error_code := 1;
+               o_error_message := 'Employee ID ' ||i_empid||' is not valid';             
+               return;
+           end if;           
+        end if;
+    end if;  
+    
+    begin
+       select pkg_security.fc_decryptpasswd(a.emppwd)
+       into v_emppwd
+       from adm_empora_map a
+       where a.empid = i_empid;
+    exception when others then
+        o_status_code := 1;
+        o_error_code := 1;
+        o_error_message := 'No password is available for the employee'; 
+        return;           
+    end;   
+    
+    if trim(v_emppwd) <>  trim(i_emppwd)  then               
+        o_status_code := 1;
+        o_error_code := 1;
+        o_error_message := 'Invalid password';
+        return;  
+    end if;         
+    
+    v_exists := 0; 
+    select count(*)
+    into v_exists
+    from adm_empprg_access
+    where empid = i_empid
+          and moduleid = i_moduleid 
+          and projectid = i_projectid;
+   
+    if v_exists <= 0     then
+        o_status_code := 1;
+        o_error_code := 1;
+        o_error_message := 'This Employee ID '||i_empid|| ' does not have access rights for any from in the Module.';
+        return;            
+    end if;       
+        
+    o_status_code := 0; o_error_code := 0; o_error_message := null; 
+exception when others then
+   o_status_code := 1;
+   o_error_code    := sqlcode;
+   o_error_message := 'Sql Error : ' || substr(sqlerrm, 1, 300);                            
+end pc_validate_employee;
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+procedure pc_global_values(i_empid              in  adm_empora_map.empid%type,
+                           i_projectid     in  adm_prg_master.projectid%type,
+                           i_moduleid           in  adm_prg_master.moduleid%type,
+                           i_unit               in  eb_unit_msts.unit_code%type,
+                           i_event              in varchar2,                    -- Valid Values L,U,M
+                           o_unit_code          out eb_unit_msts.unit_code%type,
+                           o_unit_description   out eb_unit_msts.description%type, 
+                           o_unit_type          out eb_unit_msts.unit_type%type,
+                           o_process_unit_code  out eb_unit_msts.process_unit_code%type,
+                           o_orc_unit_code      out eb_unit_msts.orc_unit_code%type,
+                           o_area_unit_code     out eb_unit_msts.area_unit_code%type,
+                           o_employee_name      out v_eb_employee_complete_dtls.emp_name%type,
+                           o_work_unit          out eb_unit_msts.unit_code%type,                           
+                           o_all_dept_access    out varchar2,
+                           o_all_sec_access     out varchar2,
+                           o_hier_yn            out varchar2,
+                           o_moduleid           out adm_prg_master.moduleid%type,
+                           o_modulename         out adm_projmod_master.modulename%type,
+                           o_status_code        out varchar2,
+                           o_error_code         out varchar2,
+                           o_error_message      out varchar2) is
+--Event : L for Login(i_empid,i_moduleid), U for Unit Change(i_empid,i_moduleid,i_unit), M for Module Change(i_empid,i_moduleid)                             
+begin
+
+    o_status_code := 0; o_error_code := 0; o_error_message := null;    
+    o_moduleid := i_moduleid;
+    
+    begin
+        select modulename
+        into o_modulename
+        from adm_projmod_master
+        where projectid = i_projectid
+              and moduleid = i_moduleid;
+    exception when others then o_modulename := null;
+    end;          
+           
+    if nvl(i_event,'L') = 'U' then                
+        begin
+            select  adua.unit_code            unit_code,
+                    ebum.description          unit_description,    
+                    ebum.unit_type            unit_type,  
+                    ebum.process_unit_code    process_unit_code,
+                    ebum.orc_unit_code        orc_unit_code,
+                    nvl(ebum.area_unit_code,ebum.orc_unit_code) area_unit_code,          
+                    ebem.emp_name             empname,
+                    ebem.work_unit            work_unit,                            
+                    adua.all_dept_access      all_dept_access,                
+                    adua.all_section_access   all_section_access,    
+                    adua.hier_yn              hier_yn 
+            into    o_unit_code,
+                    o_unit_description, 
+                    o_unit_type,
+                    o_process_unit_code,
+                    o_orc_unit_code,
+                    o_area_unit_code,
+                    o_employee_name,
+                    o_work_unit,                           
+                    o_all_dept_access,
+                    o_all_sec_access,
+                    o_hier_yn                                                                                           
+            from    adm_emp_unit_access adua, 
+                    eb_unit_msts        ebum,
+                    v_eb_employee_complete_dtls    ebem
+            where ebum.unit_code      = adua.unit_code                    
+            and ebem.personal_no      = adua.empid
+            and adua.empid            =    i_empid
+            and adua.moduleid         =    i_moduleid
+            and adua.unit_code        =    i_unit
+            and adua.projectid        =    i_projectid;
+        exception when others then
+            select  ebum.unit_code        unit_code,
+                ebum.description          unit_description,    
+                ebum.unit_type            unit_type,  
+                ebum.process_unit_code    process_unit_code,
+                ebum.orc_unit_code        orc_unit_code,
+                nvl(ebum.area_unit_code,ebum.orc_unit_code) area_unit_code,          
+                ebem.emp_name             empname,
+                ebem.work_unit            work_unit,                            
+                'Y'                       all_dept_access,                
+                'Y'                       all_section_access,    
+                'N'                       hier_yn 
+            into    o_unit_code,
+                    o_unit_description, 
+                    o_unit_type,
+                    o_process_unit_code,
+                    o_orc_unit_code,
+                    o_area_unit_code,
+                    o_employee_name,
+                    o_work_unit,                           
+                    o_all_dept_access,
+                    o_all_sec_access,
+                    o_hier_yn                                                                                           
+            from    eb_unit_msts        ebum,
+                    v_eb_employee_complete_dtls    ebem
+            where ebem.personal_no    =    i_empid
+            and ebum.unit_code        = i_unit;
+        end;            
+    elsif nvl(i_event,'L') in ('L','M') then 
+        begin
+            select  adua.unit_code            unit_code,
+                    ebum.description          unit_description,    
+                    ebum.unit_type            unit_type,  
+                    ebum.process_unit_code    process_unit_code,
+                    ebum.orc_unit_code        orc_unit_code,
+                    nvl(ebum.area_unit_code,ebum.orc_unit_code) area_unit_code,          
+                    ebem.emp_name             empname,
+                    ebem.work_unit            work_unit,                            
+                    adua.all_dept_access      all_dept_access,                
+                    adua.all_section_access   all_section_access,    
+                    adua.hier_yn              hier_yn 
+            into    o_unit_code,
+                    o_unit_description, 
+                    o_unit_type,
+                    o_process_unit_code,
+                    o_orc_unit_code,
+                    o_area_unit_code,
+                    o_employee_name,
+                    o_work_unit,                           
+                    o_all_dept_access,
+                    o_all_sec_access,
+                    o_hier_yn                                                                                          
+            from    adm_emp_unit_access adua, 
+                    eb_unit_msts        ebum,
+                    v_eb_employee_complete_dtls    ebem
+            where ebum.unit_code      = adua.unit_code                    
+            and ebem.personal_no      = adua.empid
+            and adua.empid            =    i_empid
+            and adua.projectid        =    i_projectid
+            and adua.moduleid         =    i_moduleid
+            and adua.default_unit     =    'Y';
+        exception when others then
+            select  ebem.unit_code        unit_code,
+                ebum.description          unit_description,    
+                ebum.unit_type            unit_type,  
+                ebum.process_unit_code    process_unit_code,
+                ebum.orc_unit_code        orc_unit_code,
+                nvl(ebum.area_unit_code,ebum.orc_unit_code) area_unit_code,          
+                ebem.emp_name             empname,
+                ebem.work_unit            work_unit,                            
+                'Y'                       all_dept_access,                
+                'Y'                       all_section_access,    
+                'N'                       hier_yn 
+            into    o_unit_code,
+                    o_unit_description, 
+                    o_unit_type,
+                    o_process_unit_code,
+                    o_orc_unit_code,
+                    o_area_unit_code,
+                    o_employee_name,
+                    o_work_unit,                           
+                    o_all_dept_access,
+                    o_all_sec_access,
+                    o_hier_yn                                                                                           
+            from    eb_unit_msts        ebum,
+                    v_eb_employee_complete_dtls    ebem
+            where ebem.personal_no    =    i_empid
+            and ebem.unit_code        = ebum.unit_code;
+        end;    
+        --pc_adm_security(i_empid, i_moduleid); 
+        pc_gen_menu_access(i_empid,i_projectid,i_moduleid,o_status_code,o_error_code,o_error_message);  
+        if o_status_code <> 0 then
+            return;
+        end if;                    
+    end if; 
+        
+    o_status_code := 0; o_error_code := 0; o_error_message := null; 
+exception when others then
+   o_status_code := 1;
+   o_error_code    := sqlcode;
+   o_error_message := 'Sql Error : ' || substr(sqlerrm, 1, 300);   
+end pc_global_values;
+
+-------------------------------------------------------------------------------------------------------------------------------------------
+
+procedure pc_gen_menu_access(i_empid          in  adm_empora_map.empid%type,
+                           i_projectid     in  adm_prg_master.projectid%type,
+                           i_moduleid           in  adm_prg_master.moduleid%type,                           
+                           o_status_code        out varchar2,
+                           o_error_code         out varchar2,
+                           o_error_message      out varchar2) is
+    v_cnt number;                           
+begin
+    o_status_code := 0; o_error_code := 0; o_error_message := null;
+    delete from adm_menu_access_dtls where personal_no = i_empid and projectid = i_projectid;
+
+    for c1 in (
+                select moduleid,sub_menu_id,sub_menu_name,parent_menu_id,menu_level,display_order,trim(top_menuid) top_menuid from
+                (
+                select x.moduleid,trim(x.sub_menu_id) sub_menu_id,x.sub_menu_name,trim(parent_menu_id) parent_menu_id,level menu_level,display_order,connect_by_root(sub_menu_id) top_menuid
+                from adm_sub_menu_msts x
+                where x.moduleid = i_moduleid
+                and projectid = i_projectid
+                start with trim(x.parent_menu_id) = i_moduleid 
+                connect by prior trim(x.sub_menu_id) = trim(x.parent_menu_id)
+                ) order by menu_level,display_order
+               )
+    loop
+        insert into adm_menu_access_dtls
+        (personal_no,projectid,moduleid,menuid, menuname, parent_menuid, has_child, priv_select, priv_insert, priv_update, priv_delete, menu_level, display_order,top_menuid)
+        select i_empid,
+           i_projectid,
+           a.moduleid,
+           a.programid,
+           b.programname,
+           trim(b.sub_menu_name) parent_menuid,
+           'N',           
+           a.priv_select, 
+           a.priv_insert, 
+           a.priv_update, 
+           a.priv_delete,
+           c1.menu_level+1,
+           b.display_order,
+           c1.top_menuid
+        from adm_empprg_access a,
+             adm_prg_master b
+        where a.projectid = i_projectid
+              and nvl(b.ismainform,'N') = 'N'
+              and nvl(b.active_inactive,'A') = 'A'
+              and a.empid = i_empid
+              and a.moduleid = i_moduleid 
+              and trim(b.sub_menu_name) = c1.sub_menu_id                
+              and a.projectid = b.projectid
+              and a.moduleid = b.moduleid
+              and a.programid = b.programid
+              and ( nvl(a.priv_select,'N') = 'Y' or nvl(a.priv_insert,'N') = 'Y' or nvl(a.priv_update,'N') = 'Y' or nvl(a.priv_delete,'N') = 'Y');
+              
+        v_cnt := 0;      
+              
+        select count(*)
+        into v_cnt
+        from adm_empprg_access a,
+             adm_prg_master b
+        where a.projectid = i_projectid
+              and nvl(b.ismainform,'N') = 'N'
+              and nvl(b.active_inactive,'A') = 'A'
+              and a.empid = i_empid
+              and a.moduleid = c1.moduleid
+              and trim(b.sub_menu_name) = c1.sub_menu_id          
+              and a.projectid = b.projectid
+              and a.moduleid = b.moduleid
+              and a.programid = b.programid
+              and ( nvl(a.priv_select,'N') = 'Y' or nvl(a.priv_insert,'N') = 'Y' or nvl(a.priv_update,'N') = 'Y' or nvl(a.priv_delete,'N') = 'Y');
+              
+        if v_cnt > 0 then
+            insert into adm_menu_access_dtls
+            (personal_no,projectid,moduleid,menuid, menuname, parent_menuid, has_child, menu_level, display_order,top_menuid)
+            values
+            (i_empid,i_projectid,c1.moduleid,c1.sub_menu_id,c1.sub_menu_name,c1.parent_menu_id,'Y', c1.menu_level, c1.display_order,c1.top_menuid);
+        else 
+            v_cnt := 0; 
+                                         
+            for c2 in (select trim(x.sub_menu_id) sub_menu_id,x.sub_menu_name,trim(parent_menu_id) parent_menu_id
+                       from adm_sub_menu_msts x
+                       start with trim(x.parent_menu_id) = c1.sub_menu_id 
+                       connect by prior trim(x.sub_menu_id) = trim(x.parent_menu_id)
+                       )
+            loop
+                select count(*)
+                into v_cnt
+                from adm_empprg_access a,
+                     adm_prg_master b
+                where a.projectid = i_projectid
+                      and nvl(b.ismainform,'N') = 'N'
+                      and a.empid = i_empid
+                      and a.moduleid = c1.moduleid
+                      and trim(b.sub_menu_name) = c2.sub_menu_id          
+                      and a.projectid = b.projectid
+                      and a.moduleid = b.moduleid
+                      and a.programid = b.programid
+                      and ( nvl(a.priv_select,'N') = 'Y' or nvl(a.priv_insert,'N') = 'Y' or nvl(a.priv_update,'N') = 'Y' or nvl(a.priv_delete,'N') = 'Y');
+                      
+                if v_cnt > 0 then
+                    insert into adm_menu_access_dtls
+                    (personal_no,projectid,moduleid,menuid, menuname, parent_menuid, has_child, menu_level, display_order,top_menuid)
+                    values
+                    (i_empid,i_projectid,c1.moduleid,c1.sub_menu_id,c1.sub_menu_name,c1.parent_menu_id,'Y',c1.menu_level,  c1.display_order,c1.top_menuid);
+                end if; 
+                
+                exit when v_cnt > 0;    
+            end loop;
+        end if;
+    end loop;                                                
+exception when no_data_found then null;   
+          when others then
+   o_status_code := 1;
+   o_error_code    := sqlcode;
+   o_error_message := 'Error in access rights assignment : ' || substr(sqlerrm, 1, 300);                    
+end pc_gen_menu_access;                                                            
+
+
+
+PROCEDURE pc_session_log (i_Empid              IN  Adm_EmpOra_Map.Empid%TYPE,
+                               i_Projectid     IN  Adm_Prg_Master.Projectid%TYPE,
+                               i_Moduleid      IN  Adm_Prg_Master.Moduleid%TYPE,
+                               i_clientip      IN  varchar2,
+                               o_status_code   OUT varchar2,
+                               o_error_code    OUT varchar2,
+                               o_error_message OUT varchar2)
+is
+begin
+    insert into login_log_dotnet(clientip, pno, login_datetime, sessionid, moduleid, sid, inst_id) 
+    values (i_clientip,i_empid,sysdate, sys_context('userenv','SESSIONID'),i_Projectid||'~'||i_moduleid,sys_context('userenv','SID'),sys_context('userenv','INSTANCE'));
+end pc_session_log;
+                               
+end Pkg_login_dotnet;
+/
+

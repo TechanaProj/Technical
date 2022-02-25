@@ -1,0 +1,292 @@
+﻿@{
+    TotalSDPower data = ViewBag.records;
+
+    var Arrheader = data.CommonData.Select(e => e.Category).Distinct().ToArray();
+}
+
+
+@foreach (var head in Arrheader)
+{
+    var AmmProd = data.CommonData.Where(e => e.Category == head).ToList();
+
+<div class="content-box">
+    <h3 class="sub-heading1"><span>@head</span></h3>
+    <div class="m-form">
+        <div class="m-form-bx">
+            <div class="row form-sm">
+                @foreach (var item in AmmProd)
+                {
+                    <div class="col-sm-2 col-md-4">
+                        <div>
+                            <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                        </div>
+                    </div>
+                    <div class="col-sm-2 col-md-2">
+                        <div>
+                            @if (item.InputType == "number")
+                            {
+                                if (item.Readonly.ToLower() == "yes")
+                                {
+                                    <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                }
+                                else
+                                {
+                                    <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                }
+                            }
+                            else if (item.InputType.ToLower() == "datetime-local")
+                            {
+                                string v = "";
+                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                {
+                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                }
+
+
+                                <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                            }
+                            else if (item.InputType.ToLower() == "date")
+                            {
+                                string v = "";
+                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                {
+                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                }
+
+
+                                <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                            }
+                            else
+                            {
+                                string sel = "";
+                                if (item.InputValue.Trim().ToUpper() == "0")
+                                {
+                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                        <option selected="selected" value="0">NO</option>
+                                        <option value="1">YES</option>
+                                    </select>
+                                }
+                                else
+                                {
+                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                        <option value="0">NO</option>
+                                        <option selected="selected" value="1">YES</option>
+                                    </select>
+                                }
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+}
+
+@{
+    var PowerCat = data.ShutDownPower.Select(e => e.Category).Distinct().ToArray();
+
+    List<SelectListItem> listItems = ViewBag.reason;
+}
+
+
+@foreach (var powcat in PowerCat)
+{
+
+
+    var shutdown = data.ShutDownPower.Where(e => e.Category == powcat);
+    var Heading = data.ShutDownPower.Where(e => e.Category == powcat).Select(e => e.Heading).Distinct();
+
+
+
+    int i = 0;
+    int j = 1;
+    @foreach (var head in Heading)
+    {
+        var shutdownList = data.ShutDownPower.Where(e => e.Category == powcat && e.Heading == head);
+
+        if (head.ToUpper() == "SHUT DOWN DETAILS")
+        {
+            <div class="content-box">
+                <h3 class="sub-heading1"><span>@powcat - @head</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+                        <div class="row form-sm">
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3">Reason</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3"> Reason Code</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3"> From Date</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3"> To Date</label>
+                                </div>
+                            </div>
+
+                            @foreach (var item in shutdownList)
+                            {
+                                if (i > 4) { i = 0; j = j + 1; }
+                                i = i + 1;
+                                string cls = powcat + j;
+                                if (item.InputType != "text")
+                                {
+                                    <div class="col-sm-2 col-md-3">
+                                        <div>
+                                            @if (item.InputType == "number")
+                                            {
+                                                if (item.Readonly.ToLower() == "yes")
+                                                {
+                                                    <input readonly="readonly" data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control text-right shutdown" id="@item.InputText" step="any" type="number" value="@item.InputValue.Trim()" />
+                                                }
+                                                else
+                                                {
+                                                    <input data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control text-right shutdown" id="@item.InputText" step="any" type="number" value="@item.InputValue.Trim()" />
+                                                }
+                                            }
+                                            else if (item.InputType == "date")
+                                            {
+                                                string v = "";
+                                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                {
+                                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                                }
+
+
+                                                <input data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control shutdown" id="@item.InputText" step="any" type="date" value="@v" />
+                                            }
+                                            else if (item.InputType == "datetime-local")
+                                            {
+                                                string v = "";
+                                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                {
+                                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                                }
+
+
+                                                <input data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control shutdown" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                            }
+                                            else
+                                            {
+                                                <select id="@item.InputText" data-input-text="@item.InputLabel" class="@cls form-control shutdown ddlReason">
+                                                    <option value="">---Choose Reason---</option>
+                                                    @foreach (var reason in listItems)
+                                                    {
+
+                                                        @if (reason.Text.Trim() == item.InputValue.Trim())
+                                                        {
+                                                            <option selected="selected" value="@reason.Value">@reason.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@reason.Value">@reason.Text</option>
+                                                        }
+
+
+                                                    }
+                                                </select>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2 col-md-12">
+                                        <textarea data-operation="@item.OperationType" id="@item.InputText" data-input-text="@item.InputLabel" placeholder="Technical Remarks" class="@cls form-control techRemark">@item.InputValue.Trim()</textarea>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+
+        else
+        {
+            <div class="content-box">
+                <h3 class="sub-heading1"><span>@powcat - @head</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+                        <div class="row form-sm">
+                            @foreach (var item in shutdownList)
+                            {
+                                <div class="col-sm-2 col-md-4">
+                                    <div>
+                                        <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 col-md-2">
+                                    <div>
+                                        @if (item.InputType == "number")
+                                        {
+                                            if (item.Readonly.ToLower() == "yes")
+                                            {
+                                                <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                            }
+                                            else
+                                            {
+                                                <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                            }
+                                        }
+                                        else if (item.InputType.ToLower() == "datetime-local")
+                                        {
+                                            string v = "";
+                                            if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                            {
+                                                v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                            }
+
+
+                                            <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                        }
+                                        else if (item.InputType.ToLower() == "date")
+                                        {
+                                            string v = "";
+                                            if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                            {
+                                                v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                            }
+
+
+                                            <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                                        }
+                                        else
+                                        {
+                                            string sel = "";
+                                            if (item.InputValue.Trim().ToUpper() == "0")
+                                            {
+                                                <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                                    <option selected="selected" value="0">NO</option>
+                                                    <option value="1">YES</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                                    <option value="0">NO</option>
+                                                    <option selected="selected" value="1">YES</option>
+                                                </select>
+                                            }
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}

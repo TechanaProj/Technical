@@ -1,0 +1,71 @@
+﻿
+
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+    
+
+    $(".ctrlbtn").click(function (e) {
+
+        CommonReportGenerateJS('M1/TECHSCR05/GenerateReport', {
+            ReportDate: $("#txtReportDate").val()
+        })
+
+        $(".modalLoader").hide();
+    })
+
+</script>
+
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>Steam Balance Report</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+
+
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-3">
+                                <label class="m-lbl1 m-lbl2">Report Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input class="form-control" id="txtReportDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <input type="button" id="execute" class="m-btn-1 execute ctrlbtn" value="Execute">
+                            </div>
+
+                        </div>
+
+
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

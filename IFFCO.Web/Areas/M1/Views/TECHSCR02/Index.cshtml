@@ -1,0 +1,66 @@
+﻿@*@{
+        ViewData["Title"] = "Index";
+        Layout = "~/Views/Shared/_Layout.cshtml";
+    }@*@
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+
+
+    $(".ctrlbtn").click(function (e) {
+
+        CommonReportGenerateJS('M1/TECHSCR02/GenerateReport', {
+            ReportDate: $("#txtReportDate").val()
+        })
+
+        $(".modalLoader").hide();
+    })
+
+</script>
+
+
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>Daily Report</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-4">
+                                <label class="m-lbl1 m-lbl2">Report Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-4">
+                                <input class="form-control" id="txtReportDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                            </div>
+                        </div>
+                        <div class="btn-area1">
+                            <input type="submit" id="execute" class="m-btn-1 execute report" value="Execute">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</div>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+

@@ -1,0 +1,128 @@
+﻿
+
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+
+    });
+
+
+
+    $(".ctrlbtn").click(function (e) {
+        var dt1 = new Date($("#txtFromDate").val());
+        var dt2 = new Date($("#txtToDate").val());
+        if (dt1 > dt2) {
+            CommonAlert("Warning", "From Date can not be greater than To Date", null, null, "warning")
+            return;
+        }
+        if (dt1 > new Date()) {
+            CommonAlert("Warning", "From Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        if (dt2 > new Date()) {
+            CommonAlert("Warning", "To Date can not be greater than Current Date", null, null, "warning")
+            return;
+        }
+        CommonReportGenerateJS('M1/TECHSCR17A/GenerateReport', {
+            FromDate: $("#txtFromDate").val(),
+            ToDate: $("#txtToDate").val(),
+            Gas: $('#txtGas').val(),
+            ForReport: $('#txtForReport').val(),
+
+
+        })
+    })
+
+</script>
+<div class="plcholder-cn">
+    <form asp-area="M1">
+        <div class="plcholder-cn">
+            <div class="small-frm">
+                <h3 class="sub-heading1"><span>Norms124 Report</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+                        <div class="row ">
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                @{
+                                    var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                }
+                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-2">
+                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
+                            </div>
+
+                            <div class="col-sm-6 col-md-1">
+                                <label class="m-lbl1 m-lbl2">Report <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+                                <select id="txtReport" class="form-control">
+                                    <option value="N">Norms (w/o Non-Plant)</option>
+                                    <option value="NP">Norms (with plant)</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">For the Gas <span style="color:red;">*</span></label>
+                            </div>
+                            <div class="col-sm-6 col-md-4">
+                                <select id="txtGas" class="form-control">
+                                    <option value="COMPOSITE">COMPOSITE</option>
+                                    <option value="NG">NG</option>
+                                    <option value="PMTG">PMTG</option>
+                                    <option value="RLNG">RLNG</option>
+                                    <option value="SLNG">Pooled RLNG</option>
+                                    <option value="ISLNG">SPOT RLNG (IOC)</option>
+                                    <option value="OD">OVER DRAWN GAS</option>
+                                    <option value="SWLNG">SWAP RLNG</option>
+                                    <option value="SPMTG">Spot PMTG</option>
+                                    <option value="FISLNG">Spot Fall Back RLNG(IOC)</option>
+                                    <option value="GSPCL">RIL Gas</option>
+                                </select>
+                            </div>
+
+                            <div class="col-sm-6 col-md-2">
+                                <label class="m-lbl1 m-lbl2">For Report <span style="color:red;">*</span></label>
+                            </div>
+
+                            <div class="col-sm-6 col-md-4">
+                                <select id="txtForReport" class="form-control">
+                                    <option value="M">Monthly Basis</option>
+                                    <option value="W">Weekly Basis </option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="btn-area1">
+                            <input type="button" data-report-type="1" class="m-btn-1 execute ctrlbtn" value="Execute">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
+
+
