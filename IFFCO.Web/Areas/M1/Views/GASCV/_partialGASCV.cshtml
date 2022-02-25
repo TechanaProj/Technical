@@ -43,57 +43,67 @@
 
                         <div class="col-sm-2 col-md-2">
                             <div>
-                                @if (item.InputType.ToLower() == "number")
+                                @if (item.InputType.ToLower() != "label")
                                 {
-                                    if (item.Readonly.ToLower() == "yes")
+
+
+
+                                    @if (item.InputType.ToLower() == "number")
                                     {
-                                        <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                        if (item.Readonly.ToLower() == "yes")
+                                        {
+                                            <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                        }
+                                        else
+                                        {
+                                            <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                        }
+                                    }
+                                    else if (item.InputType.ToLower() == "datetime-local")
+                                    {
+                                        string v = "";
+                                        if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                        {
+                                            v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                        }
+
+
+                                        <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                    }
+                                    else if (item.InputType.ToLower() == "date")
+                                    {
+                                        string v = "";
+                                        if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                        {
+                                            v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                        }
+
+
+                                        <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                     }
                                     else
                                     {
-                                        <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
-
+                                        string sel = "";
+                                        if (item.InputValue.Trim().ToUpper() == "0")
+                                        {
+                                            <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                                <option selected="selected" value="0">NO</option>
+                                                <option value="1">YES</option>
+                                            </select>
+                                        }
+                                        else
+                                        {
+                                            <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                                <option value="0">NO</option>
+                                                <option selected="selected" value="1">YES</option>
+                                            </select>
+                                        }
                                     }
-                                }
-                                else if (item.InputType.ToLower() == "datetime-local")
-                                {
-                                    string v = "";
-                                    if (!string.IsNullOrEmpty(item.InputValue.Trim()))
-                                    {
-                                        v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
-                                    }
-
-
-                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
-                                }
-                                else if (item.InputType.ToLower() == "date")
-                                {
-                                    string v = "";
-                                    if (!string.IsNullOrEmpty(item.InputValue.Trim()))
-                                    {
-                                        v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
-                                    }
-
-
-                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                 }
                                 else
                                 {
-                                    string sel = "";
-                                    if (item.InputValue.Trim().ToUpper() == "0")
-                                    {
-                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
-                                            <option selected="selected" value="0">NO</option>
-                                            <option value="1">YES</option>
-                                        </select>
-                                    }
-                                    else
-                                    {
-                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
-                                            <option value="0">NO</option>
-                                            <option selected="selected" value="1">YES</option>
-                                        </select>
-                                    }
+                                    <label class="m-lbl1" style="font-size:110%;color:crimson !important;margin-bottom:10px;">@item.InputText</label>
                                 }
 
 
