@@ -69,7 +69,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             }
             return PartialView("_partialGASCV");
         }
-        public IActionResult PostData(string OperationType, string Shift, DateTime FromDate, string Input_Name, string Input_Value, string InputType)
+        public IActionResult PostData( DateTime FromDate, DateTime ToDate, string Input_Name, string Input_Value, string InputType)
         {
             switch (InputType)
             {
@@ -80,15 +80,15 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     Input_Value = Convert.ToDateTime(Input_Value).Date();
                     break;
                 default:
-                    break;
+                    break;//tech//
             }
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-           // string alert = TechnicalCommonService.PostRecordsGASCV(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
-            return Json("");
+            CommonViewModel.alert = TechnicalCommonService.PostRecordsGASCV(EMP_ID.ToString(), FromDate,ToDate, Input_Value, Input_Name);
+            return Json(CommonViewModel);
         }
     }
 }
