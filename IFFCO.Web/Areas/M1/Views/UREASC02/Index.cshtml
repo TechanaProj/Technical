@@ -1,0 +1,469 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+
+<script>
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+        var op = $(this).data("type");
+
+        setTimeout(function () {
+            CommonAjax('/M1/UREASC02/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    FromDate: $("#txtDate").val(),
+                    Shift: $("#txtShift").val(),
+                    OperationType: op
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+
+    function Refresh() {
+        CommonAjax('/M1/UREASC02/Execute', "GET", false, "application/json", false, GetResponse, "",
+            {
+
+                FromDate: $("#txtDate").val(),
+                Shift: $("#txtShift").val(),
+                OperationType: op
+
+            });
+    }
+
+    $(document).on("change", ".ammonia", function (e) {
+        debugger;
+        var name = $(this).attr("id");
+        var val = $(this).val();
+        var op = $(this).data("operation");
+        var type = $(this).attr("type");
+
+        $(".modalLoader").css("display", "block");
+
+        setTimeout(function () {
+            CommonAjax('/M1/UREASC02/PostData', "GET", false, "application/json", false, "", "",
+                {
+                    Input_Name: name,
+                    Input_Value: val,
+                    OperationType: op,
+                    FromDate: $("#txtDate").val(),
+                    Shift: $("#txtShift").val(),
+                    InputType:type,
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+    function GetResponse(data) {
+        $("#mainDiv").empty().append(data);
+    }
+
+    $(document).on("change", ".shutdown", function (e) {
+        debugger;
+        var cls = $(this).attr("class").split(' ')[0];
+        var ddl = document.getElementsByClassName(cls)[0];
+        document.getElementsByClassName(cls)[1].value = document.getElementsByClassName(cls)[0].value;
+        var ddltext = ddl.options[ddl.selectedIndex].text;
+        var input_type = $(this).data('input-text');
+        if (document.getElementsByClassName(cls)[0].value == null || document.getElementsByClassName(cls)[0].value == "") {
+            CommonAlert("ERROR", "Please select reason", null, null, "error");
+            return;
+        }
+        if (document.getElementsByClassName(cls)[2].value == null || document.getElementsByClassName(cls)[2].value=="") {
+            CommonAlert("ERROR", "Please select shutdown from date ", null, null, "error");
+            return;
+        }
+
+
+        $(".modalLoader").css("display", "block");
+
+        setTimeout(function () {
+            CommonAjax('/M1/UREASC02/PostShutDownData', "GET", false, "application/json", false, GetShutDownResponse, "",
+                {
+                    ReasonCode: document.getElementsByClassName(cls)[0].id,
+                    Reason: ddltext,
+                    SD_PLANT: document.getElementsByClassName(cls)[1].value,
+                    FromDate: document.getElementsByClassName(cls)[2].value,
+                    ToDate: document.getElementsByClassName(cls)[3].value,
+                    Shift: $("#txtShift").val(),
+                    DataDate: $("#txtDate").val(),
+                    InputType: input_type,
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+        Refresh();
+    })
+    function GetShutDownResponse(data) {
+       // $("#mainDiv").empty().append(data);
+    }
+    $(document).on("change", ".techRemark", function (e) {
+        debugger;
+        var cls = $(this).attr("class").split(' ')[0];
+        var name = document.getElementsByClassName(cls)[0].id
+        var val = $(this).val();
+        if (val.length < 1) {
+
+            CommonAlert("ERROR", "Tech Remarks can not be empty", null, null, "error");
+            return;
+        }
+
+
+        $(".modalLoader").css("display", "block");
+
+        setTimeout(function () {
+            CommonAjax('/M1/UREASC02/PostTechRemarkData', "GET", false, "application/json", false, GetTechRemarksResponse, "",
+                {
+                    RemarksValue: val,
+                    ReasonName: name,
+                    Shift: $("#txtShift").val(),
+                    DataDate: $("#txtDate").val(),
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+        Refresh();
+    })
+    function GetTechRemarksResponse(data) {
+        // $("#mainDiv").empty().append(data);
+    }
+    //$(document).on("change", ".ddlReason", function (e) {
+    //    debugger;
+    //    var cls = $(this).attr("class").split(' ')[0];
+    //    document.getElementsByClassName(cls)[1].value = $(this).val();
+    //})
+</script>
+
+<div class="plcholder-cn">
+    <form id="Main" asp-action="Edit" method="post" asp-area="M1" asp-controller="SUGSCR08" onsubmit="return Validate();">
+
+        @{
+            List<CommonData> data = ViewBag.records;
+
+            var Arrheader = data.Where(e => e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+
+        }
+        <div class="content-box">
+
+
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">UREA-II Daily Plant Input Data</span></h3>
+            <div class="m-form">
+                <div class="m-form-bx">
+                    <div class="row form-sm">
+                        <div class="col-sm-2 col-md-3">
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> Date</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                @{
+                                    DateTime dt;
+                                    dt = new DateTime(2017, 10, 18);
+                                }
+                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtDate" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> Shift</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                <input class="form-control" id="txtShift" type="text" value="G" />
+
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+
+
+
+
+
+
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+
+                <div class="row form-sm">
+
+                    <div class="col-sm-6 col-md-12 text-center">
+                        <div>
+                            <hr style="margin-bottom:6px;margin-top:0" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+                            <input type="button" data-type="save" id="PrintGSTInvoice" class="m-btn-1 execute ctrlbtn" value="Save" />
+                            <input type="button" data-type="approve" id="Update" class="m-btn-1 update ctrlbtn" onclick="" value="Approve" />
+                            <div style="margin-bottom:6px;margin-top:0" />
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+        <div id="mainDiv">
+
+
+
+            @foreach (var head in Arrheader)
+            {
+                var UreaProd = data.Where(e => e.Category == head).ToList();
+
+                <div class="content-box">
+                    <h3 class="sub-heading1"><span>@head</span></h3>
+                    <div class="m-form">
+                        <div class="m-form-bx">
+                            <div class="row form-sm">
+                                @foreach (var item in UreaProd)
+                                {
+                                    <div class="col-sm-2 col-md-4">
+                                        <div>
+                                            <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-md-2">
+                                        <div>
+                                            @if (item.InputType == "number")
+                                            {
+                                                if (item.Readonly.ToLower() == "yes")
+                                                {
+                                                    <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right urea" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                                }
+                                                else
+                                                {
+                                                    <input data-operation="@item.OperationType" class="form-control text-right urea" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                                }
+                                            }
+                                            else if (item.InputType.ToLower() == "datetime-local")
+                                            {
+                                                string v = "";
+                                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                {
+                                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                                }
+
+
+                                                <input data-operation="@item.OperationType" class="form-control urea" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                            }
+                                            else if (item.InputType.ToLower() == "date")
+                                            {
+                                                string v = "";
+                                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                {
+                                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                                }
+
+
+                                                <input data-operation="@item.OperationType" class="form-control urea" id="@item.InputText" step="any" type="date" value="@v" />
+                                            }
+                                            else
+                                            {
+                                                string sel = "";
+                                                if (item.InputValue.Trim().ToUpper() == "0")
+                                                {
+                                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control urea">
+                                                        <option selected="selected" value="0">NO</option>
+                                                        <option value="1">YES</option>
+                                                    </select>
+                                                }
+                                                else
+                                                {
+                                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control urea">
+                                                        <option value="0">NO</option>
+                                                        <option selected="selected" value="1">YES</option>
+                                                    </select>
+                                                }
+                                            }
+
+
+                                        </div>
+                                    </div>
+                                }
+
+
+
+
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+
+            }
+
+
+
+
+            @{
+                var AmmShut = data.Where(e => e.Category == "SHUTDOWN DETAILS").ToList();
+
+                List<SelectListItem> listItems = ViewBag.reason;
+            }
+            <div class="content-box">
+                <h3 class="sub-heading1"><span>SHUTDOWN DETAILS</span></h3>
+                <div class="m-form">
+                    <div class="m-form-bx">
+                        <div class="row form-sm">
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3">Reason</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3"> Reason Code</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3"> From Date</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-3">
+                                <div>
+                                    <label class="mb-3"> To Date</label>
+                                </div>
+                            </div>
+
+                            @{
+                                int i = 0;
+                                int j = 1;
+                            }
+                            @foreach (var item in AmmShut)
+                            {
+                                if (i > 4) { i = 0; j = j + 1; }
+                                i = i + 1;
+                                string cls = "shut" + j;
+                                if (item.InputType != "text")
+                                {
+                                    <div class="col-sm-2 col-md-3">
+                                        <div>
+                                            @if (item.InputType == "number")
+                                            {
+                                                if (item.Readonly.ToLower() == "yes")
+                                                {
+                                                    <input readonly="readonly" data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control text-right shutdown" id="@item.InputText" step="any" type="number" value="@item.InputValue.Trim()" />
+                                                }
+                                                else
+                                                {
+                                                    <input data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control text-right shutdown" id="@item.InputText" step="any" type="number" value="@item.InputValue.Trim()" />
+                                                }
+                                            }
+                                            else if (item.InputType == "date")
+                                            {
+                                                string v = "";
+                                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                {
+                                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                                }
+
+
+                                                <input data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control shutdown" id="@item.InputText" step="any" type="date" value="@v" />
+                                            }
+                                            else if (item.InputType == "datetime-local")
+                                            {
+                                                string v = "";
+                                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                                {
+                                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                                }
+
+
+                                                <input data-operation="@item.OperationType" data-input-text="@item.InputLabel" class="@cls form-control shutdown" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                            }
+                                            else
+                                            {
+                                                <select id="@item.InputText" data-input-text="@item.InputLabel" class="@cls form-control shutdown ddlReason">
+                                                    <option value="">---Choose Reason---</option>
+                                                    @foreach (var reason in listItems)
+                                                    {
+
+                                                        @if (reason.Text.Trim() == item.InputValue.Trim())
+                                                        {
+                                                            <option selected="selected" value="@reason.Value">@reason.Text</option>
+                                                        }
+                                                        else
+                                                        {
+                                                            <option value="@reason.Value">@reason.Text</option>
+                                                        }
+
+
+                                                    }
+                                                </select>
+                                            }
+
+
+
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div class="col-sm-2 col-md-12">
+                                        <textarea data-operation="@item.OperationType" id="@item.InputText" data-input-text="@item.InputLabel" placeholder="Technical Remarks" class="@cls form-control techRemark">@item.InputValue.Trim()</textarea>
+                                    </div>
+                                }
+
+
+                            }
+
+
+
+
+
+
+
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+
+
+
+
+        </div>
+
+
+    </form>
+
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

@@ -94,6 +94,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Include="Areas\M1\Views\UREASC01\Index.cshtml" />
+    <None Include="Areas\M1\Views\UREASC01\_PartialUREASC01.cshtml" />
+    <None Include="Areas\M1\Views\UREASC02\Index.cshtml" />
+    <None Include="Areas\M1\Views\UREASC02\_PartialUREASC02.cshtml" />
     <None Include="wwwroot\bootstrap-3.3.7\css\bootstrap-theme.css.map" />
     <None Include="wwwroot\bootstrap-3.3.7\css\bootstrap-theme.min.css.map" />
     <None Include="wwwroot\bootstrap-3.3.7\css\bootstrap.css.map" />
