@@ -1599,6 +1599,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             var data = _context.ExecuteProcedureForRefCursor("UREASC01_TECH_REMARK_POST", oracleParameterCollecion);
             string alert = oracleParameterCollecion[3].Value.ToString();
             return "";
+            //tech///
         }
     }
 }
