@@ -1,0 +1,17 @@
+﻿
+@{ 
+    List<EnergyFactor> data = ViewBag.records;
+}
+
+@foreach (var item in data)
+{
+    <tr>
+        <td>@item.FromDate</td>
+        <td>@item.ToDate</td>
+        <td>@item.PrCode</td>
+        <td>@item.EFFUnit</td>
+        <td>@item.PrValue</td>
+        
+        
+    </tr>
+}

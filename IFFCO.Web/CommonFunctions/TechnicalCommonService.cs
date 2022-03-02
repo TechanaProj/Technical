@@ -1201,11 +1201,11 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return alert;
         }
 
-        public List<CommonData> GetRecordsGASCV(string pno, DateTime fdt, DateTime tdt)
+        public List<CommonData> GetRecordsGASCV(string pno, DateTime dt1, DateTime dt2)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = fdt.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = tdt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
@@ -1230,6 +1230,53 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             }
 
             return cd;
+
+        }
+
+        //----------------------Energy Factor ----------------//
+
+        public List<EnergyFactor> GetRecordsENERGYFACTOR(DateTime dt1, DateTime dt2)
+        {
+            string query = "select * from weekly_energy_factor where EFF_FROM_DATE='" + dt1.Date() + "' and EFF_TO_DATE='" + dt2.Date() + "' ORDER BY CREATION_DATETIME DESC";
+            var data = _context.GetSQLQuery(query);
+
+            List<EnergyFactor> cd = new List<EnergyFactor>();
+            cd = data.AsEnumerable().Select(e => new EnergyFactor
+            {
+
+                FromDate = Convert.ToDateTime(e.Field<DateTime>("EFF_FROM_DATE")).ToString("dd/MM/yyyy"),
+                ToDate = Convert.ToDateTime(e.Field<DateTime>("EFF_TO_DATE")).ToString("dd/MM/yyyy"),
+                PrCode = e.Field<string>("PR_CODE"),
+                PrValue = e.Field<double>("PR_VALUE"),
+                EFFUnit = e.Field<string>("EFF_UNIT"),
+
+            }).ToList();
+           
+
+            return cd;
+
+        }
+        public int SaveRecordsENERGYFACTOR(DateTime FromDate, DateTime ToDate, string Unit, string PrCode, string PrValue,string pno)
+        {
+            string query = "select pr_code from weekly_energy_factor where EFF_FROM_DATE = '" + FromDate.Date() + "'";
+            if (_context.GetCharScalerFromDB(query).ToLower() == PrCode.ToLower())
+            {
+                return -1;
+            }
+            List<EnergyFactor> cd = new List<EnergyFactor>();
+            query = "insert into weekly_energy_factor values('"+ FromDate.Date() + "','" + ToDate.Date() + "','" + PrCode + "','" + Unit + "','" + PrValue + "','" + pno + "',SYSDATE)";
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+
+        public string UpdateRecordsENERGYFACTOR(DateTime FromDate, DateTime ToDate, string Unit, string PrCode, string PrValue, string pno)
+        {
+            
+            List<EnergyFactor> cd = new List<EnergyFactor>();
+            string query = "update  weekly_energy_factor set EFF_FROM_DATE='" + FromDate.Date() + "',EFF_TO_DATE='" + ToDate.Date() + "',PR_CODE='" + PrCode + "',PR_UNIT='" + Unit + "',PR_VALUE='" + PrValue + "' WHERE EFF_FROM_DATE='" + FromDate.Date() + "'AND PR_CODE='" + PrCode + "'";
+            var i = _context.insertUpdateToDB(query);
+            return i.ToString();
 
         }
 
