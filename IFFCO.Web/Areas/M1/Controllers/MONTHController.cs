@@ -35,7 +35,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-            List<CommonData> data = TechnicalCommonService.GetRecordsMONTH(controller, "G", EMP_ID.ToString(), DateTime.Now);
+            List<CommonData> data = TechnicalCommonService.GetRecordsMONTH(controller,  EMP_ID.ToString(), DateTime.Now,DateTime.Now,"COMPOSITE");
             ViewBag.reason = TechnicalCommonService.GetReason();
             ViewBag.records = data;
 
@@ -43,7 +43,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
             return View(CommonViewModel);
         }
-        public IActionResult Execute(string OperationType, string Shift, DateTime FromDate)
+        public IActionResult Execute(string OperationType, string Gas, DateTime FromDate, DateTime ToDate)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
@@ -51,7 +51,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             switch (OperationType)
             {
                 case "query":
-                    List<CommonData> data = TechnicalCommonService.GetRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
+                    List<CommonData> data = TechnicalCommonService.GetRecordsMONTH(controller, EMP_ID.ToString(), FromDate, ToDate, Gas);
                     ViewBag.reason = TechnicalCommonService.GetReason();
                     ViewBag.records = data;
 
@@ -59,10 +59,10 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 case "save":
                     break;
                 case "approve":
-                    TechnicalCommonService.ApproveRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
-                    List<CommonData> data1 = TechnicalCommonService.GetRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
-                    ViewBag.reason = TechnicalCommonService.GetReason();
-                    ViewBag.records = data1;
+                    //TechnicalCommonService.ApproveRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
+                    //List<CommonData> data1 = TechnicalCommonService.GetRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
+                    //ViewBag.reason = TechnicalCommonService.GetReason();
+                    //ViewBag.records = data1;
 
                     break;
                 default:

@@ -1490,12 +1490,13 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         /************************Month*********************/
 
-        public List<CommonData> GetRecordsMONTH(string formName, string shift, string pno, DateTime dt)
+        public List<CommonData> GetRecordsMONTH(string formName, string pno, DateTime dt1,DateTime dt2, String Gas)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
@@ -1503,7 +1504,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
 
 
-            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
 
 
             List<CommonData> cd = new List<CommonData>();
