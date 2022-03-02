@@ -1,0 +1,278 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+@{
+    var rights = ViewBag.rights;
+}
+<script>
+       $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+           }
+
+          
+
+
+       })
+
+   
+
+    var g_target_id;
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+        var op = $(this).data("type");
+
+        setTimeout(function () {
+            CommonAjax('/M1/ENERGYFACTOR/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate: $("#txtToDate").val(),
+                    OperationType: op
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+
+
+    function PostResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+            return;
+        }
+
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+
+    }
+   
+
+
+
+
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+            $("#txtUnit").val(''),
+            $("#txtPrCode").val(''),
+            $("#txtPrValue").val(''),
+        $("#tblBody").empty().append(data);
+
+    }
+
+
+    $("#btnSave").click(function () {
+
+        setTimeout(function () {
+            CommonAjax('/M1/ENERGYFACTOR/Save', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate:   $("#txtToDate").val(),
+                    FromEDate: $("#txtEFromDate").val(),
+                    ToEDate: $("#txtEToDate").val(),
+                    Unit:    $("#txtUnit").val(),
+                    PrCode:  $("#txtPrCode").val(),
+                    PrValue: $("#txtPrValue").val(),
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+    $("#btnUpdate").click(function () {
+
+        setTimeout(function () {
+            CommonAjax('/M1/ENERGYFACTOR/Update', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate: $("#txtToDate").val(),
+                    FromEDate: $("#txtEFromDate").val(),
+                    ToEDate: $("#txtEToDate").val(),
+                    Unit: $("#txtUnit").val(),
+                    PrCode: $("#txtPrCode").val(),
+                    PrValue: $("#txtPrValue").val(),
+                });
+            $(".modalLoader").hide();
+        }, 10)
+    })
+
+    $(".btnSave").click(function () {
+        debugger;
+        var v = $(this).parents("tr");
+        var vv = $(this).parents("tr").children().get(0);
+        var vvv = $(this).parents("tr").children().get(0).innerHTML;
+
+    $("#txtEFromDate").val($(this).parents("tr").children().get(0).innerHTML)
+    $("#txtEToDate").val($(this).parents("tr").children().get(1).innerHTML)
+    $("#txtUnit").val($(this).parents("tr").children().get(3).innerHTML)
+    $("#txtPrCode").val($(this).parents("tr").children().get(2).innerHTML)
+    $("#txtPrValue").val($(this).parents("tr").children().get(4).innerHTML)
+
+       
+    })
+
+   
+
+
+</script>
+
+<div class="plcholder-cn">
+    <form id="Main" asp-action="Edit" method="post" asp-area="M1">
+        @{
+            List<EnergyFactor> data = ViewBag.records;
+        }
+        <div class="content-box">
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">Energy Factor</span></h3>
+            <div class="m-form">
+                <div class="m-form-bx">
+                    <div class="row form-sm">
+                        <div class="col-sm-2 col-md-3">
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2">From Date</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                @{
+                                    DateTime dt;
+                                    dt = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
+                                }
+                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtFromDate" type="date" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2">To Date</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                @{
+                                    DateTime dt1;
+                                    dt1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                                }
+                                <input class="form-control" id="txtToDate" value="@dt1.ToString("yyyy-MM-dd")" type="date" />
+                            </div>
+                        </div>
+
+                        <div class="col-sm-6 col-md-3">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row form-sm">
+
+                    <div class="col-sm-6 col-md-12 text-center">
+                        <div>
+                            <hr style="margin-bottom:6px;margin-top:0" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+                            <input type="button" data-type="save" id="PrintGSTInvoice" class="m-btn-1 execute ctrlbtn" value="Save" />
+
+
+                            <div style="margin-bottom:6px;margin-top:0" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-sm" style="padding-left:20px;padding-right:20px;">
+                    <div class="table-responsive scroll-tbl">
+                        <table class="compact nowrap table  table-hover" style="padding-bottom:3px;" id="">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>From Date</th>
+                                    <th>To Date</th>
+                                    <th>PR Code</th>
+                                    <th>EFF Unit</th>
+                                    <th style="width:10%">PR Value</th>
+                                    <th style="width:10%;text-align:center !important"></th>
+
+                                </tr>
+                                <tr>
+                                    <td><input value="@dt.ToString("yyyy-MM-dd")" id="txtEFromDate" type="date" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input value="@dt1.ToString("yyyy-MM-dd")" id="txtEToDate" type="date" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPrCode" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtUnit" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPrValue" type="number" step="any" class="form-control" style="border:1px solid blue" /></td>
+                                    <td>
+                                        <a class="btn btn-sm btn-default" id="btnSave" style="border:1px solid blue"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+
+                                    </td>
+
+                                </tr>
+                            </thead>
+                            <tbody id="tblBody">
+                                @foreach (var item in data)
+                                {
+                                    <tr>
+                                        <td>@item.FromDate</td>
+                                        <td>@item.ToDate</td>
+                                        <td>@item.PrCode</td>
+                                        <td>@item.EFFUnit</td>
+                                        <td>@item.PrValue</td>
+
+
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+     
+    </form>
+
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
