@@ -1201,6 +1201,10 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return alert;
         }
 
+
+
+
+        //----------------------Gas CV ----------------//
         public List<CommonData> GetRecordsGASCV(string pno, DateTime dt1, DateTime dt2)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
@@ -1232,7 +1236,33 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return cd;
 
         }
+        public string PostRecordsGASCV(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name)
+        {
 
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(FROM_DATE) FROM GAS_CV WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+            if ((int)_context.GetScalerFromDB(query) == 0)
+            {
+                query = "INSERT INTO GAS_CV (FROM_DATE,TO_DATE," + Input_Name + " ,CREATED_BY,creation_time,INPUT_TYPE) values('" + dt1.Date() + "','" + dt2.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'M')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update GAS_CV SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE  WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
+            return alert;
+
+        }
         //----------------------Energy Factor ----------------//
 
         public List<EnergyFactor> GetRecordsENERGYFACTOR(DateTime dt1, DateTime dt2)
@@ -1279,34 +1309,65 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return i.ToString();
 
         }
+        //----------------------Energy Analysis ----------------//
 
-        public string PostRecordsGASCV( string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name)
+        public List<CommonData> GetRecordsENERGYANALYSIS(DateTime dt1)
         {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
-            string query = "";
-            string alert = "";
-            query = "SELECT COUNT(FROM_DATE) FROM GAS_CV WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
-            if ((int)_context.GetScalerFromDB(query) == 0)
+            var data = _context.ExecuteProcedureForRefCursor("ENERGY_ANALYSIS_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[1].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
             {
-                query = "INSERT INTO GAS_CV (FROM_DATE,TO_DATE," + Input_Name + " ,CREATED_BY,creation_time,INPUT_TYPE) values('" + dt1.Date() + "','" + dt2.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'M')";
-                var i = _context.insertUpdateToDB(query);
-                if (i > 0)
+                cd.Add(new CommonData()
                 {
-                    alert = "Inserted";
-                }
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+                });
             }
-            else
+
+            return cd;
+
+        }
+        public string PostRecordsENERGYANALYSIS(DateTime dt1, string Input_Value, string Input_Name,string pno)
+        {
+            string alert = "";
+            string query = "select count(*) from energy_analysis where ENG_DATA_DATE = '" + dt1.Date() + "'";
+            if (_context.GetScalerFromDB(query) >0)
             {
-                query = "update GAS_CV SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE  WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+                query = "update energy_analysis SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_DATETIME=SYSDATE  WHERE ENG_DATA_DATE='" + dt1.Date() +"'";
                 var i = _context.insertUpdateToDB(query);
                 if (i > 0)
                 {
                     alert = "Updated";
                 }
             }
-            return alert;
+            else
+            {
+                query = "INSERT INTO energy_analysis (ENG_DATA_DATE," + Input_Name + " ,CREATED_BY,creation_DATETIME) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE)";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
 
+            return alert;
         }
+
+       
+      
 
 
         /************************UREASC01*********************/
