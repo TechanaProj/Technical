@@ -29,7 +29,7 @@
                     })
     var g_target_id;
     function Refresh() {
-        CommonAjax('/M1/MONTHLY/Execute', "GET", false, "application/json", false, GetResponse, "",
+        CommonAjax('/M1/MONTH/Execute', "GET", false, "application/json", false, GetResponse, "",
             {
 
                 FromDate: $("#txtFromDate").val(),
@@ -40,13 +40,13 @@
             });
     }
     $(".ctrlbtn").click(function (e) {
-
+        debugger;
         $(".modalLoader").css("display", "block");
         var op = $(this).data("type");
 
         setTimeout(function () {
             debugger;
-            CommonAjax('/M1/MONTHLY/Execute', "GET", false, "application/json", false, GetResponse, "",
+            CommonAjax('/M1/MONTH/Execute', "GET", false, "application/json", false, GetResponse, "",
                 {
 
                     FromDate: $("#txtFromDate").val(),
@@ -80,7 +80,7 @@
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
-            CommonAjax('/M1/MONTHLY/PostData', "GET", false, "application/json", false, PostResponse, "",
+            CommonAjax('/M1/MONTH/PostData', "GET", false, "application/json", false, PostResponse, "",
                 {
                     Input_Name: name,
                     Input_Value: val,

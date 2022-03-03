@@ -68,9 +68,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 default:
                     break;
             }
-            return PartialView("_partialMONTH");
+            return PartialView("_partialMONTHLY");
         }
-        public IActionResult PostData(string OperationType, string Shift, DateTime FromDate, string Input_Name, string Input_Value, string InputType)
+        public IActionResult PostData(DateTime FromDate, DateTime ToDate, string pno, string gastype, string Input_Value, string Input_Name, string InputType)
         {
             switch (InputType)
             {
@@ -88,7 +88,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-            string alert = TechnicalCommonService.PostRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
+            string alert = TechnicalCommonService.PostRecordsMONTH( FromDate,  ToDate,  pno,  gastype,  Input_Value,  Input_Name);
             return Json(alert);
         }
         public IActionResult PostShutDownData(string Shift, DateTime DataDate, string Reason, string ReasonCode, string SD_PLANT, DateTime? FromDate, DateTime? ToDate, String InputType)
