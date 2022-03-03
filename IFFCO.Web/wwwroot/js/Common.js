@@ -1,5 +1,10 @@
 ﻿function CommonAjax(Url, Type, Async, ContentType, Cache, fn, Id, content) {
     if (Url != "") {
+        debugger;
+        if (Url[0] == "/") {
+            Url = readCookie("U") + Url;
+        } 
+
         $.ajax({
             url: Url,
             type: Type,
@@ -23,6 +28,11 @@
 }
 function CommonAjax1(Url, Type, Async, ContentType, Cache, fn, Id, content, headersData) {    
     if (Url != "") {
+        debugger;
+        if (Url[0] == "/") {
+            Url = readCookie("U") + Url;
+        } 
+
         $.ajax({
             url: Url,
             type: Type,
