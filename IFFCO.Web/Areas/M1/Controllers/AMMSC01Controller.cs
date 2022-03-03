@@ -29,6 +29,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             reportRepository = new ReportRepositoryWithParameters();
             primaryKeyGen = new PrimaryKeyGen();
         }
+        //T
         public IActionResult Index()
         {
             try
