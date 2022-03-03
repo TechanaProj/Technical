@@ -1598,12 +1598,13 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         /************************Month*********************/
 
-        public List<CommonData> GetRecordsMONTH(string formName, string shift, string pno, DateTime dt)
+        public List<CommonData> GetRecordsMONTH(string formName, string pno, DateTime dt1,DateTime dt2, String Gas)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
@@ -1611,7 +1612,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
 
 
-            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[5].Value).GetDataReader();
 
 
             List<CommonData> cd = new List<CommonData>();
@@ -1634,19 +1635,39 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return cd;
 
         }
-        public string PostRecordsMONTH(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        public string GetInputTYPE(DateTime dt1, DateTime dt2)
         {
+            string inputtype="";
+
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
-            var data = _context.ExecuteProcedureForRefCursor("UREASC01_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[4].Value.ToString();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "V_TYPE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedure("MONTH_SAVE_INPUT_TYPE", oracleParameterCollecion);
+            inputtype = oracleParameterCollecion[2].Value.ToString();
+            return inputtype;
+
+        }
+        public string PostRecordsMONTH(DateTime FromDate, DateTime ToDate, string pno, string gastype, string Input_Value, string Input_Name)
+        {
+            string alert = "";
+            string query = @"SELECT Count(*) FROM MONTHLY_TECH_INPUT 
+                            WHERE FROM_DATE ='"+ FromDate + "' AND" +
+                            " TO_DATE ='" + ToDate + "' AND REVISED = 'N' and type_of_gas ='" + gastype + "' ";
+            int i = _context.GetScalerFromDB(query);
+            if (i>0)
+            {
+                query= "update MONTHLY_TECH_INPUT set "+ Input_Value + "='"+ Input_Value + "' ,CREATION_DATE=sysdate, CREATED_BY=" + pno + " WHERE FROM_DATE ='" + FromDate + "' AND" +
+                            " TO_DATE ='" + ToDate + "' AND REVISED = 'N' and type_of_gas ='" + gastype + "' ";
+                i = _context.insertUpdateToDB(query);
+
+                if (i>0)
+                {
+                    alert = "updated";
+                }
+            }
             return alert;
+
 
         }
         public string SaveRecordsMONTH(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
