@@ -565,6 +565,75 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
 
 
+        //-----------OSSC11-------------------//
+
+        public List<CommonData> GetRecordsOSSC11(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("OSSC11_QUERY", oracleParameterCollecion);
+
+
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[4].Value).GetDataReader();
+
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                   
+
+                });
+            }
+
+            return cd;
+
+        }
+        public string PostRecordsOSSC11(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("OSSC11_POST", oracleParameterCollecion);
+
+            string alert = oracleParameterCollecion[7].Value.ToString();
+            return alert;
+
+        }
+        public string ApproveRecordsOSSC11(string formName, string shift, string pno, DateTime dt)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("OSSC11_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
 
         //----------------------GASALL----------------//
         public List<CommonData> GetRecordsGASALL(string formName, string shift, string pno, DateTime dt)
