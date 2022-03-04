@@ -70,14 +70,15 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                         break;
                     case "save":
-                        break;
-                    case "approve":
-                        TechnicalCommonService.ApproveRecordsAMMSC02(controller, Shift, EMP_ID.ToString(), FromDate);
-                        List<CommonData> data1 = TechnicalCommonService.GetRecordsAMMSC02(controller, Shift, EMP_ID.ToString(), FromDate);
-                        ViewBag.reason = TechnicalCommonService.GetReason();
-                        ViewBag.records = data1;
+                        CommonViewModel.alert = "Data Saved";
+                        return Json(CommonViewModel);
 
-                        break;
+
+                    case "approve":
+                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsAMMSC01(controller, Shift, EMP_ID.ToString(), FromDate);
+                        return Json(CommonViewModel);
+
+                        
                     default:
                         break;
                 }
@@ -137,7 +138,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
             try
             {
-                string alert = TechnicalCommonService.PostShutdownAMMSC02(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
+                CommonViewModel.alert = TechnicalCommonService.PostShutdownAMMSC02(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
 
             }
             catch (Exception ex)
@@ -149,7 +150,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 return Json(CommonViewModel);
 
             }
-            return Json("");
+
+
+            return Json(CommonViewModel);
 
 
 
@@ -162,7 +165,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             try
             {
 
-                string alert = TechnicalCommonService.PostTechRemarkAMMSC02(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
+                CommonViewModel.alert = TechnicalCommonService.PostTechRemarkAMMSC02(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
 
 
             }
@@ -175,7 +178,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 return Json(CommonViewModel);
 
             }
-            return Json("");
+            return Json(CommonViewModel);
 
 
 

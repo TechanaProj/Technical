@@ -73,14 +73,13 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                         break;
                     case "save":
-                        break;
-                    case "approve":
-                        TechnicalCommonService.ApproveRecordsAMMSC01(controller, Shift, EMP_ID.ToString(), FromDate);
-                        List<CommonData> data1 = TechnicalCommonService.GetRecordsAMMSC01(controller, Shift, EMP_ID.ToString(), FromDate);
-                        ViewBag.reason = TechnicalCommonService.GetReason();
-                        ViewBag.records = data1;
+                        CommonViewModel.alert = "Data Saved";
+                        return Json(CommonViewModel);
 
-                        break;
+                      
+                    case "approve":
+                        CommonViewModel.alert=TechnicalCommonService.ApproveRecordsAMMSC01(controller, Shift, EMP_ID.ToString(), FromDate);
+                        return Json(CommonViewModel);
                     default:
                         break;
                 }
