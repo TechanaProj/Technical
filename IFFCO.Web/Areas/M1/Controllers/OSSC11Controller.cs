@@ -77,10 +77,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         return Json(CommonViewModel);
                     case "approve":
 
-                       // TechnicalCommonService.ApproveRecordsOSSC11(controller, Shift, EMP_ID.ToString(), FromDate);
-                     
-
-                        break;
+                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsOSSC11(controller, Shift, EMP_ID.ToString(), FromDate);
+                        //List<CommonData> data1 = TechnicalCommonService.GetRecordsOSSC01(controller, Shift, EMP_ID.ToString(), FromDate);
+                        ViewBag.reason = TechnicalCommonService.GetReason();
+                        //ViewBag.records = data1;
+                        return Json(CommonViewModel);
                     default:
                         break;
                 }
