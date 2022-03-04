@@ -1,9 +1,13 @@
-﻿function CommonReportGenerateJS(url, data) {
+﻿function CommonReportGenerateJS(Url, data) {
     debugger;
+
+    if (Url[0] == "/") {
+        Url = readCookie("U") + Url;
+    } 
     $(".modalLoader").css("display", "block");
     $.ajax({
         type: "POST",
-        url: url,
+        url: Url,
         data: data,
         error: function (xhr, status, error) {
 
@@ -66,4 +70,12 @@ function readCookie(name) {
 
 function eraseCookie(name) {
     createCookie(name, "", -1);
+}
+
+function isNull(val, returnVal) {
+    debugger;
+    if (val == undefined || val == null || isNaN(val) || val=="") {
+        return returnVal;
+    }
+    return val;
 }

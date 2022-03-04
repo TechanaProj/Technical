@@ -1,7 +1,7 @@
 ﻿@{
     List<CommonData> data = ViewBag.records;
 
-    var Arrheader = data.Where(e => e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+    var Arrheader = data.Select(e => e.Category).Distinct().ToArray();
 
 
     var rights = ViewBag.rights;
@@ -35,11 +35,11 @@
                                 {
                                     if (item.Readonly.ToLower() == "yes")
                                     {
-                                        <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                        <input data-operation="@item.OperationType" readonly="readonly" class="@item.InputText.Split('-')[1] form-control text-right ammonia" id="@item.InputText.Split('-')[0]" step="any" type="number" value="@item.InputValue" />
                                     }
                                     else
                                     {
-                                        <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                        <input data-operation="@item.OperationType" class="@item.InputText.Split('-')[1] form-control text-right ammonia" id="@item.InputText.Split('-')[0]" step="any" type="number" value="@item.InputValue" />
 
                                     }
                                 }
@@ -52,7 +52,7 @@
                                     }
 
 
-                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                    <input data-operation="@item.OperationType" class="@item.InputText.Split('-')[1] form-control ammonia" id="@item.InputText.Split('-')[0]" step="any" type="datetime-local" value="@v" />
                                 }
                                 else if (item.InputType.ToLower() == "date")
                                 {
@@ -63,21 +63,21 @@
                                     }
 
 
-                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                                    <input data-operation="@item.OperationType" class="@item.InputText.Split('-')[1] form-control ammonia" id="@item.InputText.Split('-')[0]" step="any" type="date" value="@v" />
                                 }
-                                else
+                                else if (item.InputType.ToLower() == "ddl")
                                 {
                                     string sel = "";
                                     if (item.InputValue.Trim().ToUpper() == "0")
                                     {
-                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                        <select id="@item.InputText.Split('-')[0]" data-operation="@item.OperationType" class=" form-control ammonia">
                                             <option selected="selected" value="0">NO</option>
                                             <option value="1">YES</option>
                                         </select>
                                     }
                                     else
                                     {
-                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                        <select id="@item.InputText.Split('-')[0]" data-operation="@item.OperationType" class=" form-control ammonia">
                                             <option value="0">NO</option>
                                             <option selected="selected" value="1">YES</option>
                                         </select>
