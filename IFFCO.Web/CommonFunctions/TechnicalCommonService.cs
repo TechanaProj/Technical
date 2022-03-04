@@ -1696,6 +1696,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                     IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
                     Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
                     Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
                     OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
 
                 });
