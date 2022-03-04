@@ -288,7 +288,7 @@
 
 
 
-    function GetMenu(MenuId) {        
+    function GetMenu(MenuId) {
         $(".modalLoader").show();
         CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetMenuResult?MenuId=' + MenuId, "GET", true, "application/json", false, BindMenue, "#ParentUL");
     }
@@ -298,7 +298,7 @@
 
         var strHtml = '<ul class="sb-menu active">';
         $.each(data.filterModulesMenu, function (index, value) {
-            
+
             if (value.menulevel == "2") {
                 //strHtml += '<li>';
                 //strHtml += '<span class="selected-ar"><span class="icn1 full-width"><i class="fas fa-chevron-right"></i></span><span class="nme">' + value.menuName + '</span></span>'
@@ -367,26 +367,28 @@
                     //strHtml += "<input type='button' class='btn btn-primary m-btn' onclick='PopupOk(" + fn + ",\"" + data + "\");' data-dismiss='modal' value='OK'>";
                     strHtml += '</li>';
                 }
-               
+
             }
         });
         strHtml += '</ul>';
         $(Id).append(strHtml);
         var script = document.createElement('script');
-        script.src = "/js/custom.js";
+        //script.src = "/js/custom.js";
+        script.src = readCookie("U") + "/js/custom.js";
         document.body.appendChild(script);
         var script = document.createElement('script');
-        script.src = "js/Common.js";
+        //script.src = "js/Common.js";
+        script.src = readCookie("U")  + "/js/Common.js";
         document.body.appendChild(script);
         $(".modalLoader").hide();
     }
-    $("#ddlModules").change(function () {        
-        $(".modalLoader").show();       
+    $("#ddlModules").change(function () {
+        $(".modalLoader").show();
         //CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetMouldeResult?ModuleId=' + $("#ddlModules option:selected").val(), "GET", true, "application/json", false, BindLeftMenu2, "#ParentUL");
-        
+
         window.location.href = $(this).val() + '/@ViewContext.RouteData.Values["Controller"].ToString()/GetMouldeResult?ModuleId=' + $(this).val();
     });
-    $("#ddlUnits").change(function () {       
+    $("#ddlUnits").change(function () {
         $(".modalLoader").show();
         CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetUnitResult?UnitId=' + $("#ddlUnits option:selected").val(), "GET", true, "application/json", false, RedirectDashboardOnUnits, "#ParentUL");
     });
@@ -570,7 +572,7 @@
 
         $(Id).append(strHtml);
         $(".modalLoader").hide();
-        window.location.href = "@ViewContext.RouteData.Values["area"].ToString()/Home/Index";
+        window.location.href = readCookie("U")  +  "/@ViewContext.RouteData.Values["area"].ToString()/Home/Index";
         // $(document).load('/js/jquery-3.2.1.min.js').fadeIn("slow");
 
         //document.write("../js/jquery-3.2.1.min.js");
@@ -657,7 +659,7 @@
         strHtml += "</ul>";
         $(Id).append(strHtml);
 
-        window.location.href = "/Home/Index";
+        window.location.href = readCookie("U") + "/Home/Index";
         // $(document).load('/js/jquery-3.2.1.min.js').fadeIn("slow");
 
         //document.write("../js/jquery-3.2.1.min.js");
@@ -746,7 +748,7 @@
             } else {
                 $('#page-wrapper').load(localStorage.getItem("currentUrl"));
             }
-            
+
             //location.reload(true);
         }
         $(".modalLoader").hide();
