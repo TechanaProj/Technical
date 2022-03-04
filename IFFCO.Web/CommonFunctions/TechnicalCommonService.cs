@@ -1672,8 +1672,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
