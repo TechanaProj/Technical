@@ -127,10 +127,6 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 return Json(CommonViewModel);
 
             }
-
-
-
-
             return Json(CommonViewModel);
         }
     }

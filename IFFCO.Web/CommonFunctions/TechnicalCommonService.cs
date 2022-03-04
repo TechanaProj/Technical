@@ -1799,5 +1799,66 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return "";
             //tech///
         }
+
+        //---------------------------REMARK-----------------------------------//
+        //public List<CommonData> GetRecordsREMARK(string pno, DateTime dt1, DateTime dt2)
+        //{
+        //    List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+        //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+        //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+        //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+        //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+        //    var data = _context.ExecuteProcedureForRefCursor("GASCV_QUERY", oracleParameterCollecion);
+
+        //    OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[3].Value).GetDataReader();
+
+        //    List<CommonData> cd = new List<CommonData>();
+        //    while (reader.Read())
+        //    {
+        //        cd.Add(new CommonData()
+        //        {
+        //            InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+        //            InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+        //            InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+        //            InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+        //            IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+        //            Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+        //            Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+        //        });
+        //    }
+
+        //    return cd;
+
+        //}
+        //public string PostRecordsGASCV(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name)
+        //{
+
+        //    string query = "";
+        //    string alert = "";
+        //    query = "SELECT COUNT(FROM_DATE) FROM GAS_CV WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+        //    if ((int)_context.GetScalerFromDB(query) == 0)
+        //    {
+        //        query = "INSERT INTO GAS_CV (FROM_DATE,TO_DATE," + Input_Name + " ,CREATED_BY,creation_time,INPUT_TYPE) values('" + dt1.Date() + "','" + dt2.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'M')";
+        //        var i = _context.insertUpdateToDB(query);
+        //        if (i > 0)
+        //        {
+        //            alert = "Inserted";
+        //        }
+        //    }
+        //    else
+        //    {
+        //        query = "update GAS_CV SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE  WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
+        //        var i = _context.insertUpdateToDB(query);
+        //        if (i > 0)
+        //        {
+        //            alert = "Updated";
+        //        }
+        //    }
+        //    return alert;
+
+        //}
+
     }
 }
