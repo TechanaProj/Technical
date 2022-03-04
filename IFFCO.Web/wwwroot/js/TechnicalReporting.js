@@ -67,13 +67,3 @@ function readCookie(name) {
 function eraseCookie(name) {
     createCookie(name, "", -1);
 }
-
-function boolcheckAuth(name) {
-
-    if ((readCookie('SSO') != stringToHash(name + "DESPATCH")) && (readCookie('SSSO') != stringToHash("#SUPPRESS#"))) {
-        return true;
-    } else {
-        return false;
-    }
-
-}
