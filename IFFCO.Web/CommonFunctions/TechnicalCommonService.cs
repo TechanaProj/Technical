@@ -1726,13 +1726,13 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         {
             string alert = "";
             string query = @"SELECT Count(*) FROM MONTHLY_TECH_INPUT 
-                            WHERE FROM_DATE ='"+ FromDate + "' AND" +
-                            " TO_DATE ='" + ToDate + "' AND REVISED = 'N' and type_of_gas ='" + gastype + "' ";
+                            WHERE FROM_DATE ='"+ FromDate.Date() + "' AND" +
+                            " TO_DATE ='" + ToDate.Date() + "' AND REVISED = 'N' and type_of_gas ='" + gastype + "' ";
             int i = _context.GetScalerFromDB(query);
             if (i>0)
             {
-                query= "update MONTHLY_TECH_INPUT set "+ Input_Value + "='"+ Input_Value + "' ,CREATION_DATE=sysdate, CREATED_BY=" + pno + " WHERE FROM_DATE ='" + FromDate + "' AND" +
-                            " TO_DATE ='" + ToDate + "' AND REVISED = 'N' and type_of_gas ='" + gastype + "' ";
+                query= "update MONTHLY_TECH_INPUT set "+ Input_Name + "='"+ Input_Value + "' ,CREATION_DATE=sysdate, CREATED_BY=" + pno + " WHERE FROM_DATE ='" + FromDate.Date() + "' AND" +
+                            " TO_DATE ='" + ToDate.Date() + "' AND REVISED = 'N' and type_of_gas ='" + gastype + "' ";
                 i = _context.insertUpdateToDB(query);
 
                 if (i>0)
@@ -1747,7 +1747,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         public string SaveRecordsMONTH(string formName, string shift, string pno, DateTime dt, string Input_Value, string Input_Name, string op)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
@@ -1760,14 +1761,15 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return alert;
 
         }
-        public string ApproveRecordsMONTH(string formName, string shift, string pno, DateTime dt)
+        public string ApproveRecordsMONTH(string formName, string pno, DateTime dt1, DateTime dt2, string Gas)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
-            var data = _context.ExecuteProcedureForRefCursor("UREASC01_APPROVE", oracleParameterCollecion);
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("MONTH_APPROVE", oracleParameterCollecion);
             string alert = oracleParameterCollecion[4].Value.ToString();
             return alert;
 
@@ -1806,7 +1808,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
 
         //---------------------------REMARK-----------------------------------//
-        //public List<CommonData> GetRecordsREMARK(string pno, DateTime dt1, DateTime dt2)58
+        //public List<CommonData> GetRecordsREMARK(string pno, DateTime dt1, DateTime dt2)
         //{
         //    List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
         //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
@@ -1814,56 +1816,56 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
         //    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
-        //    var data = _context.ExecuteProcedureForRefCursor("GASCV_QUERY", oracleParameterCollecion);
+            var data = _context.ExecuteProcedureForRefCursor("REMARK_QUERY", oracleParameterCollecion);
 
-        //    OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[3].Value).GetDataReader();
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[1].Value).GetDataReader();
 
-        //    List<CommonData> cd = new List<CommonData>();
-        //    while (reader.Read())
-        //    {
-        //        cd.Add(new CommonData()
-        //        {
-        //            InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
-        //            InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
-        //            InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
-        //            InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
-        //            IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
-        //            Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
-        //            Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
 
-        //        });
-        //    }
+                });
+            }
 
-        //    return cd;
+            return cd;
 
-        //}
-        //public string PostRecordsGASCV(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name)
-        //{
+        }
+        public string PostRecordsREMARK(string pno, DateTime dt1, string Input_Value, string Input_Name)
+        {
 
-        //    string query = "";
-        //    string alert = "";
-        //    query = "SELECT COUNT(FROM_DATE) FROM GAS_CV WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
-        //    if ((int)_context.GetScalerFromDB(query) == 0)
-        //    {
-        //        query = "INSERT INTO GAS_CV (FROM_DATE,TO_DATE," + Input_Name + " ,CREATED_BY,creation_time,INPUT_TYPE) values('" + dt1.Date() + "','" + dt2.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'M')";
-        //        var i = _context.insertUpdateToDB(query);
-        //        if (i > 0)
-        //        {
-        //            alert = "Inserted";
-        //        }
-        //    }
-        //    else
-        //    {
-        //        query = "update GAS_CV SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE  WHERE FROM_DATE='" + dt1.Date() + "' AND TO_DATE='" + dt2.Date() + "'";
-        //        var i = _context.insertUpdateToDB(query);
-        //        if (i > 0)
-        //        {
-        //            alert = "Updated";
-        //        }
-        //    }
-        //    return alert;
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(DATA_DATE) FROM GAS_CV WHERE DATA_DATE='" + dt1.Date() + "'";
+            if ((int)_context.GetScalerFromDB(query) == 0)
+            {
+                query = "INSERT INTO TECH_REMARKS (DATA_DATE," + Input_Name + " ,CREATED_BY,creation_datetime) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE)";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update TECH_REMARKS SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_datetime=SYSDATE  WHERE DATA_DATE='" + dt1.Date() + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
+            return alert;
 
-        //}
+        }
 
     }
 }
