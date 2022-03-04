@@ -1,9 +1,13 @@
 ﻿function CommonReportGenerateJS(Url, data) {
     debugger;
 
-    if (Url[0] == "/") {
-        Url = readCookie("U") + Url;
-    } 
+    //if (Url[0] == "/") {
+    //    Url = readCookie("U") + Url;
+    //}
+    Url = readCookie("U") + Url;
+
+    //Url = readCookie("U") + (Url[0] == "/") ? "" : "/" + Url;
+
     $(".modalLoader").css("display", "block");
     $.ajax({
         type: "POST",
