@@ -36,7 +36,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-            List<CommonData> data = TechnicalCommonService.GetRecordsREMARK(new System.DateTime());
+            List<CommonData> data = TechnicalCommonService.GetRecordsREMARK(DateTime.Now.AddDays(-1), EMP_ID.ToString());
             ViewBag.records = data;
             return View(CommonViewModel);
         }
@@ -48,7 +48,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             switch (OperationType)
             {
                 case "query":
-                    List<CommonData> data = TechnicalCommonService.GetRecordsREMARK(FromDate);
+                    List<CommonData> data = TechnicalCommonService.GetRecordsREMARK(FromDate, EMP_ID.ToString());
                     ViewBag.reason = TechnicalCommonService.GetReason();
                     ViewBag.records = data;
 

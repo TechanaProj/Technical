@@ -1,0 +1,219 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+@{
+    var rights = ViewBag.rights;
+}
+<script>
+       $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+           }
+
+
+
+
+       })
+
+
+
+    var g_target_id;
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+        var op = $(this).data("type");
+
+        setTimeout(function () {
+            CommonAjax('/M1/ENERGYRECORD/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    FromDate: $("#txtFromDate").val(),
+                    ToDate: $("#txtToDate").val(),
+                    OperationType: op
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+
+
+    function PostResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+            return;
+        }
+
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+
+    }
+
+
+
+
+
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+                $("#txtPlant").prop('selectedIndex',0),
+                $("#txtForMonth").val(''),
+                $("#txtUptoMonth").val(''),
+                $("#txtPeriod").val(''),
+                $("#tblBody").empty().append(data);
+
+    }
+
+
+    $("#btnSave").click(function () {
+
+        setTimeout(function () {
+            CommonAjax('/M1/ENERGYRECORD/Save', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    Plant: $("#txtPlant").val(),
+                    ForMonth: $("#txtForMonth").val(),
+                    UptoMonth: $("#txtUptoMonth").val(),
+                    Period: $("#txtPeriod").val(),
+                    
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+    
+
+    $(".btnSave").click(function () {
+        $("#txtPlant").val($(this).parents("tr").children().get(0).innerHTML)
+        $("#txtForMonth").val($(this).parents("tr").children().get(1).innerHTML)
+        $("#txtUptoMonth").val($(this).parents("tr").children().get(3).innerHTML)
+        $("#txtPeriod").val($(this).parents("tr").children().get(2).innerHTML)
+    })
+
+
+
+
+</script>
+
+<div class="plcholder-cn">
+    <form id="Main" asp-action="Edit" method="post" asp-area="M1">
+        @{
+            List<ENERGYRECORD> data = ViewBag.records;
+            List<SelectListItem> selectListItems = ViewBag.ListItem;
+
+        }
+        <div class="content-box">
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">Weekly Energy Record</span></h3>
+            <div class="m-form">
+                <div class="m-form-bx">
+                    
+                </div>
+
+               
+                <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
+                    <div class="table-responsive scroll-tbl" style="height:550px">
+                        <table class="compact nowrap table table-striped table-bordered table-condensed  table-hover" style="padding-bottom:3px;" id="tbl_energy">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th>Plant</th>
+                                    <th>For Month</th>
+                                    <th>Upto Month</th>
+                                    <th style="text-align:left !important">Period</th>
+                                    
+
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <select class="form-control" id="txtPlant" style="border:1px solid blue" >
+                                            @foreach (var list in selectListItems)
+                                            {
+                                                <option value="@list.Value">@list.Text</option>
+                                            }
+
+                                        </select>
+                                    </td>
+
+                                    <td><input id="txtForMonth" type="number" step="any" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtUptoMonth" type="number" step="any" class="form-control" style="border:1px solid blue" /></td>
+                                    <td>
+                                        <input id="txtPeriod"  placeholder="YYYYMM" type="number" class="form-control " style="border:1px solid blue;width:80%;display:inline-block" />
+                                        <a class="btn btn-sm btn-default" id="btnSave" style="border:1px solid blue;float:right"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+                                    </td>
+                                    
+
+                                </tr>
+                            </thead>
+                            <tbody id="tblBody">
+                                @foreach (var item in data)
+                                {
+                                    <tr>
+                                        <td>@item.Plant</td>
+                                        <td>@item.ForMonth</td>
+                                        <td>@item.UptoMonth</td>
+                                        <td style="text-align:left !important">@item.Period</td>
+                                      
+
+
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+
+
+
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

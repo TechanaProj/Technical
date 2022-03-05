@@ -1,0 +1,23 @@
+﻿@{
+    List<SMSENTRY> data = ViewBag.records;
+}
+
+@foreach (var item in data)
+{
+    <tr>
+    <tr>
+        <td>@item.S_SNO</td>
+        <td>@item.P_NO</td>
+        <td>@item.NAME</td>
+        <td>@item.DESIGNATION</td>
+        <td>@item.SMS_AMOUNT</td>
+        <td style="text-align:left !important">@item.TILL_DATE.Value.ToString("dd-MMM-yyyy")</td>
+
+
+
+    </tr>
+
+
+
+    </tr>
+}
