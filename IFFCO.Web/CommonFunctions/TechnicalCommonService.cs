@@ -2064,5 +2064,56 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         }
 
+
+        //---------------------------TOP 18-----------------------------------//
+        public List<TOP18Data> GetRecordsTOP18(string fyear, string plant)
+        {
+            List<TOP18Data> energy = new List<TOP18Data>();
+            string query = "select * from CHEMICALS_DATA where FN_YR='" + fyear + "' and PLANT_UNIT='" + plant + "'";
+            var data = _context.GetSQLQuery(query);
+            energy = data.AsEnumerable().Select(e => new TOP18Data
+            {
+                S_NO = e.Field<int>("S_NO"),
+                CATALYST = e.Field<string>("CATALYST"),
+                APR = e.Field<double?>("APR"),
+                MAY = e.Field<double?>("MAY"),
+                JUN = e.Field<double?>("JUN"),
+                JUL = e.Field<double?>("JUL"),
+                AUG = e.Field<double?>("AUG"),
+                SEP = e.Field<double?>("SEP"),
+                OCT = e.Field<double?>("OCT"),
+                NOV = e.Field<double?>("NOV"),
+                DEC = e.Field<double?>("DEC"),
+                JAN = e.Field<double?>("JAN"),
+                FEB = e.Field<double?>("FEB"),
+                MAR = e.Field<double?>("MAR"),
+               
+
+            }).ToList();
+            return energy;
+        }
+
+        public int SaveRecordsTOP18(string Sno, string Plant_cat, string Type, string Supplier, string Density, string Qty, string Life, DateTime? CDate, DateTime? RDate, string ELife, DateTime? PCDate, DateTime? PRDate, string finyear, string plant)
+        {
+            string query = "select count(*) from CHEMICALS_DATA where S_NO = '" + Sno + "' and PLANT_UNIT='" + plant + "' and FN_YR='" + finyear + "'";
+            if (_context.GetScalerFromDB(query) > 0)
+            {
+                return -1;
+            }
+
+            else
+            {
+                query = @"insert into CHEMICALS_DATA(FN_YR, S_NO, CATALYST, 
+                                            UNITS, CREATED_BY, CREATION_TIME, 
+                              PLANT_UNIT, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR)) 
+                          values('" + finyear + "','" + Plant_cat + "','" + Type + "','" + Supplier + "','" + Qty + "'," +
+                          "'" + Density + "','" + Life + "','" + CDate + "','" + RDate + "','" + ELife + "','" + PCDate + "','" + PRDate + "')";
+
+            }
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+
     }
 }
