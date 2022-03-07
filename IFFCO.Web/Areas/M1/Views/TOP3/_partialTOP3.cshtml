@@ -1,0 +1,22 @@
+﻿@{
+    List<TOP3Data> data = ViewBag.records;
+    int i = 1;
+}
+@foreach (var item in data)
+{
+    <tr>
+        <td>@item.S_NO</td>
+        <td>@item.PLANT_CATALYST</td>
+        <td>@item.TYPE</td>
+        <td>@item.SUPPLIER</td>
+        <td>@item.QTY</td>
+        <td>@item.DENSITY</td>
+        <td>@item.LIFE_GURANTEED</td>
+        <td>@item.CHARG_DATE</td>
+        <td>@item.REPLACE_DATE</td>
+        <td>@item.EXPECTED_LIFE</td>
+        <td>@item.PRE_CHARGE_DATE</td>
+        <td style="text-align:left !important">@item.PRE_REPLACE_DATE</td>
+
+    </tr>
+}

@@ -53,6 +53,34 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         {
             return Convert.ToDouble(_context.GetCharScalerFromDB(@"SELECT FR_VALUE FROM FACTOR_MASTER WHERE FR_CODE = 'AMSTF' AND '" + dt.Date() + "' BETWEEN NVL(EFFECTIVE_FROM_DATE, '01/JAN/1900') AND NVL(EFFECTIVE_TO_DATE, SYSDATE) "));
         }
+
+        public List<SelectListItem> GetPlantList()
+        {
+            List<SelectListItem> selectListItem = new List<SelectListItem>();
+            selectListItem.Add(new SelectListItem() { Text = "Ammonia-I(B.L)", Value = "AM1_EN" });
+            selectListItem.Add(new SelectListItem() { Text = "Ammonia-II(B.L)", Value = "AM2_EN" });
+            selectListItem.Add(new SelectListItem() { Text = "Urea( Aonla-I)", Value = "UR1_EN" });
+            selectListItem.Add(new SelectListItem() { Text = "Urea( Aonla-II)", Value = "UR2_EN" });
+            selectListItem.Add(new SelectListItem() { Text = "Urea( Aonla-I&II)", Value = "UR12_EN" });
+
+
+            return selectListItem;
+        }
+        public Employee GetEmployeeDetails(string pno)
+        {
+            Employee employee = new Employee();
+                
+            string query = "select personal_no,emp_name,designation from VW_EMPLOYEE_COMPLETE_DTLS_TBL where personal_no='" + pno + "'";
+            var data = _context.GetSQLQuery(query);
+            employee = data.AsEnumerable().Select(e => new Employee {
+                Pno = e.Field<int>("personal_no").ToString(),
+                Name = e.Field<string>("emp_name"),
+                Designation = e.Field<string>("designation"),
+            }).FirstOrDefault();
+
+
+            return employee;
+        }
         //---------AMMSC01----------------------//
         public List<CommonData> GetRecordsAMMSC01(string formName, string shift, string pno, DateTime dt)
         {
@@ -1361,8 +1389,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
         public int SaveRecordsENERGYFACTOR(DateTime FromDate, DateTime ToDate, string Unit, string PrCode, string PrValue,string pno)
         {
-            string query = "select pr_code from weekly_energy_factor where EFF_FROM_DATE = '" + FromDate.Date() + "'";
-            if (_context.GetCharScalerFromDB(query).ToLower() == PrCode.ToLower())
+            string query = "select count(*) from weekly_energy_factor where EFF_FROM_DATE = '" + FromDate.Date() + "' and pr_code='"+PrCode+"'";
+            if (_context.GetScalerFromDB(query)>0)
             {
                 return -1;
             }
@@ -1808,10 +1836,10 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
 
         //---------------------------REMARK-----------------------------------//
-        public List<CommonData> GetRecordsREMARK(DateTime dt1)
+        public List<CommonData> GetRecordsREMARK(DateTime dt1,string pno )
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATA_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() }); 
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
             var data = _context.ExecuteProcedureForRefCursor("REMARK_QUERY", oracleParameterCollecion);
@@ -1842,7 +1870,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             string query = "";
             string alert = "";
-            query = "SELECT COUNT(DATA_DATE) FROM GAS_CV WHERE DATA_DATE='" + dt1.Date() + "'";
+            query = "SELECT COUNT(DATA_DATE) FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
             if ((int)_context.GetScalerFromDB(query) == 0)
             {
                 query = "INSERT INTO TECH_REMARKS (DATA_DATE," + Input_Name + " ,CREATED_BY,creation_datetime) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE)";
@@ -1862,6 +1890,177 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                 }
             }
             return alert;
+
+        }
+        //---------------------------ENERGY RECORD-----------------------------------//
+        public List<ENERGYRECORD> GetRecordsENERGYRECORD()
+        {
+            List<ENERGYRECORD> energy = new List<ENERGYRECORD>();
+            string query = "select * from energy_record order by creation_datetime desc";
+            var data = _context.GetSQLQuery(query);
+            energy = data.AsEnumerable().Select(e => new ENERGYRECORD
+            {
+                Plant=e.Field<string>("OP_code"),
+                ForMonth=Convert.ToString(e.Field<double?>("FOR_MONTH")),
+                UptoMonth=Convert.ToString(e.Field<double?>("UPTO_MONTH")),
+                Period=e.Field<string>("PERIOD"),
+
+            }).ToList();
+            return energy;
+        }
+
+        public int SaveRecordsENERGYRECORD(string Plant, string ForMonth, string UptoMonth, string Period,string pno)
+        {
+            string query = "select count(*) from energy_record where period = '" + Period + "' and op_code='"+Plant+"'";
+            if (_context.GetScalerFromDB(query)>0)
+            {
+                return -1;
+            }
+           
+            query = "insert into energy_record values('" + Plant + "','" + Period + "','" + ForMonth + "','" + UptoMonth + "','" + pno + "',SYSDATE)";
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+
+
+        //---------------------------SMS ENTRY-----------------------------------//
+      
+
+
+
+        public List<SMSENTRY> GetRecordsSMSENTRY(DateTime dt)
+        {
+            List<SMSENTRY> energy = new List<SMSENTRY>();
+            string query = "select * from monthly_sms_overtime where till_date='"+dt.Date()+"' order by s_no desc";
+            var data = _context.GetSQLQuery(query);
+            energy = data.AsEnumerable().Select(e => new SMSENTRY
+            {
+                S_SNO = e.Field<int>("s_no"),
+                P_NO = Convert.ToString(e.Field<int?>("p_no")),               
+                NAME = e.Field<string>("ename"),
+                DESIGNATION = e.Field<string>("designation"),
+                SMS_AMOUNT = Convert.ToString(e.Field<double?>("sms_amount")),
+                TILL_DATE = e.Field<DateTime?>("till_date"),
+
+            }).ToList();
+            return energy;
+        }
+
+        public int SaveRecordsSMSENTRY(string Sno, string Pno, string Name, string Desg, string Sms,DateTime d1,string createdby)
+        {
+            string query = "select count(*) from monthly_sms_overtime where till_date = '" + d1.Date() + "' and p_no='" + Pno + "'";
+            if (_context.GetScalerFromDB(query) > 0)
+            {
+                return -1;
+            }
+         
+            query = "insert into monthly_sms_overtime(S_no,P_no,EName,Designation,  Sms_amount,  till_date, created_by,creation_datetime) values('" + Sno + "','" + Pno + "','" + Name + "','" + Desg + "','" + Sms + "','" + d1.Date() + "','" + createdby + "',SYSDATE)";
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+
+
+
+        //---------------------------FACTOR MASTER-----------------------------------//
+        public List<SelectListItem> GetFactorList()
+        {
+            var data = _context.GetSQLQuery("SELECT DISTINCT  FACTOR_MASTER.FR_CODE, FACTOR_MASTER.FR_NAME FROM FACTOR_MASTER WHERE fr_code in ('AMMSTEN', 'NGCOST', 'NAPCOST', 'HPSTCOST', 'POWCOST', 'STF', 'TOTAL_EN')");
+            return data.AsEnumerable().Select(e => new SelectListItem
+            {
+                Text = e.Field<string>("FR_NAME"),
+                Value = e.Field<string>("FR_CODE"),
+            }).ToList();
+
+        }
+        public List<FactorMaster> GetRecordsFACTORMASTER()
+        {
+            List<FactorMaster> energy = new List<FactorMaster>();
+            string query = "select * from factor_master order by Effective_From_Date desc";
+            var data = _context.GetSQLQuery(query);
+            energy = data.AsEnumerable().Select(e => new FactorMaster
+            {
+                FrCode = e.Field<string>("Fr_Code"),
+                FrName =e.Field<string>("Fr_Name"),
+                FrUnit = e.Field<string>("Fr_Unit"),
+                FrValue = e.Field<decimal?>("Fr_Value"),
+                EffectiveFromDate = e.Field<DateTime>("Effective_From_Date"),
+                EffectiveToDate = e.Field<DateTime?>("Effective_To_Date"),
+
+            }).ToList();
+            return energy;
+        }
+
+        public int SaveRecordsFACTORMASTER(string Code, string Unit, string Name, string Value, DateTime FromDate, DateTime? ToDate, string createdby)
+        {
+            string query = "select count(*) from factor_master where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
+            if (_context.GetScalerFromDB(query) > 0)
+            {
+                return -1;
+            }
+            if (ToDate is null)
+            {
+                query = "insert into factor_master(Fr_Code,Fr_Name,Fr_Unit,Fr_Value,  Effective_From_Date,created_by,creation_datetime) values('" + Code + "','" + Name + "','" + Unit + "','" + Value + "','" + FromDate.Date() + "','" + createdby + "',SYSDATE)";
+
+            }
+            else
+            {
+                query = "insert into factor_master(Fr_Code,Fr_Name,Fr_Unit,Fr_Value,  Effective_From_Date,Effective_To_Date,created_by,creation_datetime) values('" + Code + "','" + Name + "','" + Unit + "','" + Value + "','" + FromDate.Date() + "','" + ToDate.Value.Date() + "','" + createdby + "',SYSDATE)";
+
+            }
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+
+
+        //---------------------------TOP 3-----------------------------------//
+        public List<TOP3Data> GetRecordsTOP3(string fyear, string plant)
+        {
+            List<TOP3Data> energy = new List<TOP3Data>();
+            string query = "select * from top3_data where fin_year='"+fyear+"' and plant_unit='"+plant+"'";
+            var data = _context.GetSQLQuery(query);
+            energy = data.AsEnumerable().Select(e => new TOP3Data
+            {
+                S_NO = e.Field<int>("S_NO"),
+                PLANT_CATALYST = e.Field<string>("PLANT_CATALYST"),
+                TYPE = e.Field<string>("TYPE"),
+                SUPPLIER = e.Field<string>("SUPPLIER"),
+                QTY = e.Field<double?>("QTY"),
+                DENSITY = e.Field<double?>("DENSITY"),
+                LIFE_GURANTEED = e.Field<double?>("LIFE_GURANTEED"),
+                CHARG_DATE = e.Field<string>("CHARG_DATE"),
+                REPLACE_DATE = e.Field<string>("REPLACE_DATE"),
+                EXPECTED_LIFE = e.Field<string>("EXPECTED_LIFE"),
+                PRE_CHARGE_DATE = e.Field<string>("PRE_CHARGE_DATE"),
+                PRE_REPLACE_DATE = e.Field<string>("PRE_REPLACE_DATE"),
+
+            }).ToList();
+            return energy;
+        }
+
+        public int SaveRecordsTOP3(string Sno, string Plant_cat, string Type, string Supplier,string Density, string Qty, string Life, DateTime? CDate, DateTime? RDate, string ELife, DateTime? PCDate, DateTime? PRDate,string finyear,string plant)
+        {
+            string query = "select count(*) from top3_data where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='"+finyear+"'";
+            if (_context.GetScalerFromDB(query) > 0)
+            {
+                return -1;
+            }
+            
+            else
+            {
+                query = @"insert into top3_data(FIN_YEAR, PLANT_UNIT, S_NO, 
+                          PLANT_CATALYST, TYPE, SUPPLIER, 
+                          QTY, DENSITY, LIFE_GURANTEED, 
+                          CHARG_DATE, REPLACE_DATE, EXPECTED_LIFE, 
+                          PRE_CHARGE_DATE, PRE_REPLACE_DATE)) 
+                          values('" + finyear + "','" + Plant_cat + "','" + Type + "','" + Supplier + "','" + Qty + "'," +
+                          "'" + Density + "','" + Life + "','" + CDate + "','" + RDate + "','" + ELife + "','" + PCDate + "','"+PRDate+"')";
+
+            }
+            var i = _context.insertUpdateToDB(query);
+            return i;
 
         }
 

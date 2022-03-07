@@ -1,0 +1,18 @@
+﻿
+@{
+    List<ENERGYRECORD> data = ViewBag.records;
+}
+
+@foreach (var item in data)
+{
+    <tr>
+        <td>@item.Plant</td>
+        <td>@item.ForMonth</td>
+        <td>@item.UptoMonth</td>
+        <td style="text-align:left !important">@item.Period</td>
+
+
+
+
+    </tr>
+}

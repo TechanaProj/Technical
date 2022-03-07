@@ -1,0 +1,304 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+@{
+    var rights = ViewBag.rights;
+}
+<script>
+       $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+           }
+
+
+
+
+       })
+
+
+
+    var g_target_id;
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+      
+        setTimeout(function () {
+            CommonAjax('/M1/TOP3/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    plant:$("#txtPlant").val(),
+                    fyear:$("#txtFYear").val(),
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+    })
+
+
+   
+
+
+
+
+
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+
+           $("#txtCode").val(''),
+           $("#txtName").val(''),
+            $("#txtValue").val(''),
+            $("#txtUnit").val(''),
+            $("#txtFromDate").val(''),
+            $("#txtToDate").val(''),
+
+
+
+        $("#tblBody").empty().append(data);
+
+    }
+
+
+    $("#btnSave").click(function () {
+        debugger;
+
+
+        if ($("#txtValue").val() == '') {
+            CommonAlert("error", "Value is required", null, null, "error");
+            return;
+        }
+        if ($("#txtUnit").val() == '') {
+            CommonAlert("error", "Unit is required", null, null, "error");
+            return;
+        }
+        if ($("#txtFromDate").val() == '') {
+            CommonAlert("error", "From Date is required", null, null, "error");
+            return;
+        }
+        if ($("#txtName").val()== '') {
+            CommonAlert("error", "Name is required", null, null, "error");
+            return;
+        }
+
+        var txt = $("#txtName").text();
+
+
+        setTimeout(function () {
+            CommonAjax('/M1/TOP3/Save', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    plant: $("#txtSno").val(),
+                    fyear: $("#txtFYear").val(),
+
+                    Sno: $("#txtSno").val(),
+                    Plant_cat: $("#txtPlant_cat").val(),
+                    Type: $("#txtType").val(),
+                    Supplier: $("#txtSupplier").val(),
+                    Qty: $("#txtQty").val(),
+                    Density: $("#txtDensity").val(),
+                    Life: $("#txtLife").val(),
+                    CDate: $("#txtCDate").val(),
+                    RDate: $("#txtRDate").val(),
+                    ELife: $("#txtELife").val(),
+                    PCDate: $("#txtPCDate").val(),
+                    PRDate: $("#txtPRDate").val(),
+
+
+
+
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+   
+
+
+
+
+</script>
+
+<div class="plcholder-cn">
+    <form id="Main" asp-action="Edit" method="post" asp-area="M1">
+        @{
+            List<TOP3Data> data = ViewBag.records;
+            int i = 1;
+        }
+        <div class="content-box">
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">TOP3 DATA</span></h3>
+            <div class="m-form">
+                <div class="m-form-bx">
+                    <div class="row form-sm">
+                        <div class="col-sm-2 col-md-3">
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> Financial YEAR</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                <input class="form-control non" value="" id="txtFYear" type="text" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> Unit</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                              <select class="form-control" id="txtPlant">
+                                  <option value="A1">AONLA-I </option>
+                                  <option value="A2">AONLA-II </option>
+                              </select>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+
+
+
+
+
+
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+
+                <div class="row form-sm">
+
+                    <div class="col-sm-6 col-md-12 text-center">
+                        <div>
+                            <hr style="margin-bottom:6px;margin-top:0" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+                            
+                            <div style="margin-bottom:6px;margin-top:0" />
+                        </div>
+
+
+
+
+
+                   
+                </div>
+            </div>
+                <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
+                    <div class="table-responsive scroll-tbl" style="height:730px">
+                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tbl_factor">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th width="2%">#</th>
+                                    <th>Plant Catalyst</th>
+                                    <th>Type</th>
+                                    <th>Supplier</th>
+                                    <th width="3%">Qty</th>
+                                    <th width="5%">Density</th>
+                                    <th width="9%">Life Guranteed</th>
+                                    <th style="text-align:left !important">Charge Date</th>
+                                    <th style="text-align:left !important">Replace Date</th>
+                                    <th style="text-align:left !important">Expected Life</th>
+                                    <th style="text-align:left !important">Pre Charge Date</th>
+                                    <th style="text-align:left !important">Pre Replace Date</th>
+
+                                </tr>
+                                <tr>
+
+
+                                    <td><input id="txtSno"     type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPlant_cat"   type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtType"    type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtSupplier" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtQty"      type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtDensity"      type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtLife"     type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtCDate"     type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtRDate"    type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtELife"    type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPCDate"   type="text" class="form-control" style="border:1px solid blue" /></td>                                    \
+
+                                    <td>
+                                        <input id="txtPRDate" value="" type="text" class="form-control" style="border:1px solid blue;width:65%;display:inline-block" />
+                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+                                    </td>
+
+
+                                </tr>
+                            </thead>
+                            <tbody id="tblBody">
+                                @foreach (var item in data)
+                                {
+                                    <tr>
+                                        <td>@item.S_NO</td>
+                                        <td>@item.PLANT_CATALYST</td>
+                                        <td>@item.TYPE</td>
+                                        <td>@item.SUPPLIER</td>
+                                        <td>@item.QTY</td>
+                                        <td>@item.DENSITY</td>
+                                        <td>@item.LIFE_GURANTEED</td>
+                                        <td>@item.CHARG_DATE</td>
+                                        <td>@item.REPLACE_DATE</td>
+                                        <td>@item.EXPECTED_LIFE</td>
+                                        <td>@item.PRE_CHARGE_DATE</td>
+                                        <td style="text-align:left !important">@item.PRE_REPLACE_DATE</td>
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+
