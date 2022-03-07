@@ -2019,7 +2019,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         public List<TOP3Data> GetRecordsTOP3(string fyear, string plant)
         {
             List<TOP3Data> energy = new List<TOP3Data>();
-            string query = "select * from top3_data where fin_year='"+fyear+"' and plant_unit='"+plant+"'";
+            string query = "select * from top3_data where fin_year='"+fyear+"' and plant_unit='"+plant+"' order by s_no desc";
             var data = _context.GetSQLQuery(query);
             energy = data.AsEnumerable().Select(e => new TOP3Data
             {
@@ -2040,7 +2040,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return energy;
         }
 
-        public int SaveRecordsTOP3(string Sno, string Plant_cat, string Type, string Supplier,string Density, string Qty, string Life, DateTime? CDate, DateTime? RDate, string ELife, DateTime? PCDate, DateTime? PRDate,string finyear,string plant)
+        public int SaveRecordsTOP3(string Sno, string Plant_cat, string Type, string Supplier,string Density, string Qty, string Life, string CDate, string RDate, string ELife, string PCDate, string PRDate,string finyear,string plant)
         {
             string query = "select count(*) from top3_data where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='"+finyear+"'";
             if (_context.GetScalerFromDB(query) > 0)
@@ -2054,11 +2054,25 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                           PLANT_CATALYST, TYPE, SUPPLIER, 
                           QTY, DENSITY, LIFE_GURANTEED, 
                           CHARG_DATE, REPLACE_DATE, EXPECTED_LIFE, 
-                          PRE_CHARGE_DATE, PRE_REPLACE_DATE)) 
-                          values('" + finyear + "','" + Plant_cat + "','" + Type + "','" + Supplier + "','" + Qty + "'," +
+                          PRE_CHARGE_DATE, PRE_REPLACE_DATE) 
+                          values('" + finyear + "','" + plant + "','" + Sno + "','" + Plant_cat + "','" + Type + "','" + Supplier + "','" + Qty + "'," +
                           "'" + Density + "','" + Life + "','" + CDate + "','" + RDate + "','" + ELife + "','" + PCDate + "','"+PRDate+"')";
 
             }
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+        public int UpdateRecordsTOP3(string Sno, string Plant_cat, string Type, string Supplier, string Density, string Qty, string Life, string CDate, string RDate, string ELife, string PCDate, string PRDate, string finyear, string plant)
+        {
+            string query = "select count(*) from top3_data where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='" + finyear + "'";
+            
+                query = @"update top3_data set PLANT_CATALYST='" + Plant_cat + "',TYPE='" + Type + "',SUPPLIER='" + Supplier + "'," +
+                    "QTY='" + Qty + "',DENSITY='" + Density + "',LIFE_GURANTEED='" + Life + "'," +
+                    "CHARG_DATE='" + CDate + "',REPLACE_DATE='" + RDate + "',EXPECTED_LIFE='" + ELife + "'," +
+                    "PRE_CHARGE_DATE='" + PCDate + "'," +
+                    "PRE_REPLACE_DATE='" + PRDate + "' where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='" + finyear + "'";
+            
             var i = _context.insertUpdateToDB(query);
             return i;
 
