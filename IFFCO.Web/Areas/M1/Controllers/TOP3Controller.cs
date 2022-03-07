@@ -60,7 +60,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-        public IActionResult Save(string plant,string fyear,string Sno, string Plant_cat, string Type, string Supplier, string Qty,string Density, string Life, DateTime? CDate, DateTime? RDate, string ELife, DateTime? PCDate, DateTime? PRDate)
+        public IActionResult Save(string op,string plant,string fyear,string Sno, string Plant_cat, string Type, string Supplier, string Qty,string Density, string Life, string CDate, string RDate, string ELife, string PCDate, string PRDate)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
 
@@ -69,16 +69,34 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             try
             {
 
-                int i = TechnicalCommonService.SaveRecordsTOP3(Sno,  Plant_cat,  Type,  Supplier,  Qty, Density, Life,  CDate,  RDate,  ELife,  PCDate,  PRDate,plant,fyear );
-                if (i > 0)
+                if (op == "update")
                 {
-                    List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3(fyear,plant);
-                    ViewBag.records = data;
+                    int i = TechnicalCommonService.UpdateRecordsTOP3(Sno, Plant_cat, Type, Supplier, Qty, Density, Life, CDate, RDate, ELife, PCDate, PRDate, fyear, plant);
+                    if (i > 0)
+                    {
+                        List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3(fyear, plant);
+                        ViewBag.records = data;
+                    }
+                    else if (i == -1)
+                    {
+                        CommonViewModel.errorMessage = "Sno,Fin Year and Plant must be unique";
+                        return Json(CommonViewModel);
+                    }
                 }
-                else if (i == -1)
+                else
                 {
-                    CommonViewModel.errorMessage = "Personel No already addedd";
-                    return Json(CommonViewModel);
+
+                    int i = TechnicalCommonService.SaveRecordsTOP3(Sno, Plant_cat, Type, Supplier, Qty, Density, Life, CDate, RDate, ELife, PCDate, PRDate, fyear, plant);
+                    if (i > 0)
+                    {
+                        List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3(fyear, plant);
+                        ViewBag.records = data;
+                    }
+                    else if (i == -1)
+                    {
+                        CommonViewModel.errorMessage = "Sno,Fin Year and Plant must be unique ";
+                        return Json(CommonViewModel);
+                    }
                 }
 
             }

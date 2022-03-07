@@ -2,21 +2,68 @@
     List<TOP3Data> data = ViewBag.records;
     int i = 1;
 }
-@foreach (var item in data)
-{
-    <tr>
-        <td>@item.S_NO</td>
-        <td>@item.PLANT_CATALYST</td>
-        <td>@item.TYPE</td>
-        <td>@item.SUPPLIER</td>
-        <td>@item.QTY</td>
-        <td>@item.DENSITY</td>
-        <td>@item.LIFE_GURANTEED</td>
-        <td>@item.CHARG_DATE</td>
-        <td>@item.REPLACE_DATE</td>
-        <td>@item.EXPECTED_LIFE</td>
-        <td>@item.PRE_CHARGE_DATE</td>
-        <td style="text-align:left !important">@item.PRE_REPLACE_DATE</td>
+<thead>
+    <tr class="bg-primary">
+        <th width="3%">#</th>
+        <th>Plant Catalyst</th>
+        <th width="7%">Type</th>
+        <th>Supplier</th>
+        <th width="7%">Qty</th>
+        <th width="5%">Density</th>
+        <th width="7%">LifeG</th>
+        <th width="7%">Charge Date</th>
+        <th width="7%">Replace Date</th>
+        <th width="7%">Expected Life</th>
+        <th width="7%">P C Date</th>
+        <th width="7%" style="text-align:left !important">P R Date</th>
+       <th></th>
 
     </tr>
-}
+    <tr>
+
+
+        <td><input id="txtSno" type="text" class="form-control" value="@(data.Count+1)" readonly="readonly" style="border:1px solid blue" /></td>
+        <td><input id="txtPlant_cat" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtType" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtSupplier" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtQty" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtDensity" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtLife" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtCDate" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtRDate" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtELife" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtPCDate" type="text" class="form-control" style="border:1px solid blue" /></td>                                    \
+
+        <td>
+            <input id="txtPRDate" value="" type="text" class="form-control" style="border:1px solid blue;" />
+            
+        </td>
+        <td>
+            <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
+        </td>
+
+
+    </tr>
+</thead>
+<tbody>
+    @foreach (var item in data)
+    {
+        <tr>
+            <td>@item.S_NO</td>
+            <td>@item.PLANT_CATALYST</td>
+            <td>@item.TYPE</td>
+            <td>@item.SUPPLIER</td>
+            <td>@item.QTY</td>
+            <td>@item.DENSITY</td>
+            <td>@item.LIFE_GURANTEED</td>
+            <td>@item.CHARG_DATE</td>
+            <td>@item.REPLACE_DATE</td>
+            <td>@item.EXPECTED_LIFE</td>
+            <td>@item.PRE_CHARGE_DATE</td>
+            <td style="text-align:left !important">@item.PRE_REPLACE_DATE</td>
+            <td style="text-align:left !important"><a class="btn btn-xs btn-dark edit" style="border:1px solid blue;margin-bottom:1px">&nbsp;&nbsp;<i class="fa fa-pen"></i></a></td>
+
+        </tr>
+    }
+</tbody>
+

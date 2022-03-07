@@ -83,10 +83,10 @@
     }
 
 
-    $("#btnSave").click(function () {
+    $(document).on("click","#btnSave",function () {
         debugger;
 
-
+        var operation = $(this).data("operation")
         if ($("#txtValue").val() == '') {
             CommonAlert("error", "Value is required", null, null, "error");
             return;
@@ -111,22 +111,22 @@
             CommonAjax('/M1/TOP3/Save', "GET", false, "application/json", false, GetResponse, "",
                 {
 
-                    plant: $("#txtSno").val(),
+                    plant: $("#txtPlant").val(),
                     fyear: $("#txtFYear").val(),
 
-                    Sno: $("#txtSno").val(),
-                    Plant_cat: $("#txtPlant_cat").val(),
-                    Type: $("#txtType").val(),
-                    Supplier: $("#txtSupplier").val(),
-                    Qty: $("#txtQty").val(),
-                    Density: $("#txtDensity").val(),
-                    Life: $("#txtLife").val(),
-                    CDate: $("#txtCDate").val(),
-                    RDate: $("#txtRDate").val(),
-                    ELife: $("#txtELife").val(),
-                    PCDate: $("#txtPCDate").val(),
-                    PRDate: $("#txtPRDate").val(),
-
+                    Sno:         $("#txtSno").val(),
+                    Plant_cat:   $("#txtPlant_cat").val(),
+                    Type:        $("#txtType").val(),
+                    Supplier:    $("#txtSupplier").val(),
+                    Qty:         $("#txtQty").val(),
+                    Density:     $("#txtDensity").val(),
+                    Life:        $("#txtLife").val(),
+                    CDate:       $("#txtCDate").val(),
+                    RDate:      $("#txtRDate").val(),
+                    ELife:      $("#txtELife").val(),
+                    PCDate:     $("#txtPCDate").val(),
+                    PRDate:     $("#txtPRDate").val(),
+                    op:operation
 
 
 
@@ -138,8 +138,26 @@
 
 
     })
-   
 
+
+    $(document).on("click", ".edit", function () {
+
+       
+            $("#txtSno").val($(this).parent().parent().children().get(0).innerHTML);
+            $("#txtPlant_cat").val($(this).parent().parent().children().get(1).innerHTML)
+            $("#txtType").val($(this).parent().parent().children().get(2).innerHTML)
+            $("#txtSupplier").val($(this).parent().parent().children().get(3).innerHTML)
+            $("#txtQty").val($(this).parent().parent().children().get(4).innerHTML)
+            $("#txtDensity").val($(this).parent().parent().children().get(5).innerHTML)
+            $("#txtLife").val($(this).parent().parent().children().get(6).innerHTML)
+            $("#txtCDate").val($(this).parent().parent().children().get(7).innerHTML)
+            $("#txtRDate").val($(this).parent().parent().children().get(8).innerHTML)
+            $("#txtELife").val($(this).parent().parent().children().get(9).innerHTML)
+            $("#txtPCDate").val($(this).parent().parent().children().get(10).innerHTML)
+            $("#txtPRDate").val($(this).parent().parent().children().get(11).innerHTML)
+            $("#btnSave").attr("data-operation","update")
+
+})
 
 
 
@@ -217,47 +235,52 @@
             </div>
                 <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
                     <div class="table-responsive scroll-tbl" style="height:730px">
-                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tbl_factor">
+                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tblBody">
+
                             <thead>
                                 <tr class="bg-primary">
-                                    <th width="2%">#</th>
+                                    <th width="3%">#</th>
                                     <th>Plant Catalyst</th>
-                                    <th>Type</th>
+                                    <th width="7%">Type</th>
                                     <th>Supplier</th>
-                                    <th width="3%">Qty</th>
+                                    <th width="7%">Qty</th>
                                     <th width="5%">Density</th>
-                                    <th width="9%">Life Guranteed</th>
-                                    <th style="text-align:left !important">Charge Date</th>
-                                    <th style="text-align:left !important">Replace Date</th>
-                                    <th style="text-align:left !important">Expected Life</th>
-                                    <th style="text-align:left !important">Pre Charge Date</th>
-                                    <th style="text-align:left !important">Pre Replace Date</th>
+                                    <th width="7%">LifeG</th>
+                                    <th width="7%">Charge Date</th>
+                                    <th width="7%">Replace Date</th>
+                                    <th width="7%">Expected Life</th>
+                                    <th width="7%">P C Date</th>
+                                    <th width="7%" style="text-align:left !important">P R Date</th>
+                                    <th></th>
 
                                 </tr>
                                 <tr>
 
 
-                                    <td><input id="txtSno"     type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtPlant_cat"   type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtType"    type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtSno" type="text" class="form-control" value="@(data.Count+1)" readonly="readonly" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPlant_cat" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtType" type="text" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input id="txtSupplier" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtQty"      type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtDensity"      type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtLife"     type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtCDate"     type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtRDate"    type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtELife"    type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtPCDate"   type="text" class="form-control" style="border:1px solid blue" /></td>                                    \
+                                    <td><input id="txtQty" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtDensity" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtLife" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtCDate" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtRDate" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtELife" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPCDate" type="text" class="form-control" style="border:1px solid blue" /></td>                                    \
 
                                     <td>
-                                        <input id="txtPRDate" value="" type="text" class="form-control" style="border:1px solid blue;width:65%;display:inline-block" />
-                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+                                        <input id="txtPRDate" value="" type="text" class="form-control" style="border:1px solid blue;" />
+
+                                    </td>
+                                    <td>
+                                        <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
                                     </td>
 
 
                                 </tr>
                             </thead>
-                            <tbody id="tblBody">
+                            <tbody>
                                 @foreach (var item in data)
                                 {
                                     <tr>
