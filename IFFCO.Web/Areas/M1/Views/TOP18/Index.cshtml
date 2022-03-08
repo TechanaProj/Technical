@@ -81,7 +81,7 @@
     }
 
 
-    $("#btnSave").click(function () {
+    $(document).on("click","#btnSave",function () {
         debugger;
 
 
@@ -106,25 +106,43 @@
 
 
         setTimeout(function () {
-            CommonAjax('/M1/TOP3/Save', "GET", false, "application/json", false, GetResponse, "",
+            CommonAjax('/M1/TOP18/Save', "GET", false, "application/json", false, GetResponse, "",
                 {
 
-                    plant: $("#txtSno").val(),
-                    fyear: $("#txtFYear").val(),
+                   // plant: $("#txtSno").val(),
+                    //fyear: $("#txtFYear").val(),
+
+                   // Sno: $("#txtSno").val(),
+                   // Plant_cat: $("#txtPlant_cat").val(),
+                   // Type: $("#txtType").val(),
+                   // Supplier: $("#txtSupplier").val(),
+                  //  Qty: $("#txtQty").val(),
+                  //  Density: $("#txtDensity").val(),
+                  //  Life: $("#txtLife").val(),
+                   // CDate: $("#txtCDate").val(),
+                   // RDate: $("#txtRDate").val(),
+                    //ELife: $("#txtELife").val(),
+                   // PCDate: $("#txtPCDate").val(),
+                   // PRDate: $("#txtPRDate").val(),
+
+                    plant: $("#txtPlant").val(),
+                    finyear: $("#txtFYear").val(),
 
                     Sno: $("#txtSno").val(),
                     Plant_cat: $("#txtPlant_cat").val(),
-                    Type: $("#txtType").val(),
-                    Supplier: $("#txtSupplier").val(),
-                    Qty: $("#txtQty").val(),
-                    Density: $("#txtDensity").val(),
-                    Life: $("#txtLife").val(),
-                    CDate: $("#txtCDate").val(),
-                    RDate: $("#txtRDate").val(),
-                    ELife: $("#txtELife").val(),
-                    PCDate: $("#txtPCDate").val(),
-                    PRDate: $("#txtPRDate").val(),
-
+                    Unit: $("#txtUom").val(),
+                    Apr: $("#txtApr").val(),
+                    May: $("#txtMay").val(),
+                    Jun: $("#txtJun").val(),
+                    Jul: $("#txtJul").val(),
+                    Aug: $("#txtAug").val(),
+                    Sep: $("#txtSep").val(),
+                    Oct: $("#txtOct").val(),
+                    Nov: $("#txtNov").val(),
+                    Dec: $("#txtDec").val(),
+                    Jan: $("#txtJan").val(),
+                    Feb: $("#txtFeb").val(),
+                    Mar: $("#txtMar").val(),
 
 
 
@@ -146,11 +164,11 @@
 <div class="plcholder-cn">
     <form id="Main" asp-action="Edit" method="post" asp-area="M1">
         @{
-            List<TOP3Data> data = ViewBag.records;
+            List<TOP18Data> data = ViewBag.records;
             int i = 1;
         }
         <div class="content-box">
-            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">TOP3 DATA</span></h3>
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">TOP18 DATA</span></h3>
             <div class="m-form">
                 <div class="m-form-bx">
                     <div class="row form-sm">
@@ -215,62 +233,73 @@
                 </div>
                 <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
                     <div class="table-responsive scroll-tbl" style="height:730px">
-                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tbl_factor">
+                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tblBody">
                             <thead>
                                 <tr class="bg-primary">
-                                    <th width="2%">#</th>
-                                    <th>Plant Catalyst</th>
-                                    <th>Type</th>
-                                    <th>Supplier</th>
-                                    <th width="3%">Qty</th>
-                                    <th width="5%">Density</th>
-                                    <th width="9%">Life Guranteed</th>
-                                    <th style="text-align:left !important">Charge Date</th>
-                                    <th style="text-align:left !important">Replace Date</th>
-                                    <th style="text-align:left !important">Expected Life</th>
-                                    <th style="text-align:left !important">Pre Charge Date</th>
-                                    <th style="text-align:left !important">Pre Replace Date</th>
-
+                                    <th width="4%">#</th>
+                                    <th>Catalyst/resign</th>
+                                    <th width="5%">Units</th>
+                                    <th width="5%">APR</th>
+                                    <th width="5%">MAY</th>
+                                    <th width="5%">JUN</th>
+                                    <th width="5%">JUL</th>
+                                    <th width="5%">AUG</th>
+                                    <th width="5%">SEP</th>
+                                    <th width="5%">OCT</th>
+                                    <th width="5%">NOV</th>
+                                    <th width="5%">DEC</th>
+                                    <th width="5%">JAN</th>
+                                    <th width="5%">FEB</th>
+                                    <th width="5%">MAR</th>
+                                    
+                                    <th width="5%"></th>
                                 </tr>
                                 <tr>
 
 
-                                    <td><input id="txtSno" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input readonly="readonly" id="txtSno" type="text" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input id="txtPlant_cat" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtType" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtSupplier" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtQty" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtDensity" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtLife" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtCDate" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtRDate" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtELife" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtPCDate" type="text" class="form-control" style="border:1px solid blue" /></td>                                    \
+                                    <td><input id="txtUom" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtApr" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtMay" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtJun" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtJul" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtAug" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtSep" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtOct" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtNov" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtDec" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtJan" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtFeb" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtMar" type="text" class="form-control" style="border:1px solid blue" /></td>
 
                                     <td>
-                                        <input id="txtPRDate" value="" type="text" class="form-control" style="border:1px solid blue;width:65%;display:inline-block" />
-                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
                                     </td>
 
 
                                 </tr>
                             </thead>
-                            <tbody id="tblBody">
+                            <tbody >
                                 @foreach (var item in data)
                                 {
                                     <tr>
                                         <td>@item.S_NO</td>
-                                        <td>@item.PLANT_CATALYST</td>
-                                        <td>@item.TYPE</td>
-                                        <td>@item.SUPPLIER</td>
-                                        <td>@item.QTY</td>
-                                        <td>@item.DENSITY</td>
-                                        <td>@item.LIFE_GURANTEED</td>
-                                        <td>@item.CHARG_DATE</td>
-                                        <td>@item.REPLACE_DATE</td>
-                                        <td>@item.EXPECTED_LIFE</td>
-                                        <td>@item.PRE_CHARGE_DATE</td>
-                                        <td style="text-align:left !important">@item.PRE_REPLACE_DATE</td>
+                                        <td>@item.CATALYST</td>
+                                        <td>@item.UNITS</td>
+                                        <td>@item.APR</td>
+                                        <td>@item.MAY</td>
+                                        <td>@item.JUN</td>
+                                        <td>@item.JUL</td>
+                                        <td>@item.AUG</td>
+                                        <td>@item.SEP</td>
+                                        <td>@item.OCT</td>
+                                        <td>@item.NOV</td>
+                                        <td>@item.DEC</td>
+                                        <td>@item.JAN</td>
+                                        <td>@item.FEB</td>
+                                        <td>@item.MAR</td>
+                                        
 
                                     </tr>
                                 }

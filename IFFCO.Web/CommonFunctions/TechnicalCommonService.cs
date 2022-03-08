@@ -2083,12 +2083,13 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         public List<TOP18Data> GetRecordsTOP18(string fyear, string plant)
         {
             List<TOP18Data> energy = new List<TOP18Data>();
-            string query = "select * from CHEMICALS_DATA where FN_YR='" + fyear + "' and PLANT_UNIT='" + plant + "'";
+            string query = "select * from CHEMICALS_DATA where FN_YR='" + fyear + "' and PLANT_UNIT='" + plant + "' order by S_NO desc";
             var data = _context.GetSQLQuery(query);
             energy = data.AsEnumerable().Select(e => new TOP18Data
             {
                 S_NO = e.Field<int>("S_NO"),
                 CATALYST = e.Field<string>("CATALYST"),
+                UNITS = e.Field<string>("UNITS"),
                 APR = e.Field<double?>("APR"),
                 MAY = e.Field<double?>("MAY"),
                 JUN = e.Field<double?>("JUN"),
@@ -2107,7 +2108,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return energy;
         }
 
-        public int SaveRecordsTOP18(string Sno, string Plant_cat, string Type, string Supplier, string Density, string Qty, string Life, DateTime? CDate, DateTime? RDate, string ELife, DateTime? PCDate, DateTime? PRDate, string finyear, string plant)
+        public int SaveRecordsTOP18(string Sno, string Plant_cat,string Uom,string Pno, string APR, string MAY, string JUN, string JUL, string AUG, string SEP, string OCT, string NOV, string DEC, string JAN, string FEB, string MAR, string finyear, string plant)
         {
             string query = "select count(*) from CHEMICALS_DATA where S_NO = '" + Sno + "' and PLANT_UNIT='" + plant + "' and FN_YR='" + finyear + "'";
             if (_context.GetScalerFromDB(query) > 0)
@@ -2117,13 +2118,27 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             else
             {
-                query = @"insert into CHEMICALS_DATA(FN_YR, S_NO, CATALYST, 
-                                            UNITS, CREATED_BY, CREATION_TIME, 
-                              PLANT_UNIT, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR)) 
-                          values('" + finyear + "','" + Plant_cat + "','" + Type + "','" + Supplier + "','" + Qty + "'," +
-                          "'" + Density + "','" + Life + "','" + CDate + "','" + RDate + "','" + ELife + "','" + PCDate + "','" + PRDate + "')";
+                query = @"insert into CHEMICALS_DATA(FN_YR, S_NO, CATALYST, UNITS, CREATED_BY, CREATION_TIME, PLANT_UNIT, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR) 
+                          values('" + finyear + "','" + Sno + "','" + Plant_cat + "','" + Uom + "','" + Pno + "',SYSDATE,'" + plant + "'," +
+                          "'" + APR + "','" + MAY + "','" + JUN + "','" + JUL + "','" + AUG + "','" + SEP + "','" + OCT + "','" + NOV + "','" + DEC + "','" + JAN + "','" + FEB + "','" + MAR + "')";
 
             }
+            
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
+
+        public int UpdateRecordsTOP18(string Sno, string Plant_cat, string Uom, string Pno, string APR, string MAY, string JUN, string JUL, string AUG, string SEP, string OCT, string NOV, string DEC, string JAN, string FEB, string MAR, string finyear, string plant)
+        {
+            string query = "select count(*) from CHEMICALS_DATA where S_NO = '" + Sno + "' and PLANT_UNIT='" + plant + "' and FN_YR='" + finyear + "'";
+
+            query = @"update CHEMICALS_DATA set PLANT_CATALYST='" + Plant_cat + "',UNITS='" + Uom + "',APR='" + APR + "'," +
+                "MAY='" + MAY + "',JUN='" + JUN + "',JUL='" + JUL + "'," +
+                "AUG='" + AUG + "',SEP='" + SEP + "',OCT='" + OCT + "'," +
+                "NOV='" + NOV + "'," +
+                "DEC='" + DEC + "',JAN='" + JAN + "',FEB='" + FEB + "',MAR='" + MAR + "' where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='" + finyear + "'";
+
             var i = _context.insertUpdateToDB(query);
             return i;
 

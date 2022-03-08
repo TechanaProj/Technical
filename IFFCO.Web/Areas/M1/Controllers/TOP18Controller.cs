@@ -39,7 +39,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
                 DateTime dt1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
                 DateTime dt2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
-                List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3("2021-22", "");
+                List<TOP18Data> data = TechnicalCommonService.GetRecordsTOP18("2021-22", "");
                 ViewBag.ListItem = TechnicalCommonService.GetFactorList();
                 ViewBag.records = data;
             }
@@ -60,7 +60,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-        public IActionResult Save(string plant, string fyear, string Sno, string Plant_cat, string Type, string Supplier, string Qty, string Density, string Life, DateTime? CDate, DateTime? RDate, string ELife, DateTime? PCDate, DateTime? PRDate)
+        public IActionResult Save(string Sno, string Plant_cat, string Uom, string Pno, string APR, string MAY, string JUN, string JUL, string AUG, string SEP, string OCT, string NOV, string DEC, string JAN, string FEB, string MAR, string finyear, string plant)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
 
@@ -69,10 +69,10 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             try
             {
 
-                int i = TechnicalCommonService.SaveRecordsTOP3(Sno, Plant_cat, Type, Supplier, Qty, Density, Life, CDate, RDate, ELife, PCDate, PRDate, plant, fyear);
+                int i = TechnicalCommonService.SaveRecordsTOP18(Sno, Plant_cat, Uom, Pno, APR, MAY,  JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
                 if (i > 0)
                 {
-                    List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3(fyear, plant);
+                    List<TOP18Data> data = TechnicalCommonService.GetRecordsTOP18(finyear, plant);
                     ViewBag.records = data;
                 }
                 else if (i == -1)
@@ -95,7 +95,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-            return PartialView("_partialTOP3");
+            return PartialView("_partialTOP18");
         }
 
 
@@ -108,7 +108,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             try
             {
-                List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3(fyear, plant);
+                List<TOP18Data> data = TechnicalCommonService.GetRecordsTOP18(fyear, plant);
                 ViewBag.records = data;
 
 
@@ -126,7 +126,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-            return PartialView("_partialTOP3");
+            return PartialView("_partialTOP18");
         }
 
     }
