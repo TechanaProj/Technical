@@ -159,8 +159,45 @@
 
 })
 
+    $(".copy").click(function () {
+        debugger;
+        var year = $("#txtREFYear").val()
+        var ryear= $("#txtFYear").val()
+        $("#divRef").removeClass("d-none");
+        if (ryear != '' && year != '') {
+            setTimeout(function () {
+                CommonAjax('/M1/TOP3/Copy', "GET", false, "application/json", false, GetCopyResponse, "",
+                    {
+
+                        refyear: $("#txtREFYear").val(),
+                        fyear: $("#txtFYear").val(),
 
 
+                    });
+                $(".modalLoader").hide();
+            }, 10)
+        }
+        
+    })
+
+
+    function GetCopyResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            $("#txtREFYear").val('');
+            $("#txtFYear").val("");
+            $("#divRef").addClass("d-none");
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+
+            
+
+    }
 </script>
 
 <div class="plcholder-cn">
@@ -176,45 +213,49 @@
                     <div class="row form-sm">
                         <div class="col-sm-2 col-md-3">
                         </div>
-                        <div class="col-sm-2 col-md-1">
+                        <div class="col-sm-2 col-md-2">
                             <div>
                                 <label class="m-lbl1 m-lbl2"> Financial YEAR</label>
                             </div>
                         </div>
-                        <div class="col-sm-2 col-md-2">
-                            <div>
-                                <input class="form-control non" value="" id="txtFYear" type="text" />
-                            </div>
-                        </div>
                         <div class="col-sm-2 col-md-1">
                             <div>
-                                <label class="m-lbl1 m-lbl2"> Unit</label>
+                                <input class="form-control non" value="" id="txtFYear" type="text" />
+                               
                             </div>
                         </div>
-                        <div class="col-sm-2 col-md-2">
-                            <div>
-                              <select class="form-control" id="txtPlant">
-                                  <option value="A1">AONLA-I </option>
-                                  <option value="A2">AONLA-II </option>
-                              </select>
+                        <div class="col-sm-2 col-md-1 d-none"  id="divRef">
+                            <input class="form-control " placeholder="Ref FYear" value="" id="txtREFYear" type="text" />
+                        </div>
+                            <div class="col-sm-2 col-md-1">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2"> Unit</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-1">
+                                <div>
+                                    <select class="form-control" id="txtPlant">
+                                        <option value="A1">AONLA-I </option>
+                                        <option value="A2">AONLA-II </option>
+                                    </select>
+
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-md-3">
+
+
+
+
+
 
                             </div>
-                        </div>
-                        <div class="col-sm-6 col-md-3">
-
 
 
 
 
 
                         </div>
-
-
-
-
-
                     </div>
-                </div>
 
                 <div class="row form-sm">
 
@@ -222,6 +263,7 @@
                         <div>
                             <hr style="margin-bottom:6px;margin-top:0" />
                             <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 update copy" value="Copy Data" />
                             
                             <div style="margin-bottom:6px;margin-top:0" />
                         </div>
@@ -234,6 +276,8 @@
                 </div>
             </div>
                 <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
+
+                    
                     <div class="table-responsive scroll-tbl" style="height:730px">
                         <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tblBody">
 
