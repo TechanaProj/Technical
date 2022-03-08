@@ -60,7 +60,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-        public IActionResult Save(string op,string Sno, string Plant_cat, string Uom, string Pno, string APR, string MAY, string JUN, string JUL, string AUG, string SEP, string OCT, string NOV, string DEC, string JAN, string FEB, string MAR, string finyear, string plant)
+        public IActionResult Save(string op,string Sno, string Plant_cat, string Unit, string Pno, string APR, string MAY, string JUN, string JUL, string AUG, string SEP, string OCT, string NOV, string DEC, string JAN, string FEB, string MAR, string finyear, string plant)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
 
@@ -110,7 +110,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                 if (op == "update")
                 {
-                    int i = TechnicalCommonService.UpdateRecordsTOP18(Sno, Plant_cat, Uom, Pno, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
+                    int i = TechnicalCommonService.UpdateRecordsTOP18(Sno, Plant_cat, Unit, Pno, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
                     if (i > 0)
                     {
                         List<TOP18Data> data = TechnicalCommonService.GetRecordsTOP18(finyear, plant);
@@ -125,7 +125,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 else
                 {
 
-                    int i = TechnicalCommonService.SaveRecordsTOP18(Sno, Plant_cat, Uom, Pno, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
+                    int i = TechnicalCommonService.SaveRecordsTOP18(Sno, Plant_cat, Unit, Pno, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
                     if (i > 0)
                     {
                         List<TOP18Data> data = TechnicalCommonService.GetRecordsTOP18(finyear, plant);

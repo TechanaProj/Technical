@@ -1870,8 +1870,9 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             string query = "";
             string alert = "";
-            query = "SELECT COUNT(DATA_DATE) FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
-            if ((int)_context.GetScalerFromDB(query) == 0)
+            query = "SELECT COUNT("+Input_Name+") FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
+            int RES = _context.GetScalerFromDB(query);
+            if (RES == 0)
             {
                 query = "INSERT INTO TECH_REMARKS (DATA_DATE," + Input_Name + " ,CREATED_BY,creation_datetime) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE)";
                 var i = _context.insertUpdateToDB(query);
@@ -1879,7 +1880,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                 {
                     alert = "Inserted";
                 }
-            }
+            } 
             else
             {
                 query = "update TECH_REMARKS SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_datetime=SYSDATE  WHERE DATA_DATE='" + dt1.Date() + "'";
@@ -2134,11 +2135,11 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         {
             string query = "select count(*) from CHEMICALS_DATA where S_NO = '" + Sno + "' and PLANT_UNIT='" + plant + "' and FN_YR='" + finyear + "'";
 
-            query = @"update CHEMICALS_DATA set PLANT_CATALYST='" + Plant_cat + "',UNITS='" + Uom + "',APR='" + APR + "'," +
+            query = @"update CHEMICALS_DATA set CATALYST='" + Plant_cat + "',UNITS='" + Uom + "',APR='" + APR + "'," +
                 "MAY='" + MAY + "',JUN='" + JUN + "',JUL='" + JUL + "'," +
                 "AUG='" + AUG + "',SEP='" + SEP + "',OCT='" + OCT + "'," +
                 "NOV='" + NOV + "'," +
-                "DEC='" + DEC + "',JAN='" + JAN + "',FEB='" + FEB + "',MAR='" + MAR + "' where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='" + finyear + "'";
+                "DEC='" + DEC + "',JAN='" + JAN + "',FEB='" + FEB + "',MAR='" + MAR + "' where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and FN_YR='" + finyear + "'";
 
             var i = _context.insertUpdateToDB(query);
             return i;
