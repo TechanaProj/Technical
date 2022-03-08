@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace IFFCO.TECHPROD.Web.Models
 {
-    public partial class FactorMaster
+    public  class FactorMaster
     {
         public string FrCode { get; set; }
         public string FrName { get; set; }

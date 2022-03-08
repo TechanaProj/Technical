@@ -1,0 +1,286 @@
+﻿
+
+<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+@{
+    var rights = ViewBag.rights;
+}
+<script>
+       $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+           }
+
+
+
+
+       })
+
+
+
+    var g_target_id;
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+        var op = $(this).data("type");
+
+        setTimeout(function () {
+            CommonAjax('/M1/SMSENTRY/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    TillDate: $("#txtTillDate").val(),
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+
+
+    function PostResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+            return;
+        }
+
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+
+    }
+
+
+
+
+
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+        $("#txtSno").val(''),
+        $("#txtPno").val(''),
+        $("#txtName").val(''),
+        $("#txtDesg").val(''),
+        $("#txtSms").val(''),
+       
+
+
+        $("#tblBody").empty().append(data);
+
+    }
+
+
+    $("#btnSave").click(function () {
+        debugger;
+        if ($("#txtSno").val() == '') {
+            CommonAlert("error","Sno is required", null, null, "error");
+            return;
+        }
+        if ($("#txtPno").val()=='') {
+            CommonAlert("error", "Personal no is required", null, null, "error");
+            return;
+        }
+        if ($("#txtName").val() == '') {
+            CommonAlert("error", "Name is required", null, null, "error");
+            return;
+        }
+        if ($("#txtDesg").val() == '') {
+            CommonAlert("error", "Designation is required", null, null, "error");
+            return;
+        }
+        if ($("#txtSms").val()== '') {
+            CommonAlert("error", "Sms Amount is required", null, null, "error");
+            return;
+        }
+            
+
+
+        setTimeout(function () {
+            CommonAjax('/M1/SMSENTRY/Save', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    Sno: $("#txtSno").val(),
+                    Pno:   $("#txtPno").val(),
+                    Name: $("#txtName").val(),
+                    Desg: $("#txtDesg").val(),
+                    Sms:    $("#txtSms").val(),
+                    d1:  $("#txtDate").val(),
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
+
+    })
+    $("#txtPno").change(function () {
+
+        var val = $(this).val();
+        g_target_id ="#"+ $(this).attr("id");
+        setTimeout(function () {
+            CommonAjax('/M1/SMSENTRY/GetEmployee', "GET", false, "application/json", false,GetEmp, "",
+                {
+
+                    Pno: val,
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+    })
+
+    function GetEmp(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+            return;
+        }
+        if (data.employee!=null ) {
+            console.log(data.employee)
+            $("#txtPno").val(data.employee.pno)
+            $("#txtName").val(data.employee.name)
+            $("#txtDesg").val(data.employee.designation)
+            $("#txtSms").focus();
+            return;
+        }
+        if (data.alert != "") {
+
+            CommonAlert("error", data.alert, null, null, "error");
+        }
+
+
+    }
+
+
+
+
+</script>
+
+<div class="plcholder-cn">
+    <form id="Main" asp-action="Edit" method="post" asp-area="M1">
+        @{
+            List<SMSENTRY> data = ViewBag.records;
+        }
+        <div class="content-box">
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">SMS ENTRY</span></h3>
+            <div class="m-form">
+                <div class="m-form-bx">
+                    
+                </div>
+
+                <div class="row form-sm" style="padding-left:12px;padding-right:22px;">
+                  
+                    <div class="col-sm-6 col-md-3 text-center">
+
+                        <div>
+
+                            <div>
+                                @{
+                                    DateTime dt;
+                                    dt = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
+                                }
+                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtTillDate" type="date" style="width:75%;display:inline-block" />
+                                <input type="button" data-type="query" class="m-btn-1 save ctrlbtn" value="Query" />
+                            </div>
+
+
+
+
+                            <div style="margin-bottom:6px;margin-top:0" />
+                        </div>
+                    </div>
+                </div>
+                <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
+                    <div class="table-responsive scroll-tbl" style="height:550px">
+                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tbl_sms">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th width="5%">Sno</th>
+                                    <th>Personal No</th>
+                                    <th>Name</th>
+                                    <th>Designation</th>
+                                    <th>SMS Amount</th>
+                                    <th style="text-align:left !important">Date</th>
+
+                                </tr>
+                                <tr>
+                                    <td><input id="txtSno" type="number" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPno" type="number" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtName" type="text" readonly="readonly" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtDesg" type="text" readonly="readonly" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtSms" type="number" class="form-control" style="border:1px solid blue" /></td>
+                                    <td>
+                                        <input id="txtDate" value="@dt.ToString("yyyy-MM-dd")" type="date" class="form-control" style="border:1px solid blue;width:75%;display:inline-block" />
+                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+                                    </td>
+                                   
+
+                                </tr>
+                            </thead>
+                            <tbody id="tblBody">
+                                @foreach (var item in data)
+                                {
+                                    <tr>
+                                        <td>@item.S_SNO</td>
+                                        <td>@item.P_NO</td>
+                                        <td>@item.NAME</td>
+                                        <td>@item.DESIGNATION</td>
+                                        <td>@item.SMS_AMOUNT</td>
+                                        <td style="text-align:left !important">@item.TILL_DATE.Value.ToString("dd-MMM-yyyy")</td>
+
+
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

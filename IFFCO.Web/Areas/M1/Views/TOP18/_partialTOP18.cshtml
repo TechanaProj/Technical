@@ -1,0 +1,75 @@
+﻿@{
+    List<TOP18Data> data = ViewBag.records;
+    int i = 1;
+}
+<thead>
+    <tr class="bg-primary">
+        <th width="4%">#</th>
+        <th>Catalyst/resign</th>
+        <th width="5%">Units</th>
+        <th width="5%">APR</th>
+        <th width="5%">MAY</th>
+        <th width="5%">JUN</th>
+        <th width="5%">JUL</th>
+        <th width="5%">AUG</th>
+        <th width="5%">SEP</th>
+        <th width="5%">OCT</th>
+        <th width="5%">NOV</th>
+        <th width="5%">DEC</th>
+        <th width="5%">JAN</th>
+        <th width="5%">FEB</th>
+        <th width="5%">MAR</th>
+        <th width="5%"></th>
+
+    </tr>
+    <tr>
+
+
+        <td><input id="txtSno" type="text" value="@(data.Count+1)" readonly="readonly" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtPlant_cat" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtUom" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtApr" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtMay" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtJun" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtJul" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtAug" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtSep" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtOct" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtNov" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtDec" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtJan" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtFeb" type="text" class="form-control" style="border:1px solid blue" /></td>
+        <td><input id="txtMar" type="text" class="form-control" style="border:1px solid blue" /></td>
+
+        <td>
+            <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
+        </td>
+
+
+    </tr>
+</thead>
+<tbody>
+    @foreach (var item in data)
+    {
+        <tr>
+            <td>@item.S_NO</td>
+            <td>@item.CATALYST</td>
+            <td>@item.UNITS</td>
+            <td>@item.APR</td>
+            <td>@item.MAY</td>
+            <td>@item.JUN</td>
+            <td>@item.JUL</td>
+            <td>@item.AUG</td>
+            <td>@item.SEP</td>
+            <td>@item.OCT</td>
+            <td>@item.NOV</td>
+            <td>@item.DEC</td>
+            <td>@item.JAN</td>
+            <td>@item.FEB</td>
+            <td>@item.MAR</td>
+            <td style="text-align:left !important"><a class="btn btn-xs btn-dark edit" style="border:1px solid blue;margin-bottom:1px">&nbsp;&nbsp;<i class="fa fa-pen"></i></a></td>
+
+        </tr>
+    }
+</tbody>
+

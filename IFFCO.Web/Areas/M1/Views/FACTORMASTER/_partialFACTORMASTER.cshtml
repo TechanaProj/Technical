@@ -1,0 +1,21 @@
+﻿@{
+    List<FactorMaster> data = ViewBag.records;
+    int i = 1;
+}
+
+@foreach (var item in data)
+{
+    <tr>
+        <td>@(i++)</td>
+        <td>@item.FrName</td>
+        <td>@item.FrCode</td>
+        <td>@item.FrUnit</td>
+        <td>@item.FrValue</td>
+        <td>@item.EffectiveFromDate.ToString("dd-MMM-yyyy")</td>
+        <td style="text-align:left !important">@{ var d = item.EffectiveToDate == null ? "" : item.EffectiveToDate.Value.ToString("dd-MMM-yyyy"); @d }</td>
+
+
+
+
+    </tr>
+}

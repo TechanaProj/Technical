@@ -1,0 +1,353 @@
+﻿<script src="~/js/Common.js"></script>
+<script src="~/js/TechnicalReporting.js"></script>
+@{
+    var rights = ViewBag.rights;
+}
+<script>
+       $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+           }
+
+
+
+
+       })
+
+
+
+    var g_target_id;
+    $(".ctrlbtn").click(function (e) {
+
+        $(".modalLoader").css("display", "block");
+
+        setTimeout(function () {
+            CommonAjax('/M1/TOP18/Execute', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                    plant:$("#txtPlant").val(),
+                    fyear:$("#txtFYear").val(),
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+    })
+
+
+
+
+
+
+
+
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+
+           $("#txtCode").val(''),
+           $("#txtName").val(''),
+            $("#txtValue").val(''),
+            $("#txtUnit").val(''),
+            $("#txtFromDate").val(''),
+            $("#txtToDate").val(''),
+
+
+
+        $("#tblBody").empty().append(data);
+
+    }
+
+
+    $(document).on("click","#btnSave",function () {
+        debugger;
+
+
+        if ($("#txtValue").val() == '') {
+            CommonAlert("error", "Value is required", null, null, "error");
+            return;
+        }
+        if ($("#txtUnit").val() == '') {
+            CommonAlert("error", "Unit is required", null, null, "error");
+            return;
+        }
+        if ($("#txtFromDate").val() == '') {
+            CommonAlert("error", "From Date is required", null, null, "error");
+            return;
+        }
+        if ($("#txtName").val()== '') {
+            CommonAlert("error", "Name is required", null, null, "error");
+            return;
+        }
+
+        var txt = $("#txtName").text();
+
+
+        setTimeout(function () {
+            CommonAjax('/M1/TOP18/Save', "GET", false, "application/json", false, GetResponse, "",
+                {
+
+                   // plant: $("#txtSno").val(),
+                    //fyear: $("#txtFYear").val(),
+
+                   // Sno: $("#txtSno").val(),
+                   // Plant_cat: $("#txtPlant_cat").val(),
+                   // Type: $("#txtType").val(),
+                   // Supplier: $("#txtSupplier").val(),
+                  //  Qty: $("#txtQty").val(),
+                  //  Density: $("#txtDensity").val(),
+                  //  Life: $("#txtLife").val(),
+                   // CDate: $("#txtCDate").val(),
+                   // RDate: $("#txtRDate").val(),
+                    //ELife: $("#txtELife").val(),
+                   // PCDate: $("#txtPCDate").val(),
+                   // PRDate: $("#txtPRDate").val(),
+
+                    plant: $("#txtPlant").val(),
+                    finyear: $("#txtFYear").val(),
+
+                    Sno: $("#txtSno").val(),
+                    Plant_cat: $("#txtPlant_cat").val(),
+                    Unit: $("#txtUom").val(),
+                    Apr: $("#txtApr").val(),
+                    May: $("#txtMay").val(),
+                    Jun: $("#txtJun").val(),
+                    Jul: $("#txtJul").val(),
+                    Aug: $("#txtAug").val(),
+                    Sep: $("#txtSep").val(),
+                    Oct: $("#txtOct").val(),
+                    Nov: $("#txtNov").val(),
+                    Dec: $("#txtDec").val(),
+                    Jan: $("#txtJan").val(),
+                    Feb: $("#txtFeb").val(),
+                    Mar: $("#txtMar").val(),
+
+
+
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+        
+
+
+
+    })
+
+    $(document).on("click", ".edit", function () {
+
+        $("#txtPlant").val($(this).parent().parent().children().get(0).innerHTML);
+        $("##txtFYear").val($(this).parent().parent().children().get(1).innerHTML);
+        $("#txtSno").val($(this).parent().parent().children().get(2).innerHTML);
+        $("#txtPlant_cat").val($(this).parent().parent().children().get(3).innerHTML)
+        $("#txtUom").val($(this).parent().parent().children().get(4).innerHTML)
+        $("#txtApr").val($(this).parent().parent().children().get(5).innerHTML)
+        $("#txtMay").val($(this).parent().parent().children().get(6).innerHTML)
+        $("#txtJun").val($(this).parent().parent().children().get(7).innerHTML)
+        $("#txtJul").val($(this).parent().parent().children().get(8).innerHTML)
+        $("#txtAug").val($(this).parent().parent().children().get(9).innerHTML)
+        $("#txtSep").val($(this).parent().parent().children().get(10).innerHTML)
+        $("#txtOct").val($(this).parent().parent().children().get(11).innerHTML)
+        $("#txtNov").val($(this).parent().parent().children().get(12).innerHTML)
+        $("#txtDec").val($(this).parent().parent().children().get(13).innerHTML)
+        $("#txtJan").val($(this).parent().parent().children().get(14).innerHTML)
+        $("#txtFeb").val($(this).parent().parent().children().get(15).innerHTML)
+        $("#txtMar").val($(this).parent().parent().children().get(16).innerHTML)
+        $("#btnSave").attr("data-operation", "update")
+
+    })
+
+
+
+</script>
+
+<div class="plcholder-cn">
+    <form id="Main" asp-action="Edit" method="post" asp-area="M1">
+        @{
+            List<TOP18Data> data = ViewBag.records;
+            int i = 1;
+        }
+        <div class="content-box">
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">TOP18 DATA</span></h3>
+            <div class="m-form">
+                <div class="m-form-bx">
+                    <div class="row form-sm">
+                        <div class="col-sm-2 col-md-3">
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> Financial YEAR</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                <input class="form-control non" value="" id="txtFYear" type="text" />
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-1">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> Unit</label>
+                            </div>
+                        </div>
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                <select class="form-control" id="txtPlant">
+                                    <option value="A1">AONLA-I </option>
+                                    <option value="A2">AONLA-II </option>
+                                </select>
+
+                            </div>
+                        </div>
+                        <div class="col-sm-6 col-md-3">
+
+
+
+
+
+
+                        </div>
+
+
+
+
+
+                    </div>
+                </div>
+
+                <div class="row form-sm">
+
+                    <div class="col-sm-6 col-md-12 text-center">
+                        <div>
+                            <hr style="margin-bottom:6px;margin-top:0" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+
+                            <div style="margin-bottom:6px;margin-top:0" />
+                        </div>
+
+
+
+
+
+
+                    </div>
+                </div>
+                <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
+                    <div class="table-responsive scroll-tbl" style="height:730px">
+                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tblBody">
+                            <thead>
+                                <tr class="bg-primary">
+                                    <th width="4%">#</th>
+                                    <th>Catalyst/resign</th>
+                                    <th width="5%">Units</th>
+                                    <th width="5%">APR</th>
+                                    <th width="5%">MAY</th>
+                                    <th width="5%">JUN</th>
+                                    <th width="5%">JUL</th>
+                                    <th width="5%">AUG</th>
+                                    <th width="5%">SEP</th>
+                                    <th width="5%">OCT</th>
+                                    <th width="5%">NOV</th>
+                                    <th width="5%">DEC</th>
+                                    <th width="5%">JAN</th>
+                                    <th width="5%">FEB</th>
+                                    <th width="5%">MAR</th>
+                                    
+                                    <th width="5%"></th>
+                                </tr>
+                                <tr>
+
+
+                                    <td><input readonly="readonly" id="txtSno" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtPlant_cat" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtUom" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtApr" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtMay" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtJun" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtJul" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtAug" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtSep" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtOct" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtNov" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtDec" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtJan" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtFeb" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtMar" type="text" class="form-control" style="border:1px solid blue" /></td>
+
+                                    <td>
+                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
+                                    </td>
+
+
+                                </tr>
+                            </thead>
+                            <tbody >
+                                @foreach (var item in data)
+                                {
+                                    <tr>
+                                        <td>@item.S_NO</td>
+                                        <td>@item.CATALYST</td>
+                                        <td>@item.UNITS</td>
+                                        <td>@item.APR</td>
+                                        <td>@item.MAY</td>
+                                        <td>@item.JUN</td>
+                                        <td>@item.JUL</td>
+                                        <td>@item.AUG</td>
+                                        <td>@item.SEP</td>
+                                        <td>@item.OCT</td>
+                                        <td>@item.NOV</td>
+                                        <td>@item.DEC</td>
+                                        <td>@item.JAN</td>
+                                        <td>@item.FEB</td>
+                                        <td>@item.MAR</td>
+                                        
+
+                                    </tr>
+                                }
+                            </tbody>
+
+                        </table>
+
+
+                    </div>
+
+
+                </div>
+
+
+            </div>
+        </div>
+
+    </form>
+
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
