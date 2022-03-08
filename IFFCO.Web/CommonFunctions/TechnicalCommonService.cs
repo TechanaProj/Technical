@@ -2134,11 +2134,11 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         {
             string query = "select count(*) from CHEMICALS_DATA where S_NO = '" + Sno + "' and PLANT_UNIT='" + plant + "' and FN_YR='" + finyear + "'";
 
-            query = @"update CHEMICALS_DATA set PLANT_CATALYST='" + Plant_cat + "',UNITS='" + Uom + "',APR='" + APR + "'," +
+            query = @"update CHEMICALS_DATA set CATALYST='" + Plant_cat + "',UNITS='" + Uom + "',APR='" + APR + "'," +
                 "MAY='" + MAY + "',JUN='" + JUN + "',JUL='" + JUL + "'," +
                 "AUG='" + AUG + "',SEP='" + SEP + "',OCT='" + OCT + "'," +
                 "NOV='" + NOV + "'," +
-                "DEC='" + DEC + "',JAN='" + JAN + "',FEB='" + FEB + "',MAR='" + MAR + "' where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and Fin_year='" + finyear + "'";
+                "DEC='" + DEC + "',JAN='" + JAN + "',FEB='" + FEB + "',MAR='" + MAR + "' where s_no = '" + Sno + "' and Plant_unit='" + plant + "' and FN_YR='" + finyear + "'";
 
             var i = _context.insertUpdateToDB(query);
             return i;

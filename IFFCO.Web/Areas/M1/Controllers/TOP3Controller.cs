@@ -155,7 +155,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             try
             {
-                CommonViewModel.alert = TechnicalCommonService.COPYRecordsTOP3(fyear, refyear);
+                //CommonViewModel.alert = TechnicalCommonService.COPYRecordsTOP3(fyear, refyear);
                
 
 
