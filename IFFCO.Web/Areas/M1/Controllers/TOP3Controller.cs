@@ -147,5 +147,34 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             return PartialView("_partialTOP3");
         }
 
+
+        public IActionResult Copy(string refyear, string fyear)
+        {
+            int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
+            string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
+            string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
+            try
+            {
+                CommonViewModel.alert = TechnicalCommonService.COPYRecordsTOP3(fyear, refyear);
+               
+
+
+            }
+            catch (Exception ex)
+            {
+
+                commonException.GetCommonExcepton(CommonViewModel, ex);
+                CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
+                CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
+                return Json(CommonViewModel);
+
+            }
+
+
+
+
+            return Json(CommonViewModel);
+        }
+
     }
 }
