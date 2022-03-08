@@ -151,11 +151,34 @@
                 });
             $(".modalLoader").hide();
         }, 10)
+        
+
 
 
     })
 
+    $(document).on("click", ".edit", function () {
 
+        $("#txtPlant").val($(this).parent().parent().children().get(0).innerHTML);
+        $("##txtFYear").val($(this).parent().parent().children().get(1).innerHTML);
+        $("#txtSno").val($(this).parent().parent().children().get(2).innerHTML);
+        $("#txtPlant_cat").val($(this).parent().parent().children().get(3).innerHTML)
+        $("#txtUom").val($(this).parent().parent().children().get(4).innerHTML)
+        $("#txtApr").val($(this).parent().parent().children().get(5).innerHTML)
+        $("#txtMay").val($(this).parent().parent().children().get(6).innerHTML)
+        $("#txtJun").val($(this).parent().parent().children().get(7).innerHTML)
+        $("#txtJul").val($(this).parent().parent().children().get(8).innerHTML)
+        $("#txtAug").val($(this).parent().parent().children().get(9).innerHTML)
+        $("#txtSep").val($(this).parent().parent().children().get(10).innerHTML)
+        $("#txtOct").val($(this).parent().parent().children().get(11).innerHTML)
+        $("#txtNov").val($(this).parent().parent().children().get(12).innerHTML)
+        $("#txtDec").val($(this).parent().parent().children().get(13).innerHTML)
+        $("#txtJan").val($(this).parent().parent().children().get(14).innerHTML)
+        $("#txtFeb").val($(this).parent().parent().children().get(15).innerHTML)
+        $("#txtMar").val($(this).parent().parent().children().get(16).innerHTML)
+        $("#btnSave").attr("data-operation", "update")
+
+    })
 
 
 
