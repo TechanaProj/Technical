@@ -2078,18 +2078,5 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         }
 
-        public string COPYRecordsTOP3(string fyear, string refFyear)
-        {
-            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FYEAR", OracleDbType = OracleDbType.VarChar, Value =fyear });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_REFYEAR", OracleDbType = OracleDbType.VarChar, Value = refFyear });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction=ParameterDirection.Output });
-           
-            var data = _context.ExecuteProcedureForRefCursor("TOP3_COPY", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[2].Value.ToString();
-            return alert;
-
-        }
-
     }
 }
