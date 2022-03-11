@@ -48,7 +48,7 @@
         .DisplayBlock {
             display: inline-block !important;
         }
-
+        
         .DisplayNone {
             display: none !important;
         }
@@ -66,6 +66,7 @@
 
         .d-none {
             display: none;
+            
         }
 
 
@@ -175,7 +176,7 @@
                 @await Component.InvokeAsync("LeftMenu")
             </div>
             <div class="right-cn">
-                <h3 class="top-head">Dashboard</h3>
+                <h3 class="top-head">Dashboard&nbsp;</h3>
 
                 @RenderBody()
             </div>
@@ -198,6 +199,7 @@
     <script src="@Url.Content("~/js/datatables/buttons.colVis.min.js")"></script>
     <script src="@Url.Content("~/js/jquery-confirm.min.js")"></script>
     <script src="@Url.Content("~/js/notify.js")"></script>
+    <script src="@Url.Content("~/js/jQuery.print.js")"></script>
     <link href="@Url.Content("~/css/jquery-confirm.min.css")" rel="stylesheet" />
 
     <script type="text/javascript">
@@ -364,6 +366,8 @@
             });
         });
 
+
+        
     </script>
 </body>
 </html>
