@@ -49,16 +49,7 @@
 
     })
 
-    function Refresh() {
-        CommonAjax('/M1/AMMSC02/Execute', "GET", false, "application/json", false, GetResponse, "",
-            {
-
-                FromDate: $("#txtDate").val(),
-                Shift: $("#txtShift").val(),
-                OperationType: op
-
-            });
-    }
+   
 
     $(document).on("change", ".ammonia", function (e) {
         debugger;
@@ -66,11 +57,18 @@
         var val = $(this).val();
         var op = $(this).data("operation");
         var type = $(this).attr("type");
-
+        g_target_id = "#" + name;
+        if (!parseFloat(val) > 0 && $(this).attr("type") == 'number') {
+            $(g_target_id).notify(
+                "Value must be greater than zero",
+                { position: "top", className: "error" }
+            );
+            return;
+        }
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
-            CommonAjax('/M1/AMMSC02/PostData', "GET", false, "application/json", false, "", "",
+            CommonAjax('/M1/AMMSC02/PostData', "GET", false, "application/json", false, PostResponse, "",
                 {
                     Input_Name: name,
                     Input_Value: val,
@@ -83,7 +81,7 @@
                 });
             $(".modalLoader").hide();
         }, 10)
-        Refresh();
+       
 
     })
 
@@ -124,7 +122,7 @@
             $(".modalLoader").hide();
         }, 10)
 
-        Refresh();
+        
     })
 
     $(document).on("change", ".techRemark", function (e) {
@@ -157,7 +155,7 @@
             $(".modalLoader").hide();
         }, 10)
 
-        Refresh();
+      
     })
     function GetResponse(data) {
         if (data.errorMessage != "" && data.errorMessage != null) {
@@ -227,7 +225,7 @@
         <div class="content-box">
 
 
-            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">Ammonia-II Daily Plant Input Data</span></h3>
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">Ammonia-II Daily Plant Input Data<i class="btnPrint fa fa-print" style="float:right"></i></span> </h3>
             <div class="m-form">
                 <div class="m-form-bx">
                     <div class="row form-sm">
@@ -244,7 +242,7 @@
                                     DateTime dt;
                                     dt = new DateTime(2017, 10, 18);
                                 }
-                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtDate" type="date" />
+                                <input class="form-control" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" id="txtDate" type="date" />
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-1">

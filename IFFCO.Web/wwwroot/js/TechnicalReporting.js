@@ -83,3 +83,18 @@ function isNull(val, returnVal) {
     }
     return val;
 }
+$(".btnPrint").click(function () {
+    var head = $("head").html()
+    var body = $("body").html()
+    var content = $("#mainDiv").html()
+    var style = "#mainDiv{font-family:Calibri !important} input{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} label{width:40%} select{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} textarea{margin-top: 7px!important;margin-bottom: 7px!important;width:92.8%}";
+    style += ".row{ width:100%; display: flex;flex-wrap: wrap; } .col-md-1{width:8.33%}.col-md-2{width:16.66%}.col-md-3{width:24.29%}.col-md-4{width:33.33%}.col-md-5{width:41.65%}.col-md-6{width:50% } .col-md-12{width:100%}";
+    $("head").empty().html('<title></title> <style> ' + style + ' </style>');
+    $("body").empty().html(content);
+
+    setTimeout(function () {
+        window.print();
+        $("head").html(head)
+        $("body").html(body)
+    }, 100)
+})

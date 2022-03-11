@@ -4,7 +4,35 @@
 <script src="~/js/Common.js"></script>
 <script src="~/js/TechnicalReporting.js"></script>
 
+@{
+    var rights = ViewBag.rights;
+}
 <script>
+     $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+         }
+                    })
+
+
+
+    var g_target_id;
     $(".ctrlbtn").click(function (e) {
 
         $(".modalLoader").css("display", "block");
@@ -25,16 +53,7 @@
 
     })
 
-    function Refresh() {
-        CommonAjax('/M1/ELECTRICAL1/Execute', "GET", false, "application/json", false, GetResponse, "",
-            {
 
-                FromDate: $("#txtDate").val(),
-                Shift: $("#txtShift").val(),
-                OperationType: op
-
-            });
-    }
 
     $(document).on("change", ".ammonia", function (e) {
         debugger;
@@ -42,6 +61,15 @@
         var val = $(this).val();
         var op = $(this).data("operation");
         var type = $(this).attr("type");
+        g_target_id = "#" + name;
+        if (!parseFloat(val) > 0) {
+            $(g_target_id).notify(
+                "Value must be greater than zero",
+                { position: "top", className: "error" }
+            );
+            return;
+        }
+
 
         $(".modalLoader").css("display", "block");
 
@@ -63,25 +91,35 @@
 
     })
     function GetResponse(data) {
-        if (data.errorMessage != "") {
-            CommonAlert(data.alert, response.errorMessage, null, null, "error");
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.errorMessage, data.errorMessage, null, null, "error");
             return;
         }
-        else {
-            $("#mainDiv").empty().append(data);
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
         }
+        $("#mainDiv").empty().append(data);
 
     }
     function PostResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+        }
 
-        if (data.errorMessage != "") {
-            CommonAlert(data.alert, response.errorMessage, null, null, "error");
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
         }
 
     }
 
-    
-   
+
+
 </script>
 
 <div class="plcholder-cn">
@@ -148,7 +186,7 @@
                     <div class="col-sm-6 col-md-12 text-center">
                         <div>
                             <hr style="margin-bottom:6px;margin-top:0" />
-                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save non ctrlbtn" value="Query" />
                             <input type="button" data-type="save" id="PrintGSTInvoice" class="m-btn-1 execute ctrlbtn" value="Save" />
                             <input type="button" data-type="approve" id="Update" class="m-btn-1 update ctrlbtn" onclick="" value="Approve" />
                             <div style="margin-bottom:6px;margin-top:0" />
@@ -289,23 +327,23 @@
                                     </div>
 
 
-                                    </div>
+                                </div>
 
                                 <div class="col-sm-2 col-md-4">
                                 </div>
                             </div>
-                            </div>
+                        </div>
 
+
+                    </div>
 
                 </div>
-
-</div>
             }
 
 
 
 
-           
+
 
 
 

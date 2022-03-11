@@ -37,6 +37,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
                 List<CommonData> data = TechnicalCommonService.GetRecordsELECTRICAL1(controller, "G", EMP_ID.ToString(), DateTime.Now);
+                ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.records = data;
             }
@@ -66,6 +67,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     case "query":
                         List<CommonData> data = TechnicalCommonService.GetRecordsELECTRICAL1(controller, Shift, EMP_ID.ToString(), FromDate);
                         ViewBag.reason = TechnicalCommonService.GetReason();
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                         ViewBag.records = data;
 
                         break;
@@ -115,7 +117,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-                string alert = TechnicalCommonService.PostRecordsELECTRICAL1(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
+                CommonViewModel.alert = TechnicalCommonService.PostRecordsELECTRICAL1(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
 
             }
             catch (Exception ex)
@@ -127,7 +129,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 return Json(CommonViewModel);
 
             }
-            return Json("");
+            return Json(CommonViewModel);
         }
        
     }

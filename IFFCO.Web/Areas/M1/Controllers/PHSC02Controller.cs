@@ -36,7 +36,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsPHSC02(controller, "G", EMP_ID.ToString(), DateTime.Now);
+                List<CommonData> data = TechnicalCommonService.GetRecordsPHSC02(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1));
+                ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.records = data;
             }
@@ -66,6 +67,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     case "query":
                         List<CommonData> data = TechnicalCommonService.GetRecordsPHSC02(controller, Shift, EMP_ID.ToString(), FromDate);
                         ViewBag.reason = TechnicalCommonService.GetReason();
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         ViewBag.records = data;
 
                         break;
@@ -115,7 +117,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-                string alert = TechnicalCommonService.PostRecordsPHSC02(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
+                CommonViewModel.alert = TechnicalCommonService.PostRecordsPHSC02(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
 
             }
             catch (Exception ex)
@@ -127,7 +129,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 return Json(CommonViewModel);
 
             }
-            return Json("");
+            return Json(CommonViewModel);
         }
 
     }

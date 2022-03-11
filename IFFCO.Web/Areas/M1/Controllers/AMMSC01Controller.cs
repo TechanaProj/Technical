@@ -37,7 +37,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsAMMSC01(controller, "G", EMP_ID.ToString(), DateTime.Now);
+                List<CommonData> data = TechnicalCommonService.GetRecordsAMMSC01(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1));
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.records = data;
                 ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
