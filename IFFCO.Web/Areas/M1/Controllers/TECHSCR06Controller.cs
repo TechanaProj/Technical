@@ -57,7 +57,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
-            ReportData.Query = "IDT=" + ReportDate.Date() + "+" + "P_I_DT =" + ReportDate.Date() + "+" + "P_IDT =" + ReportDate.Date();
+            ReportData.Query = "IDT=" + ReportDate.Date() + "+" + "P_I_DT=" + ReportDate.Date() + "+" + "P_IDT=" + ReportDate.Date();
             switch (ReportType)
             {
                 case "T":
@@ -66,7 +66,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     break;
                 case "C":
                     
-                    ReportData.ReportName = " REP_CONDENSATE.REP";
+                    ReportData.ReportName = "REP_CONDENSATE.REP";
                     break;
                 case "D":
                   

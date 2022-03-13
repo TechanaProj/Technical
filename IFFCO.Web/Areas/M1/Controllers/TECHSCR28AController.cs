@@ -1,30 +1,31 @@
-﻿
-using IFFCO.HRMS.Service;
+﻿using IFFCO.HRMS.Service;
 using IFFCO.TECHPROD.Web.CommonFunctions;
 using IFFCO.TECHPROD.Web.Controllers;
 using IFFCO.TECHPROD.Web.Models;
 using IFFCO.TECHPROD.Web.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
-
+using System.Collections.Generic;
+using System.Globalization;
 
 namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 {
     [Area("M1")]
-    public class TECHSCR16Controller : BaseController<TECHSCR16ViewModel>
+    public class TECHSCR28AController : BaseController<TECHSCR28ViewModel>
     {
         private readonly ModelContext _context;
         private readonly TechnicalCommonService technicalCommonService = null;
         private readonly DropDownListBindWeb dropDownListBindWeb = null;
         private readonly ReportRepositoryWithParameters reportRepository = null;
         private readonly PrimaryKeyGen primaryKeyGen = null;
-        CommonException<TECHSCR11ViewModel> commonException = null;
+        CommonException<TECHSCR28ViewModel> commonException = null;
 
-        public TECHSCR16Controller(ModelContext context)
+        public TECHSCR28AController(ModelContext context)
         {
             _context = context;
-            commonException = new CommonException<TECHSCR11ViewModel>();
+            commonException = new CommonException<TECHSCR28ViewModel>();
             dropDownListBindWeb = new DropDownListBindWeb();
             technicalCommonService = new TechnicalCommonService();
             reportRepository = new ReportRepositoryWithParameters();
@@ -32,19 +33,17 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
         }
         public IActionResult Index()
         {
-
+            CommonViewModel.ToDate = DateTime.Today.AddDays(-1).ToString("yyyy-MM-dd");
+            CommonViewModel.FromDate = DateTime.Today.AddMonths(-1).ToString("yyyy-MM-dd");
             return View(CommonViewModel);
         }
 
-
-
-
-        public ActionResult GenerateReport(DateTime FromDate, DateTime ToDate, string ReportType, string InputType)
+        public ActionResult GenerateReport(TECHSCR28ViewModel tECHSCR28ViewModel)
         {
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(FromDate, ToDate, ReportType, InputType);
-            string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
+            Report reportobj = GenerateReportData(tECHSCR28ViewModel);
+            string data = reportobj.ReportName + "+destype=cache+desformat=" + tECHSCR28ViewModel.SelectedReportFormat;
 
             Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
             CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
@@ -52,29 +51,16 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             CommonViewModel.Report = Report;
             return Json(CommonViewModel);
         }
-        public Report GenerateReportData(DateTime FromDate, DateTime ToDate, string ReportType, string InputType)
+
+
+        public Report GenerateReportData(TECHSCR28ViewModel tECHSCR28ViewModel)
         {
-            int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
-            ReportData.ReportFormat = "PDF";
-            switch (ReportType)
-            {
-                case "T":
-                    ReportData.Query = "I_DT1=" + FromDate.Date() + "+" + "I_DT2=" + ToDate.Date() + "+" + "TPE=" + InputType;
-                    ReportData.ReportName = "F1report.rep";
-                    break;
-                case "F":
-                    ReportData.Query = "I_DT1=" + FromDate.Date() + "+" + "I_DT2=" + ToDate.Date() + "+" + "TPE=" + InputType;
-                    ReportData.ReportName = "F1report_finance.rep";
-                    break;
-                default:
-                    break;
-
-            }
-
+            int unit = Convert.ToInt32(HttpContext.Session.GetString("UnitCode"));
+            ReportData.ReportName = "Hindi1lN.rep";
+            tECHSCR28ViewModel.SelectedReportFormat = "PDF";
+            ReportData.Query = "i_dt=" + Convert.ToDateTime(tECHSCR28ViewModel.ToDate).ToString("dd/MMM/yyyy");
             return ReportData;
         }
-
-
     }
 }
