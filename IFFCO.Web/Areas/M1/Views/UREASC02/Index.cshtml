@@ -156,7 +156,7 @@
         <div class="content-box">
 
 
-            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">UREA-II Daily Plant Input Data</span></h3>
+            <h3 class="sub-heading1"><span style="background-color:#4A689A !important;color:white;font-weight:bold">UREA-II Daily Plant Input Data <i class="btnPrint fa fa-print" style="float:right"></i></span></h3>
             <div class="m-form">
                 <div class="m-form-bx">
                     <div class="row form-sm">
@@ -173,7 +173,7 @@
                                     DateTime dt;
                                     dt = new DateTime(2017, 10, 18);
                                 }
-                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtDate" type="date" />
+                                <input class="form-control" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" id="txtDate" type="date" />
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-1">

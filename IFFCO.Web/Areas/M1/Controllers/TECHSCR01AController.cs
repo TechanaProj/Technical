@@ -62,7 +62,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             {
                 case "A":
                     ReportData.Query = "P_Idt=" + ReportDate.Date();
-                    ReportData.ReportName = "MDtelexN.rep";
+                    ReportData.ReportName = "PPR.rep";
                     break;
                 default:
                 case "B":

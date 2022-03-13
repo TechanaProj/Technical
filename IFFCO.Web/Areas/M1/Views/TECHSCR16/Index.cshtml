@@ -31,6 +31,7 @@
             FromDate: $("#txtFromDate").val(),
             ToDate: $("#txtToDate").val(),
             ReportType: $('#txtReportType').val(),
+            InputType: $('#txtInputType').val(),
 
         })
     })
@@ -63,14 +64,20 @@
                                 <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
                             </div>
 
-                            @*<div class="row ">
+                            <div class="row ">
             <div class="col-sm-6 col-md-2">
                 <label class="m-lbl1 m-lbl2">Report Input <span style="color:red;">*</span></label>
             </div>
             <div class="col-sm-6 col-md-3">
-                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" />
+                <select id="txtInputType" class="form-control">
+                    <option value="M">Monthly</option>
+                    <option value="W">Weekly</option>
+                    <option value="D">Daily</option>
+
+
+                </select>
             </div>
-        </div>*@
+        </div>
 
                             <div class="col-sm-6 col-md-2">
                                 <label class="m-lbl1 m-lbl2">Report <span style="color:red;">*</span></label>
