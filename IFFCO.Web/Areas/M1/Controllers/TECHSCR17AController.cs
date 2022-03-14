@@ -39,11 +39,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-        public ActionResult GenerateReport(DateTime FromDate, DateTime ToDate, string ForReport, string Gas)
+        public ActionResult GenerateReport(DateTime FromDate, DateTime ToDate, string Report1, string Gas, string ForReport)
         {
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(FromDate, ToDate, ForReport, Gas);
+            Report reportobj = GenerateReportData(FromDate, ToDate, Report1, Gas, ForReport);
             string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
 
             Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
@@ -52,17 +52,34 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             CommonViewModel.Report = Report;
             return Json(CommonViewModel);
         }
-        public Report GenerateReportData(DateTime FromDate, DateTime ToDate, string ForReport, string Gas)
+        public Report GenerateReportData(DateTime FromDate, DateTime ToDate, string Report1, string Gas, string ForReport)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
-
+            
             ReportData.Query = "I_DT1=" + FromDate.Date() + "+" + "I_DT2=" + ToDate.Date() + "+" + "TPE=" + ForReport + "+" + "GAS=" + Gas;
-                    ReportData.ReportName = "F1report.rep";
-                   
+            //ReportData.ReportName = "F1report.rep";
+            switch (Report1)
+            {
+                case "N":
+
+                    ReportData.ReportName = "Norms124.rep";
+                    break;
+                case "NP":
+
+                    ReportData.ReportName = "Norms124.rep";
+                    break;
+                    default:;
+                    
+                    break;
+
+            }
 
             return ReportData;
+
+
+            
         }
 
 
