@@ -35,7 +35,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-            List<CommonData> data = TechnicalCommonService.GetRecordsUREASC02(controller, "G", EMP_ID.ToString(), DateTime.Now);
+            List<CommonData> data = TechnicalCommonService.GetRecordsUREASC02(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1));
             ViewBag.reason = TechnicalCommonService.GetReason();
             ViewBag.records = data;
 
@@ -57,12 +57,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     break;
                 case "save":
-                    break;
+                    CommonViewModel.alert = "Data Saved";
+                    return Json(CommonViewModel);
                 case "approve":
-                    TechnicalCommonService.ApproveRecordsUREASC02(controller, Shift, EMP_ID.ToString(), FromDate);
-                    List<CommonData> data1 = TechnicalCommonService.GetRecordsUREASC02(controller, Shift, EMP_ID.ToString(), FromDate);
-                    ViewBag.reason = TechnicalCommonService.GetReason();
-                    ViewBag.records = data1;
+                    CommonViewModel.alert =TechnicalCommonService.ApproveRecordsUREASC02(controller, Shift, EMP_ID.ToString(), FromDate);
+                    return Json(CommonViewModel);
 
                     break;
                 default:
@@ -88,8 +87,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-            string alert = TechnicalCommonService.PostRecordsUREASC02(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
-            return Json(alert);
+            CommonViewModel.alert = TechnicalCommonService.PostRecordsUREASC02(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
+            return Json(CommonViewModel);
         }
         public IActionResult PostShutDownData(string Shift, DateTime DataDate, string Reason, string ReasonCode, string SD_PLANT, DateTime? FromDate, DateTime? ToDate, String InputType)
         {
