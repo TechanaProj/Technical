@@ -3,7 +3,33 @@
 <script src="~/js/Common.js"></script>
 <script src="~/js/TechnicalReporting.js"></script>
 
+
+@{
+    var rights = ViewBag.rights;
+}
 <script>
+     $(document).ready(function () {
+        debugger;
+        var r='@rights';
+         if (r == "N") {
+             $("input:not(.non),textarea").addClass("disable");
+             $('input[type="button"]:not(.non)').addClass("btn-disable");
+             $('select').addClass("sel-disable");
+             $('.disable').prop("readonly", true);
+             $('.btn-disable').hide();
+             $('.sel-disable').prop('disabled', true);
+         }
+         else {
+             $('.disable').prop("readonly", false);
+             $('.btn-disable').show();
+             $('.sel-disable').prop('disabled', false);
+             $("input:not(.non),textarea").removeClass("disable");
+             $('input[type="button"]:not(.non)').removeClass("btn-disable");
+             $('select').removeClass("sel-disable");
+
+         }
+                    })
+    var g_target_id;
     $(".ctrlbtn").click(function (e) {
 
         $(".modalLoader").css("display", "block");
@@ -24,16 +50,7 @@
 
     })
 
-    function Refresh() {
-        CommonAjax('/M1/UREASC02/Execute', "GET", false, "application/json", false, GetResponse, "",
-            {
-
-                FromDate: $("#txtDate").val(),
-                Shift: $("#txtShift").val(),
-                OperationType: op
-
-            });
-    }
+   
 
     $(document).on("change", ".ammonia", function (e) {
         debugger;
@@ -41,11 +58,11 @@
         var val = $(this).val();
         var op = $(this).data("operation");
         var type = $(this).attr("type");
-
+        g_target_id = "#" + name;
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
-            CommonAjax('/M1/UREASC02/PostData', "GET", false, "application/json", false, "", "",
+            CommonAjax('/M1/UREASC02/PostData', "GET", false, "application/json", false, PostResponse, "",
                 {
                     Input_Name: name,
                     Input_Value: val,
@@ -61,9 +78,7 @@
 
 
     })
-    function GetResponse(data) {
-        $("#mainDiv").empty().append(data);
-    }
+    
 
     $(document).on("change", ".shutdown", function (e) {
         debugger;
@@ -100,11 +115,9 @@
             $(".modalLoader").hide();
         }, 10)
 
-        Refresh();
+       
     })
-    function GetShutDownResponse(data) {
-       // $("#mainDiv").empty().append(data);
-    }
+   
     $(document).on("change", ".techRemark", function (e) {
         debugger;
         var cls = $(this).attr("class").split(' ')[0];
@@ -132,16 +145,62 @@
             $(".modalLoader").hide();
         }, 10)
 
-        Refresh();
+      
     })
-    function GetTechRemarksResponse(data) {
-        // $("#mainDiv").empty().append(data);
+    function GetResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.errorMessage, data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+        $("#mainDiv").empty().append(data);
+
     }
-    //$(document).on("change", ".ddlReason", function (e) {
-    //    debugger;
-    //    var cls = $(this).attr("class").split(' ')[0];
-    //    document.getElementsByClassName(cls)[1].value = $(this).val();
-    //})
+    function PostResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, data.errorMessage, null, null, "error");
+        }
+
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+
+    }
+    function GetTechRemarksResponse(data) {
+        debugger;
+
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, response.errorMessage, null, null, "error");
+        }
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+    }
+    function GetShutDownResponse(data) {
+        debugger;
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert(data.alert, response.errorMessage, null, null, "error");
+        }
+        if (data.alert != "") {
+
+            $(g_target_id).notify(
+                data.alert,
+                { position: "top", className: "success" }
+            );
+        }
+    }
 </script>
 
 <div class="plcholder-cn">
@@ -208,7 +267,7 @@
                     <div class="col-sm-6 col-md-12 text-center">
                         <div>
                             <hr style="margin-bottom:6px;margin-top:0" />
-                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn" value="Query" />
+                            <input type="button" data-type="query" id="Ewb" class="m-btn-1 save ctrlbtn non" value="Query" />
                             <input type="button" data-type="save" id="PrintGSTInvoice" class="m-btn-1 execute ctrlbtn" value="Save" />
                             <input type="button" data-type="approve" id="Update" class="m-btn-1 update ctrlbtn" onclick="" value="Approve" />
                             <div style="margin-bottom:6px;margin-top:0" />
@@ -226,7 +285,6 @@
         </div>
 
         <div id="mainDiv">
-
 
 
             @foreach (var head in Arrheader)
@@ -251,11 +309,11 @@
                                             {
                                                 if (item.Readonly.ToLower() == "yes")
                                                 {
-                                                    <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right urea" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                                    <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
                                                 }
                                                 else
                                                 {
-                                                    <input data-operation="@item.OperationType" class="form-control text-right urea" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                                    <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
 
                                                 }
                                             }
@@ -268,7 +326,7 @@
                                                 }
 
 
-                                                <input data-operation="@item.OperationType" class="form-control urea" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                                <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
                                             }
                                             else if (item.InputType.ToLower() == "date")
                                             {
@@ -279,21 +337,21 @@
                                                 }
 
 
-                                                <input data-operation="@item.OperationType" class="form-control urea" id="@item.InputText" step="any" type="date" value="@v" />
+                                                <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                             }
                                             else
                                             {
                                                 string sel = "";
                                                 if (item.InputValue.Trim().ToUpper() == "0")
                                                 {
-                                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control urea">
+                                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
                                                         <option selected="selected" value="0">NO</option>
                                                         <option value="1">YES</option>
                                                     </select>
                                                 }
                                                 else
                                                 {
-                                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control urea">
+                                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
                                                         <option value="0">NO</option>
                                                         <option selected="selected" value="1">YES</option>
                                                     </select>
@@ -449,9 +507,6 @@
 
 
             </div>
-
-
-
 
         </div>
 
