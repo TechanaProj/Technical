@@ -36,7 +36,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsELECTRICAL1(controller, "G", EMP_ID.ToString(), DateTime.Now);
+                List<CommonData> data = TechnicalCommonService.GetRecordsELECTRICAL1(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1));
                 ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.records = data;
@@ -72,14 +72,13 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                         break;
                     case "save":
-                        break;
+                        CommonViewModel.alert = "Data Saved";
+                        return Json(CommonViewModel);
                     case "approve":
-                        TechnicalCommonService.ApproveRecordsELECTRICAL1(controller, Shift, EMP_ID.ToString(), FromDate);
-                        List<CommonData> data1 = TechnicalCommonService.GetRecordsELECTRICAL1(controller, Shift, EMP_ID.ToString(), FromDate);
-                        ViewBag.reason = TechnicalCommonService.GetReason();
-                        ViewBag.records = data1;
+                        CommonViewModel.alert=TechnicalCommonService.ApproveRecordsELECTRICAL1(controller, Shift, EMP_ID.ToString(), FromDate);
+                        return Json(CommonViewModel);
 
-                        break;
+                       
                     default:
                         break;
                 }

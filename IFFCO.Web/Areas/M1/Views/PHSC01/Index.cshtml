@@ -145,7 +145,7 @@
                                     DateTime dt;
                                     dt = new DateTime(2017, 10, 18);
                                 }
-                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtDate" type="date" />
+                                <input class="form-control" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" id="txtDate" type="date" />
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-1">
