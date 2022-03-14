@@ -58,8 +58,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
 
-            ReportData.Query = "I_DT1=" + FromDate.Date() + "+" + "I_DT2=" + ToDate.Date();
-            ReportData.ReportName = "Norms_CHK_FF.rep";
+            ReportData.Query = "FRM_DATE=" + FromDate.Date() + "+" + "T_DATE=" + ToDate.Date();
+            ReportData.ReportName = "NORMS_CUMULATIVE.rep";
 
 
             return ReportData;
