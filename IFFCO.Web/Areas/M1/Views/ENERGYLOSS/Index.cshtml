@@ -1,0 +1,139 @@
+﻿@model IFFCO.TECHPROD.Web.ViewModels.ENERGYLOSSViewModel
+
+
+<script src="~/js/Common.js"></script>
+<div class="plcholder-cn">
+    <div class="table-responsive">
+        <div class="table-area">
+            <div class="table-title">
+                <div class="table-wrapper">
+                    <div class="table-con">
+                        <div class="tableUp">
+                            <div class="content-box">
+                                <h3 class="sub-heading1"><span>REFERENCE Energy</span></h3>
+                                <div class="m-form">
+                                    <div class="m-form-bx">
+                                        <div class="btn-area-tbl">
+                                            <a class="m-btn-1 addnew @Model.Insert addnewitem" asp-area="M1"  asp-controller="ENERGYLOSS" asp-action="Create" method="Get"><i class="material-icons"></i><span>Add P.Code</span></a>
+                                        </div>
+                                        <div class="pd-form-area">
+                                            <table class="compact nowrap table table-striped table-hover" style='width:105%' ;" id="HrmsHrdGrid">
+                                                <thead>
+                                                    <tr>
+                                                        <th>
+                                                            PLANT
+                                                        </th>
+                                                        <th>
+                                                            PLANT CODE
+                                                        </th>
+                                                        <th>
+                                                            REFERENCE ENERGY
+                                                        </th>
+                                                        <th>Actions</th>
+                                                    </tr>
+                                                    @if (Model.Status == "Create")
+                                                    {
+                                                        <tr id="traddpanel">
+                                                            <td colspan="9">
+                                                                <div>
+                                                                    <form id="CreateForm" asp-area="M1" asp-controller="ENERGYLOSS" asp-action="Create" method="post">
+                                                                        <table style="width:100%">
+                                                                            <tr class="update-row odd">
+                                                                                <td><input type="text" asp-for="@Model.ObjRefEnergy.Plant" id="plant" placeholder="Plant" class="form-control" /></td>
+                                                                                <td><input type="text" asp-for="@Model.ObjRefEnergy.PlantCode" id="plantcode" placeholder="PlantCode" class="form-control" /></td>
+                                                                                <td><input type="number" step="any" asp-for="@Model.ObjRefEnergy.ReEnergy" id="refenergy" placeholder="RefEnergy" class="form-control" /></td>
+                                                                                <td><input type="submit" id="createid" value="Save" class="m-btn-1 save" style="float:left;margin-right: 4px" /><button class="m-btn-1 close1" type="button" onclick="GetIndex('M1/ENERGYLOSS/Index')">Close</button></td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                    @if (Model.Status == "Edit")
+                                                    {
+                                                        <tr id="traddpanelEdit">
+                                                            <td colspan="6">
+                                                                <div>
+                                                                    <form asp-area="M1" asp-controller="ENERGYLOSS" asp-action="Edit" method="post">
+                                                                        <table style="width:100%">
+                                                                            <tr class="update-row odd">
+                                                                                <td><input type="text" asp-for="@Model.ObjRefEnergy.Plant" id="plant" placeholder="Plant" class="form-control" /></td>
+                                                                                <td><input type="text" asp-for="@Model.ObjRefEnergy.PlantCode" id="plantcode" placeholder="Plant Code" class="form-control" /></td>
+                                                                                <td><input type="number" step="any" asp-for="@Model.ObjRefEnergy.ReEnergy" id="refenergy" placeholder="Ref Energy" class="form-control" /></td>
+                                                                                <td><input type="submit" id="Updateid" value="Update" class="m-btn-1 update" style="float:left;margin-right: 4px" /><button class="m-btn-1 close1" type="button" onclick="GetIndex('M1/ENERGYLOSS/Index')">Close</button></td>
+                                                                            </tr>
+                                                                        </table>
+                                                                    </form>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    }
+
+
+                                                </thead>
+
+                                                <tbody>
+                                                    @foreach (var item in Model.ListRefEnergy)
+                                                    {
+                                                        <tr>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.Plant)
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.PlantCode)
+                                                           
+                                                            </td>
+                                                            <td>
+                                                                @Html.DisplayFor(modelItem => item.ReEnergy)
+                                                            </td>
+                                                            <td style=" width: 5%;">
+                                                                <a asp-area="M1" asp-controller="ENERGYLOSS" asp-action="Edit" asp-route-id="@item.PlantCode" class="edit @Model.Edit glpicon addnewitem" data-toggle="modal"><i class="far fa-edit" data-toggle="tooltip" title="" data-original-title="Edit" onclick="SHOW_TR_Function('traddpanelEdit','traddpanel')"></i></a>
+                                                                <a style="cursor:pointer" class="delete @Model.Delete glpicon" data-toggle="modal" onclick="divShow('/M1/ENERGYLOSS/DeleteConfirmed?id=@item.PlantCode');"><i class="far fa-trash-alt" data-toggle="tooltip" title="" data-original-title="Delete"></i></a>
+      
+                                                            </td>
+                                                        </tr>
+                                                    }
+                                                </tbody>
+
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        //CommonAlert("Alert", '"' + @Model.Message + '"', null, null, "Warning");
+        $('#HrmsHrdGrid').DataTable({
+            order: [[0, "desc"]]
+        });
+
+        $('#HrmsHrdGrid').DataTable();
+        //BindGridWithIdCol([0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], '#HrmsHrdGrid', "Monthly Wage-Rate Master");
+        //subMenuHiddenMarker();
+    });
+
+
+     function subMenuHiddenMarker() {
+         debugger;
+         var editVal = '@Model.Status';
+        var val = $("#SubMenuId").val();
+         if (val != null && editVal == "Edit") {
+            $("#SubMenuHiddenID").val(val);
+        }
+    }
+
+
+</script>

@@ -26,7 +26,6 @@ namespace IFFCO.TECHPROD.Web.Models
             : base(options)
         {
         }
-
         public virtual DbSet<AdmEmpprgAccess> AdmEmpprgAccess { get; set; }
         public virtual DbSet<AdmEmpUnitAccess> AdmEmpUnitAccess { get; set; }
         public virtual DbSet<AdmPrgMaster> AdmPrgMaster { get; set; }
@@ -45,7 +44,7 @@ namespace IFFCO.TECHPROD.Web.Models
         public virtual DbSet<OutputMaster> OutputMaster { get; set; }
         public virtual DbSet<ParameterMaster> ParameterMaster { get; set; }
         public virtual DbSet<PlantMaster> PlantMaster { get; set; }
-
+        public virtual DbSet<RefEnergy> RefEnergy { get; set; }
         public DataTable GetSQLQuery(string sqlquery)
         {
             DataTable dt = new DataTable();
@@ -3153,6 +3152,43 @@ namespace IFFCO.TECHPROD.Web.Models
                     .HasColumnName("PL_NAME")
                     .HasColumnType("varchar2")
                     .HasMaxLength(32);
+            });
+
+            modelBuilder.Entity<RefEnergy>(entity =>
+            {
+                entity.HasKey(e => e.PlantCode);
+
+                entity.ToTable("REF_ENERGY", "TECHANA");
+
+                entity.HasIndex(e => e.PlantCode)
+                    .HasName("REF_ENERGY_PK")
+                    .IsUnique();
+
+                entity.Property(e => e.PlantCode)
+                    .HasColumnName("PLANT_CODE")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(5);
+
+                entity.Property(e => e.CreatedBy).HasColumnName("CREATED_BY");
+
+                entity.Property(e => e.CreationDatetime)
+                    .HasColumnName("CREATION_DATETIME")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Plant)
+                    .HasColumnName("PLANT")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.ReEnergy)
+                    .HasColumnName("RE_ENERGY")
+                    .HasColumnType("double");
+
+                entity.Property(e => e.ModifiedBy).HasColumnName("MODIFIED_BY");
+
+                entity.Property(e => e.ModifiedDatetime)
+                    .HasColumnName("MODIFIED_DATETIME")
+                    .HasColumnType("date");
             });
         }
 
