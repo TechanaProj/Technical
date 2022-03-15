@@ -60,14 +60,7 @@
         var type = $(this).attr("type");
 
         g_target_id = "#" + name;
-        if (!parseFloat(val) > 0) {
-            $(g_target_id).notify(
-                "Value must be greater than zero",
-                { position: "top", className: "error" }
-            );
-            return;
-        }
-
+        
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
@@ -93,21 +86,21 @@
 
     function GetResponse(data) {
 
-        debugger;
-        if (data.isSaved != "" && data.isSaved != null && data.isSaved == true) {
-            $('.group-1').hide();
-        }
-        else {
-            $('.group-1').show();
-        }
+        //debugger;
+        //if (data.isSaved != "" && data.isSaved != null && data.isSaved == true) {
+        //    $('.group-1').hide();
+        //}
+        //else {
+        //    $('.group-1').show();
+        //}
         if (data.errorMessage != "" && data.errorMessage != null) {
             CommonAlert(data.errorMessage, data.errorMessage, null, null, "error");
             return;
         }
         else if (data.alert != "" && data.alert != null) {
 
-            
-            CommonAlert("SUCCESS", data.alert, null, null, "success");
+
+            data.alert.includes('NOT') ? CommonAlert("error", data.alert, null, null, "error") :CommonAlert("SUCCESS", data.alert, null, null, "success");
             return;
         }
         

@@ -803,9 +803,17 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             string query = "";
             string alert = "";
+            bool isNHLV = (int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") > 0;
+            bool isTEMPNHLV = (int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0;
+            if (isNHLV && isTEMPNHLV)
+            {
+                query= "INSERT INTO TEMP_NGLHV SELECT* FROM NGLHV WHERE DATA_DATE =  '" + dt.Date() + "'";
+                _context.insertUpdateToDB(query);
 
+            }
             if ((int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0)
             {
+                
                 query = "INSERT INTO TEMP_NGLHV(DATA_DATE," + Input_Name + " ,CREATED_BY,CREATION_DATE,INPUT_TYPE) values('" + dt.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'D')";
                 var i = _context.insertUpdateToDB(query);
                 if (i > 0)
