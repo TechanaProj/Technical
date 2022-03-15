@@ -69,13 +69,7 @@
         var type = $(this).attr("type");
 
         g_target_id = "#" + name;
-        if (!parseFloat(val) > 0) {
-            $(g_target_id).notify(
-                "Value must be gratter than zero",
-                { position: "top", className: "error" }
-            );
-            return;
-        }
+        
         var classList = $(this).attr("class");
         var myclass = classList.split(' ')[0];
         if (myclass.includes('PS')) {

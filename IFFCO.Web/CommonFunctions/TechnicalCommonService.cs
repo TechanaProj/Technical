@@ -367,8 +367,9 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction=ParameterDirection.Output    });
             var data = _context.ExecuteProcedureForRefCursor("PHSC01_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[4].Value.ToString();
+            string alert = oracleParameterCollecion[7].Value.ToString();
             return alert;
 
         }
@@ -379,6 +380,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("PHSC01_APPROVE", oracleParameterCollecion);
             string alert = oracleParameterCollecion[4].Value.ToString();
             return alert;
@@ -434,8 +436,9 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OPERATION_TYPE", OracleDbType = OracleDbType.VarChar, Value = op });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("PHSC02_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[4].Value.ToString();
+            string alert = oracleParameterCollecion[7].Value.ToString();
             return alert;
 
         }
@@ -446,6 +449,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("PHSC02_APPROVE", oracleParameterCollecion);
             string alert = oracleParameterCollecion[4].Value.ToString();
             return alert;
@@ -519,6 +523,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("ELECTRICAL_APPROVE", oracleParameterCollecion);
             string alert = oracleParameterCollecion[4].Value.ToString();
             return alert;
@@ -798,9 +803,17 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             string query = "";
             string alert = "";
+            bool isNHLV = (int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") > 0;
+            bool isTEMPNHLV = (int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0;
+            if (isNHLV && isTEMPNHLV)
+            {
+                query= "INSERT INTO TEMP_NGLHV SELECT* FROM NGLHV WHERE DATA_DATE =  '" + dt.Date() + "'";
+                _context.insertUpdateToDB(query);
 
+            }
             if ((int)_context.GetScalerFromDB("SELECT COUNT(DATA_DATE) FROM TEMP_NGLHV WHERE DATA_DATE = '" + dt.Date() + "' and input_type = 'D'") == 0)
             {
+                
                 query = "INSERT INTO TEMP_NGLHV(DATA_DATE," + Input_Name + " ,CREATED_BY,CREATION_DATE,INPUT_TYPE) values('" + dt.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'D')";
                 var i = _context.insertUpdateToDB(query);
                 if (i > 0)

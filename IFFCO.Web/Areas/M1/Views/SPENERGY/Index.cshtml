@@ -72,13 +72,7 @@
         var op = $(this).data("operation");
         var type = $(this).attr("type");
         g_target_id = "#" + name;
-        if (!parseFloat(val) > 0) {
-            $(g_target_id).notify(
-                "Value must be greater than zero",
-                { position: "top", className: "error" }
-            );
-            return;
-        }
+        
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
