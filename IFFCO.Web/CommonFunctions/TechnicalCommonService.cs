@@ -2282,8 +2282,66 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return alert;
 
         }
-        
 
+        //---------------------------TOP9UREA-----------------------------------//
+        public List<CommonData> GetRecordsTOP9UREA(DateTime dt1, string plant)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PLANT", OracleDbType = OracleDbType.VarChar, Value = plant });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("TOP9_UREA_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[2].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+                });
+            }
+
+            return cd;
+        }
+
+        public string PostRecordsTOP9UREA(DateTime dt1, string plant, string Input_Name, string Input_Value, string pno)
+        {
+
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(*) FROM top9_data WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+            int RES = _context.GetScalerFromDB(query);
+            if (RES == 0)
+            {
+                query = "INSERT INTO top9_data (data_date," + Input_Name + " ,CREATED_BY,creation_time,PLANT) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'" + plant + "')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update top9_data SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
+            return alert;
+
+        }
 
     }
 }
