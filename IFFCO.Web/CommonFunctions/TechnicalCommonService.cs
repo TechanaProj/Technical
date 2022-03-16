@@ -2387,7 +2387,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                 var i = _context.insertUpdateToDB(query);
                 if (i > 0)
                 {
-                    alert = "Inserted";
+                    alert = "Inserted"; 
                 }
             }
             else
