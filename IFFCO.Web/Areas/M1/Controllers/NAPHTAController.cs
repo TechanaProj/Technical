@@ -11,19 +11,19 @@ using System.Collections.Generic;
 namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 {
     [Area("M1")]
-    public class ENERGYANALYSISController : BaseController<ENERGYANALYSISViewModel>
+    public class NAPHTAController : BaseController<NAPHTAViewModel>
     {
         private readonly ModelContext _context;
         private readonly TechnicalCommonService TechnicalCommonService = null;
         private readonly DropDownListBindWeb dropDownListBindWeb = null;
         private readonly ReportRepositoryWithParameters reportRepository = null;
         private readonly PrimaryKeyGen primaryKeyGen = null;
-        CommonException<ENERGYANALYSISViewModel> commonException = null;
+        CommonException<NAPHTAViewModel> commonException = null;
 
-        public ENERGYANALYSISController(ModelContext context)
+        public NAPHTAController(ModelContext context)
         {
             _context = context;
-            commonException = new CommonException<ENERGYANALYSISViewModel>();
+            commonException = new CommonException<NAPHTAViewModel>();
             dropDownListBindWeb = new DropDownListBindWeb();
             TechnicalCommonService = new TechnicalCommonService();
             reportRepository = new ReportRepositoryWithParameters();
@@ -36,10 +36,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsENERGYANALYSIS(DateTime.Now.AddDays(-1));
+                List<CommonData> data = TechnicalCommonService.GetRecordsNAPHTA(DateTime.Now.AddDays(-1));
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.records = data;
                 ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
+                ViewBag.frValue = TechnicalCommonService.GetFrValue(DateTime.Now.AddDays(-1));
             }
             catch (Exception ex)
             {
@@ -55,7 +56,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
             return View(CommonViewModel);
         }
-        public IActionResult Execute(string OperationType, DateTime FromDate)
+        public IActionResult Execute(string OperationType, string Shift, DateTime FromDate)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
@@ -65,18 +66,25 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 switch (OperationType)
                 {
                     case "query":
-                        List<CommonData> data = TechnicalCommonService.GetRecordsENERGYANALYSIS(FromDate);
+                        List<CommonData> data = TechnicalCommonService.GetRecordsNAPHTA(FromDate);
                         ViewBag.reason = TechnicalCommonService.GetReason();
                         ViewBag.records = data;
                         ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
+                        ViewBag.frValue = TechnicalCommonService.GetFrValue(FromDate);
 
                         break;
                     case "save":
                         CommonViewModel.alert = "Data Saved";
                         return Json(CommonViewModel);
-                       
+
                     case "approve":
-                        
+                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsNAPHTA(controller, Shift, EMP_ID.ToString(), FromDate);
+                        //List<CommonData> data1 = TechnicalCommonService.GetRecordsNAPHTA(controller, Shift, EMP_ID.ToString(), FromDate);
+                        ViewBag.reason = TechnicalCommonService.GetReason();
+                        //ViewBag.records = data1;
+                        return Json(CommonViewModel);
+
+
                     default:
                         break;
                 }
@@ -92,9 +100,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 return Json(CommonViewModel);
 
             }
-            return PartialView("_partialENERGYANALYSIS");
+            return PartialView("_partialNAPHTA");
         }
-        public IActionResult PostData(string OperationType, DateTime FromDate, string Input_Name, string Input_Value, string InputType)
+        public IActionResult PostData(string Cat, string Label,string Unit, DateTime FromDate, string Input_Name, string Input_Value, string InputType)
         {
 
             try
@@ -115,7 +123,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-                CommonViewModel.alert = TechnicalCommonService.PostRecordsENERGYANALYSIS(FromDate, Input_Value, Input_Name,EMP_ID.ToString());
+                CommonViewModel.alert = TechnicalCommonService.PostRecordsNAPHTA(Cat, Label, Unit, FromDate, Input_Name, Input_Value, InputType, EMP_ID.ToString());
                 return Json(CommonViewModel);
             }
             catch (Exception ex)
@@ -130,6 +138,6 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
         }
-        
+
     }
 }
