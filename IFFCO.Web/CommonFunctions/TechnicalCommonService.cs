@@ -2343,25 +2343,17 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         }
 
-
-
-
-
-        //-----------NAPHTA-------------------//
-
-        public List<CommonData> GetRecordsNAPHTA( DateTime dt)
+        //---------------------------TOP9STEAM-----------------------------------//
+        public List<CommonData> GetRecordsTOP9STEAM(DateTime dt1, string plant)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
-            
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            //oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PLANT", OracleDbType = OracleDbType.VarChar, Value = plant });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
-            var data = _context.ExecuteProcedureForRefCursor("NAPHTHA_QUERY", oracleParameterCollecion);
-
-
+            var data = _context.ExecuteProcedureForRefCursor("TOP9_SG_QUERY", oracleParameterCollecion);
 
             OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[1].Value).GetDataReader();
-
 
             List<CommonData> cd = new List<CommonData>();
             while (reader.Read())
@@ -2374,46 +2366,167 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                     InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
                     IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
                     Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
-                    Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
-                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
 
                 });
             }
 
             return cd;
-
         }
 
-        public string PostRecordsNAPHTA(string Cat, string Label, string Unit, DateTime FromDate, string Input_Name, string Input_Value, string InputType,string pno)
+        public string PostRecordsTOP9STEAM(DateTime dt1, string plant, string Input_Name, string Input_Value, string pno)
         {
-            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_CAT", OracleDbType = OracleDbType.VarChar, Value = Cat });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_LABEL", OracleDbType = OracleDbType.VarChar, Value = Label });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_UNIT", OracleDbType = OracleDbType.VarChar, Value = Unit });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });           
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });           
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
-            var data = _context.ExecuteProcedureForRefCursor("NAPHTHA_POST", oracleParameterCollecion);
 
-            string alert = oracleParameterCollecion[7].Value.ToString();
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(*) FROM top9_data WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+            int RES = _context.GetScalerFromDB(query);
+            if (RES == 0)
+            {
+                query = "INSERT INTO top9_data (data_date," + Input_Name + " ,CREATED_BY,creation_time,PLANT) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'" + plant + "')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted"; 
+                }
+            }
+            else
+            {
+                query = "update top9_data SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
             return alert;
 
         }
-        public string ApproveRecordsNAPHTA(string formName, string shift, string pno, DateTime dt)
+
+
+
+
+        //---------------------------TOP9POWER-----------------------------------//
+
+        public List<CommonData> GetRecordsTOP9CPP(DateTime dt1, string plant)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
-            var data = _context.ExecuteProcedureForRefCursor("OSSC01_APPROVE", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[4].Value.ToString();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("TOP9_CPP_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[1].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+                });
+            }
+
+            return cd;
+        }
+
+        public string PostRecordsTOP9CPP(DateTime dt1, string plant, string Input_Name, string Input_Value, string pno)
+        {
+
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(*) FROM top9_data WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+            int RES = _context.GetScalerFromDB(query);
+            if (RES == 0)
+            {
+                query = "INSERT INTO top9_data (data_date," + Input_Name + " ,CREATED_BY,creation_time,PLANT) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'" + plant + "')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update top9_data SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
             return alert;
 
         }
 
+
+
+        //---------------------------TOP9LAB-----------------------------------//
+
+        public List<CommonData> GetRecordsTOP9LAB(DateTime dt1, string plant)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PLANT", OracleDbType = OracleDbType.VarChar, Value = plant });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("TOP9_LAB_QUERY", oracleParameterCollecion);
+
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[2].Value).GetDataReader();
+
+            List<CommonData> cd = new List<CommonData>();
+            while (reader.Read())
+            {
+                cd.Add(new CommonData()
+                {
+                    InputLabel = reader.GetString(reader.GetOrdinal("INPUT_LABEL")),
+                    InputValue = reader.GetString(reader.GetOrdinal("INPUT_VALUE")),
+                    InputText = reader.GetString(reader.GetOrdinal("INPUT_TEXT")),
+                    InputType = reader.GetString(reader.GetOrdinal("INPUT_TYPE")),
+                    IsReadonly = reader.GetString(reader.GetOrdinal("READONLY")),
+                    Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
+                    Readonly = reader.GetString(reader.GetOrdinal("READONLY"))
+
+                });
+            }
+
+            return cd;
+        }
+
+        public string PostRecordsTOP9LAB(DateTime dt1, string plant, string Input_Name, string Input_Value, string pno)
+        {
+
+            string query = "";
+            string alert = "";
+            query = "SELECT COUNT(*) FROM top9_data WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+            int RES = _context.GetScalerFromDB(query);
+            if (RES == 0)
+            {
+                query = "INSERT INTO top9_data (data_date," + Input_Name + " ,CREATED_BY,creation_time,PLANT) values('" + dt1.Date() + "','" + Input_Value + "','" + pno + "',SYSDATE,'" + plant + "')";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Inserted";
+                }
+            }
+            else
+            {
+                query = "update top9_data SET " + Input_Name + "='" + Input_Value + "' ,CREATED_BY='" + pno + "',creation_time=SYSDATE WHERE data_date='" + dt1.Date() + "' AND plant='" + plant + "'";
+                var i = _context.insertUpdateToDB(query);
+                if (i > 0)
+                {
+                    alert = "Updated";
+                }
+            }
+            return alert;
+
+        }
     }
 }
