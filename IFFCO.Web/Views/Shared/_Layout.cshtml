@@ -167,7 +167,7 @@
     @*chatbot script end*@
 </head>
 <body class="loading ">
-    <span class="chat-btn">Hide</span>
+    <span class="chat-btn btnPrint"><i class=" fa fa-print"></i>&nbsp;Print</span>
     <div class="main-con">
         <div class="menu-overlay"></div>
         <div>
@@ -178,7 +178,7 @@
                 @await Component.InvokeAsync("LeftMenu")
             </div>
             <div class="right-cn">
-                <h3 class="top-head">Dashboard&nbsp;</h3>
+                <h3 class="top-head " id="lblHead">Dashboard&nbsp;</h3>
 
                 @RenderBody()
             </div>
@@ -367,7 +367,29 @@
 
             });
         });
+        $(".btnPrint").click(function () {
+            var head = $("#lblHead").text().split('[')[0]; 
+            var content = $("#mainDiv").html()
+            var style = "#mainDiv{font-family:Calibri !important} input{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} label{width:40%} select{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} textarea{margin-top: 7px!important;margin-bottom: 7px!important;width:92.8%}";
+            style += ".row{ width:100%; display: flex;flex-wrap: wrap; } .col-md-1{width:8.33%}.col-md-2{width:16.66%}.col-md-3{width:24.29%}.col-md-4{width:33.33%}.col-md-5{width:41.65%}.col-md-6{width:50% } .col-md-12{width:100%}";
+            var w = window.open('')
+            w.document.write('<head><title>' + head + '</title> <style> ' + style + ' </style></head>')
+            w.document.write('<h2 style="text-align:center;width:100%">' + head + '</h2>')
+            w.document.write('<hr style="color:black;width:100%;margin-bottom:6px;margin-top:0">');
+            w.document.write(content);
+            w.document.close();          
+            w.print();
+            setTimeout(function () {
+                w.close()
+            },100)
+            
+           
+           
 
+
+
+
+        })
 
         
     </script>
