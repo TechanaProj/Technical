@@ -1515,7 +1515,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                     Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
                     Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
                     OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
-
+                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
                 });
             }
 
@@ -1630,6 +1630,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
                     Category = reader.GetString(reader.GetOrdinal("CATEGORY")),
                     Readonly = reader.GetString(reader.GetOrdinal("READONLY")),
                     OperationType = reader.GetString(reader.GetOrdinal("OPERATION_TYPE")),
+                    Layout = reader.GetString(reader.GetOrdinal("LAYOUT")),
 
                 });
             }

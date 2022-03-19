@@ -1,7 +1,10 @@
 ﻿@{
+
     List<CommonData> data = ViewBag.records;
 
-    var Arrheader = data.Where(e => e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+    var Arrheader = data.Where(e => e.Layout == "TYPE-3" && e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+    var Chemical = data.Where(e => e.Layout == "TYPE-2" && e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+    var Ammtransfer = data.Where(e => e.Layout == "TYPE-1" && e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
 
 }
 
@@ -12,20 +15,324 @@
 
 @foreach (var head in Arrheader)
 {
-    var UreaProd = data.Where(e => e.Category == head).ToList();
-
+    var AmmProd = data.Where(e => e.Category == head).ToList();
+    int k = 0;
     <div class="content-box">
         <h3 class="sub-heading1"><span>@head</span></h3>
         <div class="m-form">
             <div class="m-form-bx">
+
+
                 <div class="row form-sm">
-                    @foreach (var item in UreaProd)
+
+                    <div class="col-sm-2 col-md-8">
+
+
+                        <div class="row form-sm ">
+
+                            <div class="col-sm-2 col-md-6">
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2" style="font-size:90%;color:crimson !important;margin-bottom:10px;"> UNIT-31</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2" style="font-size:90%;color:crimson !important;margin-bottom:10px;"> UNIT-41</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2" style="font-size:90%;color:crimson !important;margin-bottom:10px;"> TOTAL</label>
+                                </div>
+                            </div>
+
+
+                            @foreach (var item in AmmProd)
+                            {
+
+                                if (k == 0)
+                                {
+                                    k = k + 1;
+                                    <div class="col-sm-2 col-md-6">
+                                        <div>
+                                            <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                                        </div>
+                                    </div>
+                                }
+                                else if (k > 1)
+                                {
+                                    k = 0;
+                                }
+                                else
+                                {
+                                    k = k + 1;
+                                }
+
+                                <div class="col-sm-2 col-md-2">
+                                    <div>
+                                        @if (item.InputType == "number")
+                                        {
+                                            if (item.Readonly.ToLower() == "yes")
+                                            {
+                                                <input data-operation="@item.OperationType" readonly="readonly" class="@item.InputText form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                            }
+                                            else
+                                            {
+                                                <input data-operation="@item.OperationType" class="@item.InputText form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                            }
+                                        }
+                                        else if (item.InputType.ToLower() == "datetime-local")
+                                        {
+                                            string v = "";
+                                            if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                            {
+                                                v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                            }
+
+
+                                            <input data-operation="@item.OperationType" class="@item.InputText form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                        }
+                                        else if (item.InputType.ToLower() == "date")
+                                        {
+                                            string v = "";
+                                            if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                            {
+                                                v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                            }
+
+
+                                            <input data-operation="@item.OperationType" class="@item.InputText form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                                        }
+                                        else if (item.InputType.ToLower() == "ddl")
+                                        {
+                                            string sel = "";
+                                            if (item.InputValue.Trim().ToUpper() == "0")
+                                            {
+                                                <select id="@item.InputText" data-operation="@item.OperationType" class="@item.InputText form-control ammonia">
+                                                    <option selected="selected" value="0">NO</option>
+                                                    <option value="1">YES</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select id="@item.InputText" data-operation="@item.OperationType" class="@item.InputText form-control ammonia">
+                                                    <option value="0">NO</option>
+                                                    <option selected="selected" value="1">YES</option>
+                                                </select>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                        }
+
+
+                                    </div>
+                                </div>
+
+
+
+                            }
+
+
+
+
+
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-sm-2 col-md-4">
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+}
+
+@foreach (var head in Chemical)
+{
+    var AmmProd = data.Where(e => e.Category == head).ToList();
+    int k = 0;
+    <div class="content-box">
+        <h3 class="sub-heading1"><span>@head</span></h3>
+        <div class="m-form">
+            <div class="m-form-bx">
+
+
+                <div class="row form-sm">
+
+                    <div class="col-sm-2 col-md-8">
+
+
+                        <div class="row form-sm ">
+
+                            <div class="col-sm-2 col-md-6">
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2" style="font-size:90%;color:crimson !important;margin-bottom:10px;">UNIT-31</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+                                <div>
+                                    <label class="m-lbl1 m-lbl2" style="font-size:90%;color:crimson !important;margin-bottom:10px;">UNIT-41</label>
+                                </div>
+                            </div>
+                            <div class="col-sm-2 col-md-2">
+
+                            </div>
+
+
+                            @foreach (var item in AmmProd)
+                            {
+
+                                if (k == 0)
+                                {
+                                    k = k + 1;
+                                    <div class="col-sm-2 col-md-6">
+                                        <div>
+                                            <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                                        </div>
+                                    </div>
+                                }
+                                else if (k > 0)
+                                {
+                                    k = 0;
+                                }
+                                else
+                                {
+                                    k = k + 1;
+                                }
+
+                                <div class="col-sm-2 col-md-2">
+                                    <div>
+                                        @if (item.InputType == "number")
+                                        {
+                                            if (item.Readonly.ToLower() == "yes")
+                                            {
+                                                <input data-operation="@item.OperationType" readonly="readonly" class="@item.InputText form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                            }
+                                            else
+                                            {
+                                                <input data-operation="@item.OperationType" class="@item.InputText form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                            }
+                                        }
+                                        else if (item.InputType.ToLower() == "datetime-local")
+                                        {
+                                            string v = "";
+                                            if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                            {
+                                                v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                            }
+
+
+                                            <input data-operation="@item.OperationType" class="@item.InputText form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                        }
+                                        else if (item.InputType.ToLower() == "date")
+                                        {
+                                            string v = "";
+                                            if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                            {
+                                                v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                            }
+
+
+                                            <input data-operation="@item.OperationType" class="@item.InputText form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
+                                        }
+                                        else if (item.InputType.ToLower() == "ddl")
+                                        {
+                                            string sel = "";
+                                            if (item.InputValue.Trim().ToUpper() == "0")
+                                            {
+                                                <select id="@item.InputText" data-operation="@item.OperationType" class="@item.InputText form-control ammonia">
+                                                    <option selected="selected" value="0">NO</option>
+                                                    <option value="1">YES</option>
+                                                </select>
+                                            }
+                                            else
+                                            {
+                                                <select id="@item.InputText" data-operation="@item.OperationType" class="@item.InputText form-control ammonia">
+                                                    <option value="0">NO</option>
+                                                    <option selected="selected" value="1">YES</option>
+                                                </select>
+                                            }
+                                        }
+                                        else
+                                        {
+
+                                        }
+
+
+                                    </div>
+                                </div>
+
+
+
+                            }
+
+
+
+
+
+
+
+                        </div>
+
+
+                    </div>
+
+                    <div class="col-sm-2 col-md-4">
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+    </div>
+}
+@foreach (var head in Ammtransfer)
+{
+    var AmmProd = data.Where(e => e.Category == head).ToList();
+    int k = 0;
+    <div class="content-box">
+        <h3 class="sub-heading1"><span>@head</span></h3>
+        <div class="m-form">
+            <div class="m-form-bx">
+
+
+
+
+
+                <div class="row form-sm">
+
+
+
+
+
+
+                    @foreach (var item in AmmProd)
                     {
+
+
                         <div class="col-sm-2 col-md-4">
                             <div>
                                 <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
                             </div>
                         </div>
+
+
                         <div class="col-sm-2 col-md-2">
                             <div>
                                 @if (item.InputType == "number")
@@ -36,7 +343,7 @@
                                     }
                                     else
                                     {
-                                        <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                        <input data-operation="@item.OperationType" data-category="@head.Trim()" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
 
                                     }
                                 }
@@ -62,7 +369,7 @@
 
                                     <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                 }
-                                else
+                                else if (item.InputType.ToLower() == "ddl")
                                 {
                                     string sel = "";
                                     if (item.InputValue.Trim().ToUpper() == "0")
@@ -84,6 +391,9 @@
 
                             </div>
                         </div>
+
+
+
                     }
 
 
@@ -93,15 +403,17 @@
 
 
                 </div>
+
+
+
+
             </div>
+
+
         </div>
 
-
     </div>
-
-
 }
-
 
 
 
