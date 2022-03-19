@@ -2578,22 +2578,19 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_NAME", OracleDbType = OracleDbType.VarChar, Value = Input_Name });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_INPUT_VALUE", OracleDbType = OracleDbType.VarChar, Value = Input_Value });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
-            var data = _context.ExecuteProcedureForRefCursor("NAPHTA_POST", oracleParameterCollecion);
+            var data = _context.ExecuteProcedureForRefCursor("NAPHTHA_POST", oracleParameterCollecion);
 
             string alert = oracleParameterCollecion[7].Value.ToString();
             return alert;
 
         }
-        public string ApproveRecordsNAPHTA(string formName, string shift, string pno, DateTime dt)
+        public string ApproveRecordsNAPHTA(DateTime dt)
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });           
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
-            var data = _context.ExecuteProcedureForRefCursor("OSSC01_APPROVE", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[4].Value.ToString();
+            var data = _context.ExecuteProcedureForRefCursor("NAPHTHA_APPROVE", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[1].Value.ToString();
             return alert;
 
         }

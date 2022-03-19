@@ -78,10 +78,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         return Json(CommonViewModel);
 
                     case "approve":
-                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsNAPHTA(controller, Shift, EMP_ID.ToString(), FromDate);
-                        //List<CommonData> data1 = TechnicalCommonService.GetRecordsNAPHTA(controller, Shift, EMP_ID.ToString(), FromDate);
-                        ViewBag.reason = TechnicalCommonService.GetReason();
-                        //ViewBag.records = data1;
+                        CommonViewModel.alert = TechnicalCommonService.ApproveRecordsNAPHTA(FromDate);                       
                         return Json(CommonViewModel);
 
 
