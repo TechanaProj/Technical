@@ -60,21 +60,17 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     break;
                 case "approve":
                     CommonViewModel.alert = TechnicalCommonService.ApproveRecordsMONTH(controller, EMP_ID.ToString(), FromDate, ToDate, Gas);
-                   // List<CommonData> data1 = TechnicalCommonService.GetRecordsMONTH(controller, EMP_ID.ToString(), FromDate, ToDate, Gas);
+                   
                     ViewBag.reason = TechnicalCommonService.GetReason();
-                    // ViewBag.records = data1;
-                    //TechnicalCommonService.ApproveRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
-                    //List<CommonData> data1 = TechnicalCommonService.GetRecordsMONTH(controller, Shift, EMP_ID.ToString(), FromDate);
-                    //ViewBag.reason = TechnicalCommonService.GetReason();
-                    //ViewBag.records = data1;
+                    
                     return Json(CommonViewModel);
-                   // break;
+                   
                 default:
                     break;
             }
             return PartialView("_partialMONTHLY");
         }
-        public IActionResult PostData(DateTime FromDate, DateTime ToDate, string GAS, string Input_Value, string Input_Name, string InputType)
+        public IActionResult PostData(DateTime FromDate, DateTime ToDate, string Gas, string Input_Value, string Input_Name, string InputType)
         {
             switch (InputType)
             {
@@ -92,34 +88,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-            string alert = TechnicalCommonService.PostRecordsMONTH( FromDate,  ToDate, EMP_ID.ToString(),  GAS,  Input_Value,  Input_Name);
+            string alert = TechnicalCommonService.PostRecordsMONTH( FromDate,  ToDate, EMP_ID.ToString(),  Gas,  Input_Value,  Input_Name);
             return Json(alert);
         }
-        public IActionResult PostShutDownData(string Shift, DateTime DataDate, string Reason, string ReasonCode, string SD_PLANT, DateTime? FromDate, DateTime? ToDate, String InputType)
-        {
-            int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
-            string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-
-
-            string alert = TechnicalCommonService.PostShutdownMONTH(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
-            return Json("");
-
-
-
-        }
-        public IActionResult PostTechRemarkData(string Shift, DateTime DataDate, string ReasonName, string RemarksValue)
-        {
-            int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
-            string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-
-
-            string alert = TechnicalCommonService.PostTechRemarkMONTH(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
-            return Json("");
-
-
-
-        }
+        
     }
 }
