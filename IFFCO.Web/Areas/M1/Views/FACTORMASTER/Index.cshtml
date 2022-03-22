@@ -44,7 +44,7 @@
             CommonAjax('/M1/FACTORMASTER/Execute', "GET", false, "application/json", false, GetResponse, "",
                 {
 
-                    TillDate: $("#txtTillDate").val(),
+                    FrName: $("#txtName").val(),
 
 
                 });
@@ -86,8 +86,25 @@
             return;
         }
         
-           $("#txtCode").val(''),
-           $("#txtName").val(''),
+          
+
+
+
+        $("#tblBody").empty().append(data);
+
+    }
+    function PostResponse(data) {
+        if (data.errorMessage != "" && data.errorMessage != null) {
+            CommonAlert("ERROR", data.errorMessage, null, null, "error");
+            return;
+        }
+        else if (data.alert != "" && data.alert != null) {
+            CommonAlert("SUCCESS", data.alert, null, null, "success");
+            return;
+        }
+
+          $("#txtCode").val(''),
+            $("#txtName").val(''),
             $("#txtValue").val(''),
             $("#txtUnit").val(''),
             $("#txtFromDate").val(''),
@@ -95,10 +112,9 @@
 
 
 
-        $("#tblBody").empty().append(data);
+            $("#tblBody").empty().append(data);
 
     }
-
 
     $("#btnSave").click(function () {
         debugger;
@@ -125,7 +141,7 @@
 
 
         setTimeout(function () {
-            CommonAjax('/M1/FACTORMASTER/Save', "GET", false, "application/json", false, GetResponse, "",
+            CommonAjax('/M1/FACTORMASTER/Save', "GET", false, "application/json", false, PostResponse, "",
                 {
 
 
@@ -215,7 +231,7 @@
                                 <tr>
                                     <td></td>
                                     <td>
-                                        <select class="form-control" id="txtName" style="border:1px solid blue">
+                                        <select class="form-control" id="txtName" style="border:1px solid blue;width:80%;display:inline-block">
                                             <option value="">---Select----</option>
                                             @foreach (var list in selectListItems)
                                             {
@@ -223,6 +239,7 @@
                                             }
 
                                         </select>
+                                        <a class="btn  btn-info ctrlbtn" id="btnQuery" style="margin-bottom:1px">Query</a>
                                     </td>
 
                                     <td><input id="txtCode" type="text" readonly="readonly" class="form-control" style="border:1px solid blue" /></td>
@@ -270,7 +287,11 @@
 </div>
 <div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
 
-
+<script>
+    $(document).ready(function () {
+        $("#tblBody").empty();
+    })
+</script>
 
 
 @section Scripts {

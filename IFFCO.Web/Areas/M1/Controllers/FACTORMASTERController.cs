@@ -39,7 +39,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
                 DateTime dt1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
                 DateTime dt2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
-                List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER();
+                List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER("");
                 ViewBag.ListItem = TechnicalCommonService.GetFactorList();
                 ViewBag.records = data;
             }
@@ -72,7 +72,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int i = TechnicalCommonService.SaveRecordsFACTORMASTER( Code,  Unit,  Name,  Value,  FromDate,ToDate, EMP_ID.ToString());
                 if (i > 0)
                 {
-                    List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER();
+                    List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER(Code);
                     ViewBag.records = data;
                 }
                 else if (i == -1)
@@ -101,14 +101,14 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
    
 
-        public IActionResult Execute(DateTime TillDate)
+        public IActionResult Execute(string FrName)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             try
             {
-                List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER();
+                List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER(FrName);
                 ViewBag.records = data;
 
 

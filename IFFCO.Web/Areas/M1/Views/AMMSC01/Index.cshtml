@@ -126,7 +126,14 @@
         var name = document.getElementsByClassName(cls)[0].id
         var val = $(this).val();
         g_target_id = "#" + $(this).attr("id");
-        if ($(this).val().length < 1) {
+        if ($('.' + cls).prop("selectedIndex") == 0) {
+            $(g_target_id).notify(
+                "Select a reason first",
+                { position: "top", className: "error" }
+            );
+            return;
+        }
+        if ($(this).val().length < 1 ) {
             $(g_target_id).notify(
                 "Write your remark",
                 { position: "top", className: "error" }

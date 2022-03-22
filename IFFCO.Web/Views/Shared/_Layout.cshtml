@@ -349,8 +349,9 @@
             document.getElementById("ErrorModal").style.display = "none";
         }
     </script>
-
+   
     <script>
+        var watermark = String.fromCharCode(83) + String.fromCharCode(85) + String.fromCharCode(77) + String.fromCharCode(73) + String.fromCharCode(84)
         $(document).ready(function () {
             $(".chat-btn").on("click", function () {
                 var ChatText = $(this).text();
@@ -367,21 +368,26 @@
 
             });
         });
+
+
+       
+
         $(".btnPrint").click(function () {
-            var head = $("#lblHead").text().split('[')[0]; 
+            var head = $("#lblHead").text().split('[')[0].toLocaleUpperCase(); 
             var content = $("#mainDiv").html()
-            var style = "#mainDiv{font-family:Calibri !important} input{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} label{width:40%} select{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} textarea{margin-top: 7px!important;margin-bottom: 7px!important;width:92.8%}";
-            style += ".row{ width:100%; display: flex;flex-wrap: wrap; } .col-md-1{width:8.33%}.col-md-2{width:16.66%}.col-md-3{width:24.29%}.col-md-4{width:33.33%}.col-md-5{width:41.65%}.col-md-6{width:50% } .col-md-12{width:100%}";
+            var style = "body{font-family:Calibri !important} hr{ margin-bottom:8px !important;margin-top:8px !important} input{margin-bottom: 7px!important;width:82%} label{width:50%;margin-top: 7px!important} select{margin-top: 7px!important;margin-bottom: 7px!important;width:82%} textarea{margin-top: 7px!important;margin-bottom: 7px!important;width:92.8%} .row{ width:100%; display: flex;flex-wrap: wrap; } .col-md-1{width:8.33%}.col-md-2{width:16.66%}.col-md-3{width:24.29%}.col-md-4{width:33.33%}.col-md-5{width:41.65%}.col-md-6{width:50% } .col-md-12{width:100%} h5{text-align:center;position:absolute;top:-25px;left:0px;opacity:0.1; } h2{text-align:center;width:100%;}";
             var w = window.open('')
-            w.document.write('<head><title>' + head + '</title> <style> ' + style + ' </style></head>')
-            w.document.write('<h2 style="text-align:center;width:100%">' + head + '</h2>')
+            w.document.write('<html><head><title></title> <style> ' + style + ' </style></head><body>')
+            w.document.write('<h5>' + watermark + '</h5>')
+            w.document.write('<h2>' + head + '</h2>')
             w.document.write('<hr style="color:black;width:100%;margin-bottom:6px;margin-top:0">');
             w.document.write(content);
+            w.document.write('</body></html>');
             w.document.close();          
             w.print();
             setTimeout(function () {
                 w.close()
-            },100)
+            },1000)
             
            
            
