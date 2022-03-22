@@ -58,11 +58,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 case "save":
                     break;
                 case "approve":
-                    TotalSDPower data1 = TechnicalCommonService.GetRecordsPWRSC01(controller, Shift, EMP_ID.ToString(), FromDate);
-                    ViewBag.reason = TechnicalCommonService.GetReason();
-                    ViewBag.records = data1;
-
-                    break;
+                    CommonViewModel.alert = TechnicalCommonService.ApproveRecordsPWRSC01(controller, Shift, EMP_ID.ToString(), FromDate);
+                    return Json(CommonViewModel);
+                  
                 default:
                     break;
             }
@@ -85,8 +83,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
-            string alert = TechnicalCommonService.PostRecordsPWRSC01(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
-            return Json("");
+            CommonViewModel.alert = TechnicalCommonService.PostRecordsPWRSC01(controller, Shift, EMP_ID.ToString(), FromDate, Input_Value, Input_Name, OperationType);
+            return Json(CommonViewModel);
         }
         public IActionResult PostShutDownData(string Shift, DateTime DataDate, string Reason, string ReasonCode, string SD_PLANT, DateTime? FromDate, DateTime? ToDate, String InputType)
         {
@@ -94,8 +92,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
-            string alert = TechnicalCommonService.PostShutdownPWRSC01(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
-            return Json("");
+            CommonViewModel.alert = TechnicalCommonService.PostShutdownPWRSC01(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
+            return Json(CommonViewModel);
         }
         public IActionResult PostTechRemarkData(string Shift, DateTime DataDate, string ReasonName, string RemarksValue)
         {
@@ -103,8 +101,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
-            string alert = TechnicalCommonService.PostTechRemarkPWRSC01(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
-            return Json("");
+            CommonViewModel.alert = TechnicalCommonService.PostTechRemarkPWRSC01(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
+            return Json(CommonViewModel);
         }
     }
 }

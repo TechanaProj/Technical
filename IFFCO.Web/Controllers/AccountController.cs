@@ -158,7 +158,7 @@ namespace IFFCO.TECHPROD.Web.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return Redirect("/Account/Login");
+            return RedirectToAction("Login", "Account");
         }
 
     }

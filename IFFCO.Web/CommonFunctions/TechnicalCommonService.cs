@@ -951,6 +951,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+
             var data = _context.ExecuteProcedureForRefCursor("PWRSC01_APPROVE", oracleParameterCollecion);
             string alert = oracleParameterCollecion[4].Value.ToString();
             return alert;
@@ -970,9 +972,10 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_FROM", OracleDbType = OracleDbType.VarChar, Value = FromDate != null ? FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : "NULL" });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_TO", OracleDbType = OracleDbType.VarChar, Value = ToDate != null ? ToDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("PWRSC01_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[7].Value.ToString();
-            return "";
+            string alert = oracleParameterCollecion[9].Value.ToString();
+            return alert;
         }
 
         public string PostTechRemarkPWRSC01(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
@@ -985,9 +988,11 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REASON_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = RemarksValue });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+
             var data = _context.ExecuteProcedureForRefCursor("PWRSC01_TECH_REMARK_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[3].Value.ToString();
-            return "";
+            string alert = oracleParameterCollecion[5].Value.ToString();
+            return alert;
         }
 
 
@@ -1994,10 +1999,10 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             }).ToList();
 
         }
-        public List<FactorMaster> GetRecordsFACTORMASTER()
+        public List<FactorMaster> GetRecordsFACTORMASTER(string FrCode)
         {
             List<FactorMaster> energy = new List<FactorMaster>();
-            string query = "select * from factor_master order by Effective_From_Date desc";
+            string query = "select * from factor_master where fr_code='"+FrCode+"' order by Effective_From_Date desc";
             var data = _context.GetSQLQuery(query);
             energy = data.AsEnumerable().Select(e => new FactorMaster
             {

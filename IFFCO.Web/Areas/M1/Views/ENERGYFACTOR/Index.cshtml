@@ -226,7 +226,18 @@
                                 <tr>
                                     <td><input value="@dt.ToString("yyyy-MM-dd")" id="txtEFromDate" type="date" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input value="@dt1.ToString("yyyy-MM-dd")" id="txtEToDate" type="date" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtPrCode" type="text" class="form-control" style="border:1px solid blue" /></td>
+                                    <td>
+                                    <select id="txtPrCode"  class="form-control" style="border:1px solid blue" >
+                                        <option value="CPP1">CPP1</option>
+                                        <option value="CPP2">CPP2</option>
+                                        <option value="DM1">DM1</option>
+                                        <option value="DM2">DM2</option>
+                                        <option value="RW1">RW1</option>
+                                        <option value="RW2">RW2</option>
+                                        <option value="STEAM">STEAM</option>
+                                    </select>
+                                    
+                                    
                                     <td><input id="txtUnit" type="text" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input id="txtPrValue" type="number" step="any" class="form-control" style="border:1px solid blue" /></td>
                                     <td>

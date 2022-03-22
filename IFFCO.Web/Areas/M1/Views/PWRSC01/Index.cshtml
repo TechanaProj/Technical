@@ -49,16 +49,7 @@
 
     })
 
-    function Refresh() {
-        CommonAjax('/M1/PWRSC01/Execute', "GET", false, "application/json", false, GetResponse, "",
-            {
-
-                FromDate: $("#txtDate").val(),
-                Shift: $("#txtShift").val(),
-                OperationType: "query"
-
-            });
-    }
+    
 
     $(document).on("change", ".ammonia", function (e) {
         debugger;
@@ -66,11 +57,11 @@
         var val = $(this).val();
         var op = $(this).data("operation");
         var type = $(this).attr("type");
-
+        g_target_id = "#" + name;
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
-            CommonAjax('/M1/PWRSC01/PostData', "GET", false, "application/json", false, "", "",
+            CommonAjax('/M1/PWRSC01/PostData', "GET", false, "application/json", false, PostResponse, "",
                 {
                     Input_Name: name,
                     Input_Value: val,
@@ -104,7 +95,7 @@
             return;
         }
 
-
+        g_target_id = "#" + $(this).attr("id");
         $(".modalLoader").css("display", "block");
 
         setTimeout(function () {
@@ -131,6 +122,21 @@
         var cls = $(this).attr("class").split(' ')[0];
         var name = document.getElementsByClassName(cls)[0].id
         var val = $(this).val();
+        g_target_id = "#" + $(this).attr("id");
+        if ($('.' + cls).prop("selectedIndex") == 0 ) {
+            $(g_target_id).notify(
+                "Select a reason first",
+                { position: "top", className: "error" }
+            );
+            return;
+        }
+        if (document.getElementsByClassName(cls)[2].value == null || document.getElementsByClassName(cls)[2].value == "") {
+            $(g_target_id).notify(
+                "Select from date",
+                { position: "top", className: "error" }
+            );
+            return;
+        }
         if (val.length < 1) {
 
             CommonAlert("ERROR", "Tech Remarks can not be empty", null, null, "error");
@@ -236,7 +242,7 @@
                                     DateTime dt;
                                     dt = new DateTime(2017, 10, 18);
                                 }
-                                <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtDate" type="date" />
+                                <input class="form-control" value="@DateTime.Now.ToString("yyyy-MM-dd")" id="txtDate" type="date" />
                             </div>
                         </div>
                         <div class="col-sm-2 col-md-1">
