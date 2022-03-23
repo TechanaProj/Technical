@@ -60,7 +60,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
-            ReportData.Query = "FRM_DATE=" + FromDate.Date() + "+" + "T_DATE=" + ToDate.Date() + "+" + "'I_DT1=" + FromDate.Date() + "+" + "'I_DT2=" + ToDate.Date() + "+" + "FRM_DATE=" + FromDate.Date() + "+" + "T_DATE=" + ToDate.Date() + "+" + "FYR=" + FromDate.Year.ToString()+"-"+ToDate.Year.ToString();
+            ReportData.Query = "I_DT1=" + FromDate.Date() + "+" + "I_DT2=" + ToDate.Date() + "+" + "FRM_DATE=" + FromDate.Date() + "+" + "T_DATE=" + ToDate.Date() + "+" + "FYR=" + FromDate.Year.ToString()+"-"+ToDate.Year.ToString();
             ReportData.ReportName = ReportName;
             return ReportData;
         }

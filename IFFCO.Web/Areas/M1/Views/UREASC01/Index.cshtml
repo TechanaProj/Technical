@@ -220,14 +220,13 @@
 
             List<CommonData> data = ViewBag.records;
 
-            var Arrheader = data.Where(e => e.Layout == "TYPE-3" && e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
-            var Chemical = data.Where(e => e.Layout == "TYPE-2" && e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
-            var Ammtransfer = data.Where(e => e.Layout == "TYPE-1" && e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+            var Arrheader = data.Where(e => e.Layout == "TYPE-3" && e.Category.Contains("SHUTDOWN DETAILS") == false).Select(e => e.Category).Distinct().ToArray();
+            var Chemical = data.Where(e => e.Layout == "TYPE-2" && e.Category.Contains("SHUTDOWN DETAILS") == false).Select(e => e.Category).Distinct().ToArray();
+            var Ammtransfer = data.Where(e => e.Layout == "TYPE-1" && e.Category.Contains("SHUTDOWN DETAILS") == false).Select(e => e.Category).Distinct().ToArray();
+            var ShutdownHead = data.Where(e => e.Category.Contains("SHUTDOWN DETAILS")==true).Select(e => e.Category).Distinct().ToArray();
 
 
 
-
-            
         }
         <div class="content-box">
 
@@ -710,13 +709,17 @@
             }
 
 
-            @{
-                var AmmShut = data.Where(e => e.Category == "SHUTDOWN DETAILS").ToList();
+           
+
+
+            @foreach (var head in ShutdownHead)
+            {
+                var AmmShut = data.Where(e => e.Category==head).ToList();
 
                 List<SelectListItem> listItems = ViewBag.reason;
-            }
+
             <div class="content-box">
-                <h3 class="sub-heading1"><span>SHUTDOWN DETAILS</span></h3>
+                <h3 class="sub-heading1"><span>@head</span></h3>
                 <div class="m-form">
                     <div class="m-form-bx">
                         <div class="row form-sm">
@@ -836,7 +839,7 @@
 
             </div>
 
-
+              }
 
         </div>
 

@@ -1585,8 +1585,9 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_FROM", OracleDbType = OracleDbType.VarChar, Value = FromDate != null ? FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : "NULL" });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_TO", OracleDbType = OracleDbType.VarChar, Value = ToDate != null ? ToDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("UREASC01_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[7].Value.ToString();
+            string alert = oracleParameterCollecion[9].Value.ToString();
             return "";
         }
         public string PostTechRemarkUREASC01(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
@@ -1701,8 +1702,9 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_FROM", OracleDbType = OracleDbType.VarChar, Value = FromDate != null ? FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : "NULL" });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_TO", OracleDbType = OracleDbType.VarChar, Value = ToDate != null ? ToDate.Value.ToString("MM/dd/yyyy HH:mm:ss") : FromDate.Value.ToString("MM/dd/yyyy HH:mm:ss") });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("UREASC02_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[7].Value.ToString();
+            string alert = oracleParameterCollecion[9].Value.ToString();
             return "";
         }
         public string PostTechRemarkUREASC02(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
