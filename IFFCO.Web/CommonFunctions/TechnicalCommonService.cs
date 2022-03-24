@@ -1588,7 +1588,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("UREASC01_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
             string alert = oracleParameterCollecion[9].Value.ToString();
-            return "";
+            return alert;
         }
         public string PostTechRemarkUREASC01(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
         {
@@ -1600,9 +1600,10 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REASON_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = RemarksValue });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("UREASC01_TECH_REMARK_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[3].Value.ToString();
-            return "";
+            string alert = oracleParameterCollecion[5].Value.ToString();
+            return alert;
         }
 
 
@@ -1705,7 +1706,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("UREASC02_PLANT_SHUTDOWN_POST", oracleParameterCollecion);
             string alert = oracleParameterCollecion[9].Value.ToString();
-            return "";
+            return alert;
         }
         public string PostTechRemarkUREASC02(string Shift, DateTime DataDate, string ReasonName, string RemarksValue, string pno, string FormName)
         {
@@ -1717,9 +1718,10 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REASON_NAME", OracleDbType = OracleDbType.VarChar, Value = ReasonName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SD_REMARKS", OracleDbType = OracleDbType.VarChar, Value = RemarksValue });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_NAME", OracleDbType = OracleDbType.VarChar, Value = FormName });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("UREASC02_TECH_REMARK_POST", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[3].Value.ToString();
-            return "";
+            string alert = oracleParameterCollecion[5].Value.ToString();
+            return alert;
         }
 
 

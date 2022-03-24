@@ -102,7 +102,7 @@
             CommonAlert("ERROR", "Please select shutdown from date ", null, null, "error");
             return;
         }
-
+        g_target_id = "#" + $(this).attr("id");
 
         $(".modalLoader").css("display", "block");
 
@@ -135,7 +135,7 @@
             CommonAlert("ERROR", "Tech Remarks can not be empty", null, null, "error");
             return;
         }
-
+        g_target_id = "#" + $(this).attr("id");
 
         $(".modalLoader").css("display", "block");
 
@@ -752,7 +752,7 @@
                             {
                                 if (i > 4) { i = 0; j = j + 1; }
                                 i = i + 1;
-                                string cls = "shut" + j;
+                                string cls = "shut" + head.Replace(" ","") + j;
                                 if (item.InputType != "text")
                                 {
                                     <div class="col-sm-2 col-md-3">

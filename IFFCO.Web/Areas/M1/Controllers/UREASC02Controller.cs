@@ -97,8 +97,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-            string alert = TechnicalCommonService.PostShutdownUREASC02(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
-            return Json("");
+            CommonViewModel.alert= TechnicalCommonService.PostShutdownUREASC02(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
+            return Json(CommonViewModel);
 
 
 
@@ -110,8 +110,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-            string alert = TechnicalCommonService.PostTechRemarkUREASC02(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
-            return Json("");
+            CommonViewModel.alert = TechnicalCommonService.PostTechRemarkUREASC02(Shift, DataDate, ReasonName, RemarksValue, EMP_ID.ToString(), controller);
+            return Json(CommonViewModel);
 
 
 
