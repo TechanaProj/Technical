@@ -5,6 +5,13 @@
 @{
     var rights = ViewBag.rights;
 }
+@section styles{ 
+
+    
+
+
+}
+
 <script>
        $(document).ready(function () {
         debugger;
@@ -55,22 +62,21 @@
     })
 
 
-    function PostResponse(data) {
-        debugger;
-        if (data.errorMessage != "" && data.errorMessage != null) {
-            CommonAlert(data.alert, data.errorMessage, null, null, "error");
-            return;
-        }
+    $(document).on("click", ".edit", function () {
 
-        if (data.alert != "") {
+     
+        $("#txtCode").val($(this).parent().parent().children().get(2).innerHTML);
+        $("#txtName").val($(this).parent().parent().children().get(2).innerHTML)
+        $("#txtValue").val($(this).parent().parent().children().get(4).innerHTML)
+        $("#txtUnit").val($(this).parent().parent().children().get(3).innerHTML)
+        $("#txtFromDate").val($(this).parent().parent().children().get(5).getAttribute("data-date"))
+        $("#txtToDate").val($(this).parent().parent().children().get(6).getAttribute("data-date"))        
+        operation = 'update'
 
-            $(g_target_id).notify(
-                data.alert,
-                { position: "top", className: "success" }
-            );
-        }
+    })
 
-    }
+
+  
 
 
 
@@ -85,11 +91,11 @@
             CommonAlert("SUCCESS", data.alert, null, null, "success");
             return;
         }
-        
-          
-
-
-
+        $("#txtValue").val('')
+        $("#txtUnit").val('')
+        $("#txtFromDate").val('')
+        $("#txtToDate").val('')
+        operation = 'save'
         $("#tblBody").empty().append(data);
 
     }
@@ -103,31 +109,28 @@
             return;
         }
 
-          $("#txtCode").val(''),
+            $("#txtCode").val(''),
             $("#txtName").val(''),
             $("#txtValue").val(''),
             $("#txtUnit").val(''),
             $("#txtFromDate").val(''),
             $("#txtToDate").val(''),
-
+            operation = 'save'
 
 
             $("#tblBody").empty().append(data);
 
     }
-
+    var operation='save';
     $("#btnSave").click(function () {
         debugger;
 
-
+        
         if ($("#txtValue").val() == '') {
             CommonAlert("error", "Value is required", null, null, "error");
             return;
         }
-        if ($("#txtUnit").val() == '') {
-            CommonAlert("error", "Unit is required", null, null, "error");
-            return;
-        }
+        
         if ($("#txtFromDate").val() == '') {
             CommonAlert("error", "From Date is required", null, null, "error");
             return;
@@ -151,42 +154,30 @@
                     Value:    $("#txtValue").val(),
                     FromDate: $("#txtFromDate").val(),
                     ToDate:   $("#txtToDate").val(),
-
+                    op: operation
                 });
             $(".modalLoader").hide();
         }, 10)
 
-
+        
     })
     $("#txtName").change(function () {
         debugger;
         var v = $(this).val();
         var t = $('option:selected',this).text()
         $("#txtCode").val($(this).val())
+        $("#txtValue").val('')
+            $("#txtUnit").val('')
+            $("#txtFromDate").val('')
+        $("#txtToDate").val('')
+        operation='save'
+           
+
+
 
     })
 
-    function GetEmp(data) {
-        debugger;
-        if (data.errorMessage != "" && data.errorMessage != null) {
-            CommonAlert(data.alert, data.errorMessage, null, null, "error");
-            return;
-        }
-        if (data.employee!=null ) {
-            console.log(data.employee)
-            $("#txtFactor").val(data.employee.pno)
-            $("#txtName").val(data.employee.name)
-            $("#txtDesg").val(data.employee.designation)
-            $("#txtSms").focus();
-            return;
-        }
-        if (data.alert != "") {
-
-            CommonAlert("error", data.alert, null, null, "error");
-        }
-
-
-    }
+   
 
 
 
@@ -216,17 +207,18 @@
                 </div>
                 <div class="row form-sm" style="padding-left:22px;padding-right:22px;">
                     <div class="table-responsive scroll-tbl" style="height:730px">
-                        <table class="compact nowrap table table-striped table-bordered table-condensed " style="padding-bottom:3px;" id="tbl_factor">
-                            <thead>
+                        <table class="compact nowrap table table-striped table-bordered table-condensed" style="padding-bottom:3px;" id="tbl_factor">
+                            <thead >
                                 <tr class="bg-primary">
                                     <th width="2%">#</th>
                                     <th>Fr Name</th>
                                     <th>FR Code</th>
-                                    <th>Fr Unit</th>
-                                    <th width="5%">Value</th>
+                                    <th width="8%">Fr Unit</th>
+                                    <th >Value</th>
                                     <th width="9%">Effective FromDate</th>
                                     <th style="text-align:left !important">Effective ToDate</th>
-
+                                    <th style="text-align:left !important">Action</th>
+                                
                                 </tr>
                                 <tr>
                                     <td></td>
@@ -244,17 +236,23 @@
 
                                     <td><input id="txtCode" type="text" readonly="readonly" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input id="txtUnit" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtValue" type="number" step="any"  class="form-control" style="border:1px solid blue" /></td>
+                                    <td><input id="txtValue" type="number" step="any" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input id="txtFromDate" value="" type="date" class="form-control" style="border:1px solid blue;" /></td>
                                     <td>
-                                        <input id="txtToDate" value="" type="date" class="form-control" style="border:1px solid blue;width:65%;display:inline-block" />
-                                        <a class="btn  btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
+                                        <input id="txtToDate" value="" type="date" class="form-control" style="border:1px solid blue;display:inline-block" />
+                                       
+                                    </td>
+                                   
+                                    <td>
+
+                                        <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
                                     </td>
 
 
                                 </tr>
                             </thead>
-                            <tbody id="tblBody">
+                          
+                            <tbody id="tblBody" >
                                 @foreach (var item in data)
                                 {
                                     <tr>
@@ -263,11 +261,10 @@
                                         <td>@item.FrCode</td>
                                         <td>@item.FrUnit</td>
                                         <td>@item.FrValue</td>
-                                        <td>@item.EffectiveFromDate.ToString("dd-MMM-yyyy")</td>
-                                        <td style="text-align:left !important">@{ var d = item.EffectiveToDate == null ? "" : item.EffectiveToDate.Value.ToString("dd-MMM-yyyy"); @d }</td>
-
+                                        <td data-date="@item.EffectiveFromDate.ToString("yyyy-MM-dd")">@item.EffectiveFromDate.ToString("dd-MMM-yyyy")</td>
+                                        <td  data-date="@{ var z = item.EffectiveToDate == null ? "" : item.EffectiveToDate.Value.ToString("yyyy-MM-dd"); @z }" style="text-align:left !important">@{ var d = item.EffectiveToDate == null ? "" : item.EffectiveToDate.Value.ToString("dd-MMM-yyyy"); @d }</td>
                                     </tr>
-                                            }
+                                 }
                             </tbody>
 
                         </table>

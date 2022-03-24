@@ -60,7 +60,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-        public IActionResult Save(string Code, string Unit, string Name, string Value, DateTime FromDate, DateTime? ToDate)
+        public IActionResult Save(string op,string Code, string Unit, string Name, string Value, DateTime FromDate, DateTime? ToDate)
         {
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
 
@@ -69,18 +69,35 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             try
             {
 
-                int i = TechnicalCommonService.SaveRecordsFACTORMASTER( Code,  Unit,  Name,  Value,  FromDate,ToDate, EMP_ID.ToString());
-                if (i > 0)
-                {
-                    List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER(Code);
-                    ViewBag.records = data;
-                }
-                else if (i == -1)
-                {
-                    CommonViewModel.errorMessage = "Personel No already addedd";
-                    return Json(CommonViewModel);
-                }
 
+                if (op == "update")
+                {
+                    int i = TechnicalCommonService.UpdateRecordsFACTORMASTER(Code, Unit, Name, Value, FromDate, ToDate, EMP_ID.ToString());
+                    if (i > 0)
+                    {
+                        List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER(Code);
+                        ViewBag.records = data;
+                    }
+                    else if (i == -1)
+                    {
+                        CommonViewModel.errorMessage = "From Date With Same FR Code already exists";
+                        return Json(CommonViewModel);
+                    }
+                }
+                else
+                {
+                    int i = TechnicalCommonService.SaveRecordsFACTORMASTER(Code, Unit, Name, Value, FromDate, ToDate, EMP_ID.ToString());
+                    if (i > 0)
+                    {
+                        List<FactorMaster> data = TechnicalCommonService.GetRecordsFACTORMASTER(Code);
+                        ViewBag.records = data;
+                    }
+                    else if (i == -1)
+                    {
+                        CommonViewModel.errorMessage = "From Date With Same FR Code already exists";
+                        return Json(CommonViewModel);
+                    }
+                }
             }
             catch (Exception ex)
             {

@@ -2042,6 +2042,16 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return i;
 
         }
+        public int UpdateRecordsFACTORMASTER(string Code, string Unit, string Name, string Value, DateTime FromDate, DateTime? ToDate, string createdby)
+        {
+            
+              string  query = "update factor_master set Fr_Unit='"+Unit+"',Fr_Value='"+Value+ "', created_by='" + createdby + "',creation_datetime=SYSDATE where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
+
+           
+            var i = _context.insertUpdateToDB(query);
+            return i;
+
+        }
 
 
         //---------------------------TOP 3-----------------------------------//
@@ -2107,7 +2117,18 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         }
 
-       
+        public string COPYRecordsTOP3(string refyear, string fyear)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FYEAR", OracleDbType = OracleDbType.VarChar, Value = fyear });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_REFYEAR", OracleDbType = OracleDbType.VarChar, Value = refyear});
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("TOP3_COPY", oracleParameterCollecion);
+
+            string alert = oracleParameterCollecion[2].Value.ToString();
+            return alert;
+        }
 
         //---------------------------TOP 18-----------------------------------//
         public List<TOP18Data> GetRecordsTOP18(string fyear, string plant)
