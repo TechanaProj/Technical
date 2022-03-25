@@ -6,10 +6,7 @@
 <script type="text/javascript">
 
     $(document).ready(function () {
-
     });
-
-
     var RName;
     $(".ctrlbtn").click(function (e) {
         debugger;
@@ -36,20 +33,13 @@
             FromDate: $("#txtFromDate").val(),
             ToDate: $("#txtToDate").val(),
             ReportName: RName,
-           
-
         })
     })
-
     $(".cat").change(function () {
         var v = $(this).val();
         $(".cat").prop("selectedIndex", 0);
         $(this).val(v);
     })
-
-
-
-
 </script>
 <div class="plcholder-cn">
     <form asp-area="M1">
@@ -58,8 +48,6 @@
                 <h3 class="sub-heading1"><span>TOP Reports </span></h3>
                 <div class="m-form">
                     <div class="m-form-bx">
-
-
                         <div class="row ">
                             <div class="col-sm-6 col-md-2">
                                 <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
@@ -70,7 +58,6 @@
                                 }
                                 <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
                             </div>
-
                             <div class="col-sm-6 col-md-2">
                                 <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
                             </div>
@@ -81,9 +68,7 @@
                         <hr style="margin:0" />
                         <h5 class="text-center">Plants</h5>
                         <hr style="margin:8px" />
-
                         <div class="row ">
-
                             <div class="col-sm-6 col-md-3">
                                 <select id="txtCat1" class="form-control cat">
                                     <option value="">---Select---</option>
@@ -103,11 +88,7 @@
                                     <option data-report="TOP8_6YR_A2.rep" value="TP86A2">Top-8_6yrs(Aonla-I)</option>
                                     <option data-report="TOP9_A1.rep" value="T9A1">Top-9(Aonla-I)</option>
                                     <option data-report="TOP9_A2.rep" value="T9A2">Top-9(Aonla-I|)</option>
-
-
                                 </select>
-
-
                             </div>
                             <div class="col-sm-6 col-md-3">
                                 <select id="txtCat1" class="form-control cat">
@@ -129,9 +110,6 @@
                                     <option data-report="TOP12_A2_NAP.rep" value="T12N2">Top-12_NAP(Aonla-II)</option>
                                     <option data-report="TOP12_A2_AMM.rep" value="T12A2">Top-12_Amm(Aonla-II </option>
                                     <option data-report="TOP13_A1.rep" value="T13A1">Top-13(Aonla-I)     </option>
-
-
-
                                 </select>
                             </div>
                             <div class="col-sm-6 col-md-3">
@@ -154,8 +132,6 @@
                                     <option data-report="TOP19_CPP1.rep" value="T19C1">Top-19(CPP-I    </option>
                                     <option data-report="TOP19_DM1.rep" value="T19D1">Top-19(DM-I)    </option>
                                     <option data-report="TOP19_RW1.rep" value="T19R1">Top-19(RW-I)    </option>
-
-
                                 </select>
                             </div>
                             <div class="col-sm-6 col-md-3">
@@ -181,28 +157,20 @@
                                     <option data-report="TOP11AM_INS.rep" value="AI">Amm-II Report (Insurance)        </option>
                                     <option data-report="TOP11UR_INS.rep" value="UI">Urea-II Report (Insurance)       </option>
                                     <option data-report="FICC_ESCA1A2.rep" value="FA1A2">FICC Escalation (Inputs A-I&A-II)</option>
-
-
-
                                 </select>
                             </div>
                         </div>
                         <hr style="margin:8px" />
                         <div class="row ">
-
                             <div class="col-sm-6 col-md-12 text-center pb-3">
-
                                 <input type="button" data-report-type="1" class="m-btn-1 execute ctrlbtn" value="Execute">
-
                             </div>
                         </div>
-
                     </div>
             </div>
         </div>
             </div>
     </form>
-
 </div>
 
 <script>
@@ -213,12 +181,7 @@
         d.push()
     }
 </script>
-
 <div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
-
-
-
-
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
