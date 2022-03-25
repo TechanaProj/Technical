@@ -72,7 +72,7 @@
         $("#txtFromDate").val($(this).parent().parent().children().get(5).getAttribute("data-date"))
         $("#txtToDate").val($(this).parent().parent().children().get(6).getAttribute("data-date"))        
         operation = 'update'
-
+        $("#btnSave").text('Update')
     })
 
 
@@ -96,6 +96,7 @@
         $("#txtFromDate").val('')
         $("#txtToDate").val('')
         operation = 'save'
+        $("#btnSave").text('save')
         $("#tblBody").empty().append(data);
 
     }
@@ -116,7 +117,7 @@
             $("#txtFromDate").val(''),
             $("#txtToDate").val(''),
             operation = 'save'
-
+            $("#btnSave").text('save')
 
             $("#tblBody").empty().append(data);
 
@@ -167,11 +168,11 @@
         var t = $('option:selected',this).text()
         $("#txtCode").val($(this).val())
         $("#txtValue").val('')
-            $("#txtUnit").val('')
-            $("#txtFromDate").val('')
+        $("#txtUnit").val('')
+        $("#txtFromDate").val('')
         $("#txtToDate").val('')
         operation='save'
-           
+        $("#btnSave").text('save')
 
 
 
@@ -245,7 +246,7 @@
                                    
                                     <td>
 
-                                        <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
+                                        <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px">Save</a>
                                     </td>
 
 

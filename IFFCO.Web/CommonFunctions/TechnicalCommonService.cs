@@ -1995,7 +1995,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         //---------------------------FACTOR MASTER-----------------------------------//
         public List<SelectListItem> GetFactorList()
         {
-            var data = _context.GetSQLQuery("SELECT DISTINCT  FACTOR_MASTER.FR_CODE, FACTOR_MASTER.FR_NAME FROM FACTOR_MASTER WHERE fr_code in ('AMMSTEN', 'NGCOST', 'NAPCOST', 'HPSTCOST', 'POWCOST', 'STF', 'TOTAL_EN')");
+            var data = _context.GetSQLQuery("SELECT DISTINCT  FACTOR_MASTER.FR_CODE, FACTOR_MASTER.FR_NAME FROM FACTOR_MASTER WHERE fr_code in ('AMMSTEN', 'NGCOST', 'NAPCOST', 'HPSTCOST', 'POWCOST', 'STF', 'TOTAL_EN','NEEMCOST')");
             return data.AsEnumerable().Select(e => new SelectListItem
             {
                 Text = e.Field<string>("FR_NAME"),

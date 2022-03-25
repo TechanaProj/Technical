@@ -13,7 +13,7 @@
             <td>@item.FrValue</td>
             <td data-date="@item.EffectiveFromDate.ToString("yyyy-MM-dd")">@item.EffectiveFromDate.ToString("dd-MMM-yyyy")</td>
             <td data-date="@{ var z = item.EffectiveToDate == null ? "" : item.EffectiveToDate.Value.ToString("yyyy-MM-dd"); @z }" style="text-align:left !important">@{ var d = item.EffectiveToDate == null ? "" : item.EffectiveToDate.Value.ToString("dd-MMM-yyyy"); @d }</td>
-            <td style="text-align:left !important"><a class="btn btn-xs btn-dark edit" style="border:1px solid blue;margin-bottom:1px">&nbsp;&nbsp;<i class="fa fa-pen"></i></a></td>
+            <td style="text-align:left !important"><a class="btn btn-xs btn-dark edit" style="border:1px solid blue;margin-bottom:1px">&nbsp;&nbsp;<i class="fa fa-pen"></i> &nbsp;EDIT</a></td>
         </tr>
     
 }

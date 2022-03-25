@@ -1,16 +1,18 @@
 ﻿
 @{ 
     List<EnergyFactor> data = ViewBag.records;
+    int count = 1;
 }
 
 @foreach (var item in data)
 {
     <tr>
+        <td>@(count++)</td>
         <td>@item.FromDate</td>
         <td>@item.ToDate</td>
         <td>@item.PrCode</td>
         <td>@item.EFFUnit</td>
-        <td>@item.PrValue</td>
+        <td style="text-align:left">@item.PrValue</td>
         
         
     </tr>

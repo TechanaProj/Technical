@@ -75,7 +75,7 @@
             $("#txtUnit").val(''),
             $("#txtFromDate").val(''),
             $("#txtToDate").val(''),
-               $("#btnSave").attr("data-operation", "save")
+            $("#btnSave").attr("data-operation", "save")
 
 
         $("#tblBody").empty().append(data);
@@ -86,7 +86,7 @@
     $(document).on("click","#btnSave",function () {
         debugger;
 
-        var operation = $(this).data("operation")
+        var operation = $(this).text().toLowerCase();
         if ($("#txtValue").val() == '') {
             CommonAlert("error", "Value is required", null, null, "error");
             return;
@@ -142,7 +142,7 @@
 
     $(document).on("click", ".edit", function () {
 
-       
+        debugger;
             $("#txtSno").val($(this).parent().parent().children().get(0).innerHTML);
             $("#txtPlant_cat").val($(this).parent().parent().children().get(1).innerHTML)
             $("#txtType").val($(this).parent().parent().children().get(2).innerHTML)
@@ -156,8 +156,8 @@
             $("#txtPCDate").val($(this).parent().parent().children().get(10).innerHTML)
             $("#txtPRDate").val($(this).parent().parent().children().get(11).innerHTML)
             $("#btnSave").attr("data-operation","update")
-
-})
+               $("#btnSave").text('Update')
+    })
 
     $(".copy").click(function () {
         debugger;
@@ -220,7 +220,7 @@
                         </div>
                         <div class="col-sm-2 col-md-1">
                             <div>
-                                <input class="form-control non" value="" id="txtFYear" type="text" />
+                                <input placeholder="YYYY-YY" class="form-control non" value="" id="txtFYear" type="text" />
                                
                             </div>
                         </div>
@@ -318,7 +318,7 @@
 
                                     </td>
                                     <td>
-                                        <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i></a>
+                                        <a class="btn   btn-default" id="btnSave" data-operation="save" style="border:1px solid blue;margin-bottom:1px">Save</a>
                                     </td>
 
 
