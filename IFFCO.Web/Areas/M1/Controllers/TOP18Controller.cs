@@ -66,44 +66,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-            //try
-            //{
-            //    if (op == "update")
-            //    {
-            //        int i = TechnicalCommonService.UpdateRecordsTOP18(Sno, Plant_cat, Uom, Pno, APR, MAY, JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
-            //        if (i > 0)
-            //        {
-            //            List<TOP3Data> data = TechnicalCommonService.GetRecordsTOP3(finyear, plant);
-            //            ViewBag.records = data;
-            //        }
-            //        else if (i == -1)
-            //        {
-            //            CommonViewModel.errorMessage = "Sno,Fin Year and Plant must be unique";
-            //            return Json(CommonViewModel);
-            //        }
-            //    }
-            //    int i = TechnicalCommonService.SaveRecordsTOP18(Sno, Plant_cat, Uom, Pno, APR, MAY,  JUN, JUL, AUG, SEP, OCT, NOV, DEC, JAN, FEB, MAR, finyear, plant);
-            //    if (i > 0)
-            //    {
-            //        List<TOP18Data> data = TechnicalCommonService.GetRecordsTOP18(finyear, plant);
-            //        ViewBag.records = data;
-            //    }
-            //    else if (i == -1)
-            //    {
-            //        CommonViewModel.errorMessage = "Personel No already addedd";
-            //        return Json(CommonViewModel);
-            //    }
-
-            //}
-            //catch (Exception ex)
-            //{
-
-            //    commonException.GetCommonExcepton(CommonViewModel, ex);
-            //    CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
-            //    CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
-            //    return Json(CommonViewModel);
-
-            //}
+            
 
             try
             {

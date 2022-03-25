@@ -4,6 +4,7 @@
 <script src="~/js/TechnicalReporting.js"></script>
 @{
     var rights = ViewBag.rights;
+    int count= 1;
 }
 <script>
        $(document).ready(function () {
@@ -212,18 +213,21 @@
                 </div>
                 <div class="row form-sm" style="padding-left:20px;padding-right:20px;">
                     <div class="table-responsive scroll-tbl">
-                        <table class="compact nowrap table  table-hover" style="padding-bottom:3px;" id="">
+                        <table class="compact nowrap table table-bordered  table-striped" style="padding-bottom:3px;" id="">
                             <thead>
+                                
                                 <tr class="bg-primary">
+                                    <th>#</th>
                                     <th>From Date</th>
                                     <th>To Date</th>
                                     <th>PR Code</th>
-                                    <th>EFF Unit</th>
-                                    <th style="width:10%">PR Value</th>
-                                    <th style="width:10%;text-align:center !important"></th>
+                                    <th width="20%">EFF Unit</th>
+                                    <th style="text-align:left">PR Value</th>
+                                    
 
                                 </tr>
                                 <tr>
+                                    <td></td>
                                     <td><input value="@dt.ToString("yyyy-MM-dd")" id="txtEFromDate" type="date" class="form-control" style="border:1px solid blue" /></td>
                                     <td><input value="@dt1.ToString("yyyy-MM-dd")" id="txtEToDate" type="date" class="form-control" style="border:1px solid blue" /></td>
                                     <td>
@@ -239,11 +243,11 @@
                                     
                                     
                                     <td><input id="txtUnit" type="text" class="form-control" style="border:1px solid blue" /></td>
-                                    <td><input id="txtPrValue" type="number" step="any" class="form-control" style="border:1px solid blue" /></td>
                                     <td>
-                                        <a class="btn btn-sm btn-default" id="btnSave" style="border:1px solid blue"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
-
+                                        <input id="txtPrValue" type="number" step="any" class="form-control" style="border:1px solid blue;width:80%;display:inline-block" />
+                                        <a class="btn btn-default" id="btnSave" style="border:1px solid blue;margin-bottom:1px"><i class="fa fa-plus"></i>&nbsp;&nbsp;ADD</a>
                                     </td>
+                                    
 
                                 </tr>
                             </thead>
@@ -251,11 +255,12 @@
                                 @foreach (var item in data)
                                 {
                                     <tr>
+                                        <td>@(count++)</td>
                                         <td>@item.FromDate</td>
                                         <td>@item.ToDate</td>
                                         <td>@item.PrCode</td>
                                         <td>@item.EFFUnit</td>
-                                        <td>@item.PrValue</td>
+                                        <td style="text-align:left">@item.PrValue</td>
 
 
 
