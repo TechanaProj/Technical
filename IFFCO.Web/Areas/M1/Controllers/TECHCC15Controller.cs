@@ -75,9 +75,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             if ((TO_DATE.ToString("DD/MM/YYYY") == new DateTime(FROM_DATE.Year,FROM_DATE.Month,DateTime.DaysInMonth(FROM_DATE.Year,FROM_DATE.Month)).ToString("DD/MM/YYYY")))
             {
                 List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-                oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
-                oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TO_DATE", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
-                //oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
+                oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "fr_date", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
+                oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "t_date", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
+                
                 try
                 {
                     int a = _context.ExecuteProcedure("XIIAB_PROC", oracleParameterCollecion);

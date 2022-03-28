@@ -87,10 +87,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             }
 
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "from_date", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "to_date", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "ID1", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "ID2", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "input", OracleDbType = OracleDbType.VarChar, Value = ForReport });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TPE", OracleDbType = OracleDbType.VarChar, Value = ForReport });
 
             try
             {

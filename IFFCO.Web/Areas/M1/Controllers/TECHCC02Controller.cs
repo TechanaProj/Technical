@@ -76,8 +76,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             int count = 0;
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "REP_DATE", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TO_DATE", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TILL_DATE", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
             if ((FromDate.ToString("yyyyMM") == DateTime.Now.AddMonths(-1).ToString("yyyyMM") && DateTime.Now.Day <= 13) || FromDate.ToString("yyyyMM") == DateTime.Now.AddMonths(0).ToString("yyyyMM"))
             {
@@ -99,32 +99,18 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     {
                         try
                         {
-                            int a = _context.ExecuteProcedure("DAILYFUNCTION", oracleParameterCollecion);
-                            if (a == -1)
+                            _context.ExecuteProcedure("DAILYFUNCTION_NEEM", oracleParameterCollecion);
+                            Alert alert = new Alert
                             {
-                                Alert alert = new Alert
-                                {
-                                    name = "ALERT17",
-                                    message = "Compution have been completed successfully !",
-                                    type = "success"
+                                name = "ALERT17",
+                                message = "Compution have been completed successfully !",
+                                type = "success"
 
-                                };
-                                return Json(alert);
-                            }
-                            else
-                            {
-                                _context.ExecuteProcedure("DAILYFUNCTION_NEEM", oracleParameterCollecion);
-                                Alert alert = new Alert
-                                {
-                                    name = "ALERT17",
-                                    message = "Compution have been completed successfully !",
-                                    type = "success"
-
-                                };
-                                return Json(alert);
-                            }
+                            };
+                            return Json(alert);
 
                         }
+
                         catch (Exception)
                         {
                             Alert alert = new Alert

@@ -77,8 +77,12 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 if (report == "D")
                 {
                     List<OracleParameter> oracleParameterCollecion1 = new List<OracleParameter>();
-                    oracleParameterCollecion1.Add(new OracleParameter() { ParameterName = "FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
-                    oracleParameterCollecion1.Add(new OracleParameter() { ParameterName = "TO_DATE", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
+                    oracleParameterCollecion1.Add(new OracleParameter() { ParameterName = "I_DT1", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
+                    oracleParameterCollecion1.Add(new OracleParameter() { ParameterName = "I_DT2", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
+                    oracleParameterCollecion1.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
+
+
+
                     int a1 = _context.ExecuteProcedure("NG_ANALYSIS", oracleParameterCollecion1);
                     if (a1 == -1)
                     {
@@ -97,9 +101,10 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 else
                 {
                     List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
-                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TO_DATE", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
-                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "report", OracleDbType = OracleDbType.VarChar, Value = report });
+                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FRM_DATE", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
+                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "T_DATE", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
+                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERS_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
+                    oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "INPUT", OracleDbType = OracleDbType.VarChar, Value = report });
                     int a2 = _context.ExecuteProcedure("NG_ANALYSIS1", oracleParameterCollecion);
                     if (a2 == -1)
                     {
