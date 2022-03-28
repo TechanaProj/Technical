@@ -1,0 +1,1991 @@
+﻿CREATE OR REPLACE PROCEDURE TECHANA.PMIS_DESPATCH(I_DT IN DATE) IS
+
+     V_AN_PROD VARCHAR2(600);
+    V_AN_PROD1 NUMBER;
+    V_FYEAR CHAR(4);
+    V_START_DATE DATE;
+
+    V_DESP NUMBER:=0;V_MDESP NUMBER:=0;V_YDESP NUMBER:=0;
+    V_OS554M NUMBER:=0;V_OS555M NUMBER:=0;V_OS563M NUMBER:=0;V_OS565M NUMBER:=0;
+    V_U1502M NUMBER:=0;V_U1503M NUMBER:=0;V_U2503M NUMBER:=0;V_U2504M NUMBER:=0;
+
+ BEGIN
+
+
+    BEGIN
+    SELECT SUM(NVL(OS_554,0)),SUM(NVL(OS_555,0)),SUM(NVL(OS_563,0)),SUM(NVL(OS_565,0)),
+    SUM(NVL(U1_502,0)),SUM(NVL(U1_503,0)),SUM(NVL(U2_503,0)),SUM(NVL(U2_504,0))
+    INTO    V_OS554M,V_OS555M,V_OS563M,V_OS565M,V_U1502M,V_U1503M,V_U2503M,V_U2504M
+    FROM DAILYTECH_OUTPUT WHERE DATA_DATE BETWEEN
+    TO_DATE('01'||TO_CHAR(I_DT,'MMYY'),'DDMMYY') AND I_DT;
+EXCEPTION
+    WHEN NO_DATA_FOUND THEN
+    NULL;
+    END;
+begin
+V_FYEAR:=TO_CHAR(I_DT,'YYYY');
+V_START_DATE:=TO_DATE('01'||'04'||V_FYEAR,'DDMMYYYY');
+IF  TO_CHAR(I_DT,'MM')<'04' THEN
+          V_FYEAR:= V_FYEAR-1;
+         V_START_DATE:=TO_DATE('01'||'04'||V_FYEAR,'DDMMYYYY');
+END IF;
+end;
+    --    an_desp := text_io.fopen('G:\PMIS_DATAN\an_desp.txt','W');
+
+
+begin
+        SELECT  NVL(OS_554,0),NVL(V_OS554M,0),NVL(OS_558,0) INTO V_DESP,V_MDESP,V_YDESP
+    FROM DAILYTECH_OUTPUT
+     WHERE DATA_DATE=I_DT;
+
+    if v_ydesp<>0 then
+        begin
+     insert into  crs_daily_despatch_dtls
+       values(I_DT,3,'A01',1,3,'KD', V_DESP,V_MDESP,V_YDESP );
+   EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+----values(I_DT,3,'A01',1,1,'GJ', V_DESP,V_MDESP,V_YDESP );
+     null;
+     end;
+     end if;
+     END ;
+
+    begin
+
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+
+                SELECT  NVL(OS_559,0) INTO V_YDESP
+      FROM DAILYTECH_OUTPUT
+     WHERE DATA_DATE=I_DT;
+
+     if V_YDESP<>0 then
+     begin
+     insert into   crs_daily_despatch_dtls select I_DT,702,'A02',1,3,'KD',
+     NVL(OS_555,0),NVL(V_OS555M,0),NVL(OS_559,0) FROM DAILYTECH_OUTPUT
+     WHERE DATA_DATE=I_DT;
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+     null;
+
+     END ;
+        end if;
+        end ;
+    begin
+
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+
+    SELECT  NVL(OS_564,0) INTO V_YDESP
+    FROM DAILYTECH_OUTPUT WHERE DATA_DATE=I_DT;
+    if V_YDESP<>0 then
+
+     begin
+     insert into   crs_daily_despatch_dtls select I_DT,3,'A01',2,1,'91',
+     NVL(OS_563,0),NVL(V_OS563M,0),NVL(OS_564,0) FROM DAILYTECH_OUTPUT
+     WHERE DATA_DATE=I_DT;
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+     null;
+    END ;
+     end if;
+    end;
+
+            begin
+
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+
+                SELECT  NVL(OS_566,0) INTO V_YDESP
+    FROM DAILYTECH_OUTPUT
+     WHERE DATA_DATE=I_DT;
+     if V_YDESP<>0 then
+
+            begin
+     insert into   crs_daily_despatch_dtls select I_DT,702,'A02',2,1,'91',
+     NVL(OS_565,0),NVL(V_OS565M,0),NVL(OS_566,0) FROM DAILYTECH_OUTPUT
+     WHERE DATA_DATE=I_DT;
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+null;
+end ;
+end if;
+
+ END ;
+
+--Bihar---
+BEGIN
+    SELECT SUM(NVL(rlQTY1,0))into v_an_prod1
+    --FROM STWISEDESP@iffco.world
+      FROM STWISEDESP
+      WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+     insert into   crs_daily_despatch_dtls select I_DT,3,'FUC',1,1,'BH',
+     SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY1,0),0))
+     ,SUM(NVL(rlQTY1,0))
+     --FROM STWISEDESP@iffco.world
+      FROM STWISEDESP
+      where  DESPDATE
+         BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+    EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+
+     END ;
+    END;
+ELSE NULL;
+    END IF;
+END;
+
+BEGIN
+        SELECT SUM(NVL(rlQTY2,0))into v_an_prod1
+       -- FROM STWISEDESP@iffco.world
+        FROM STWISEDESP
+          WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+            begin
+
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+     insert into   crs_daily_despatch_dtls select I_DT,702,'FUD',1,1,'BH',
+     SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0))
+     --FROM STWISEDESP@iffco.world
+     FROM STWISEDESP
+       WHERE DESPDATE
+         BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+    END;
+ELSE NULL;
+END IF;
+END;
+
+--Bihar Neem--
+BEGIN
+    SELECT SUM(NVL(rlQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+                        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+     insert into   crs_daily_despatch_dtls select I_DT,3,'FUA',1,1,'BH',
+     SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY1nm,0),0))
+     ,SUM(NVL(rlQTY1nm,0)) FROM STWISEDESP@iffco.world  where  DESPDATE
+         BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+    EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+    END;
+ELSE NULL;
+    END IF;
+END;
+
+BEGIN
+        SELECT SUM(NVL(rlQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+            begin
+                    V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+     insert into   crs_daily_despatch_dtls select I_DT,702,'FUB',1,1,'BH',
+     SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) FROM STWISEDESP@iffco.world   WHERE DESPDATE
+         BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+    END;
+ELSE NULL;
+END IF;
+END;
+--Bihar Neem--
+
+--BIHAR-45KG
+BEGIN
+    SELECT SUM(NVL(rlQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+                        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+     insert into   crs_daily_despatch_dtls select I_DT,3,'FUC',1,1,'BH',
+     SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY1nm45,0),0))
+     ,SUM(NVL(rlQTY1nm45,0)) FROM STWISEDESP@iffco.world  where  DESPDATE
+         BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+    EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+    END;
+ELSE NULL;
+    END IF;
+END;
+
+BEGIN
+        SELECT SUM(NVL(rlQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+            begin
+                    V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+     insert into   crs_daily_despatch_dtls select I_DT,702,'FUD',1,1,'BH',
+     SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) FROM STWISEDESP@iffco.world   WHERE DESPDATE
+         BETWEEN V_START_DATE AND I_DT AND statecd = 'BH';
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+    END;
+ELSE NULL;
+END IF;
+END;
+---BIHAR 45 KG------
+---CG---
+BEGIN
+        SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+            begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world where  DESPDATE
+      BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'CG',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+      null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+    SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY2,0),0))
+     ,SUM(NVL(rlQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+     FROM STWISEDESP@iffco.world
+   WHERE  DESPDATE BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'CG',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+---CG---
+---CG  Neem---
+BEGIN
+        SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+            begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world where  DESPDATE
+      BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'CG',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+      null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY2nm,0),0))
+     ,SUM(NVL(rlQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+     FROM STWISEDESP@iffco.world
+   WHERE  DESPDATE BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'CG',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+---CG Neem---
+---CG 45 KG---
+BEGIN
+        SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+            begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world where  DESPDATE
+      BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'CG',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+      null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY2nm45,0),0))
+     ,SUM(NVL(rlQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+     FROM STWISEDESP@iffco.world
+   WHERE  DESPDATE BETWEEN V_START_DATE AND I_DT AND statecd = 'CG';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'CG',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+
+
+---GJ--
+BEGIN
+    SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY1,0),0))
+     ,SUM(NVL(rlQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'GJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+      null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY2,0),0))
+     ,SUM(NVL(rlQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'GJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---GJ--
+
+
+---GJ Neem--
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY1nm,0),0))
+     ,SUM(NVL(rlQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'GJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+      null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY2nm,0),0))
+     ,SUM(NVL(rlQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'GJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---GJ Neem--
+
+---GJ 45KG---
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY1nm45,0),0))
+     ,SUM(NVL(rlQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'GJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+      null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(rlQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(rlQTY2nm45,0),0))
+     ,SUM(NVL(rlQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'GJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'GJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----GJ 45KG
+
+--HP--
+BEGIN
+    SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'HP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'HP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+
+END;
+ELSE NULL;
+END IF;
+END;
+--HP--
+--HP Neem--
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'HP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'HP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+--HP Neem--
+
+--HP 45KG---
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'HP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'HP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---HP 45KG
+
+----HR---
+BEGIN
+        SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+    SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+   BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+----HR---
+----HR NEEM---
+BEGIN
+        SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+   BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+----HR Neem---
+---HR 45KG---
+
+/*BEGIN
+        SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;*/
+------
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+END;
+ELSE NULL;
+END IF;
+END;
+---------
+
+
+
+
+
+
+/*BEGIN
+    SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+   BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;*/
+-----
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'HR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'HR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+----
+----HR 45KG---
+---JK---
+BEGIN
+    SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'JK',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'JK',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---JK---
+---JK Neem---
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'JK',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'JK',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---JK Neem---
+---JK 45---
+BEGIN
+    SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+  FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'JK',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'JK';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'JK',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---JK Neem---
+
+---MP---
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+ insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'MP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+ END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'MP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---MP---
+---MP Neem---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+ insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'MP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+ END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'MP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---MP Neem---
+
+---MP 45KG---
+---MP Neem---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+ insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'MP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+ END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+    SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'MP';
+insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'MP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---MP 45KG---
+
+
+---NP--
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+ insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'NP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'NP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---NP--
+---NP Neem--
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+ insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'NP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'NP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---NP Neem--
+---NP 45 KG--
+
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+        V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+ insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'NP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'NP';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'NP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---NP 45 kG
+---OR----
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'OR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'OR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---OR----
+---OR Neem----
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'OR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'OR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---OR Neem----
+
+--OR 45 KG--
+---OR Neem----
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'OR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'OR';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'OR',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---OR 45KG--
+
+
+----PB---
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'PB',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'PB',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+----PB---
+----PB Neem---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'PB',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'PB',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+----PB Neem---
+----PB 45KG---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'PB',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'PB';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'PB',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+----PB 45KG---
+-----RJ---
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'RJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'RJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----RJ---
+-----RJ Neem---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'RJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'RJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----RJ Neem---
+
+---RJ 45KG--
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'RJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'RJ';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'RJ',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----RJ 45KG---
+-----UP---
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'UP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+       insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'UP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----UP---
+
+-----UP neem---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'UP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+       insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'UP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----UP Neem---
+
+-----UP 45KG---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'UP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UP';
+       insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'UP',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+-----UP Neem---
+-----UC---
+BEGIN
+SELECT SUM(NVL(RLQTY1,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+                select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1,0),0))
+     ,SUM(NVL(RLQTY1,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FU7',1,1,'UC',V_DESP,V_MDESP,V_YDESP);
+    EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2,0),0))
+     ,SUM(NVL(RLQTY2,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+       insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FU6',1,1,'UC',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---UC---
+
+-----UC Neem---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+                select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm,0),0))
+     ,SUM(NVL(RLQTY1nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUA',1,1,'UC',V_DESP,V_MDESP,V_YDESP);
+    EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm,0),0))
+     ,SUM(NVL(RLQTY2nm,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+       insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUB',1,1,'UC',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---UC Neem---
+-----UC 45KG---
+BEGIN
+SELECT SUM(NVL(RLQTY1nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+                select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY1nm45,0),0))
+     ,SUM(NVL(RLQTY1nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'FUC',1,1,'UC',V_DESP,V_MDESP,V_YDESP);
+    EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+BEGIN
+SELECT SUM(NVL(RLQTY2nm45,0))into v_an_prod1 FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+IF V_AN_PROD1<>0 THEN
+    BEGIN
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select SUM(DECODE(to_char(despdate,'dd/mm/yyyy'),to_char(I_DT,'dd/mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(DECODE(to_char(despdate,'mm/yyyy'),to_char(I_DT,'mm/yyyy'),NVL(RLQTY2nm45,0),0))
+     ,SUM(NVL(RLQTY2nm45,0)) INTO V_DESP,V_MDESP,V_YDESP
+   FROM STWISEDESP@iffco.world  WHERE  DESPDATE
+BETWEEN V_START_DATE AND I_DT AND statecd = 'UC';
+       insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'FUD',1,1,'UC',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+END;
+ELSE NULL;
+END IF;
+END;
+---UC 45kg---
+
+        begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+                select NVL(U1_502,0),V_U1502M,NVL(U1_528,0)
+          INTO V_DESP,V_MDESP,V_YDESP
+         from dailytech_output where data_date=I_DT;
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'A01',9,2,'11',V_DESP,V_MDESP,V_YDESP);
+     EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+
+     END ;
+
+        begin
+                    V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+                        select NVL(U1_503,0),V_U1503M,NVL(U1_529,0)
+          INTO V_DESP,V_MDESP,V_YDESP
+         from dailytech_output where data_date=I_DT;
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,3,'A01',9,2,'12',V_DESP,V_MDESP,V_YDESP);
+          EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+
+      null;
+
+     END ;
+        begin
+                V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select NVL(U2_503,0),V_U2503M,NVL(U2_532,0)
+          INTO V_DESP,V_MDESP,V_YDESP
+         from dailytech_output where data_date=I_DT;
+      insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'A02',9,2,'21',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+    begin
+            V_DESP:=0;V_MDESP:=0;V_YDESP:=0;
+            select NVL(U2_504,0),V_U2504M,NVL(U2_533,0)
+          INTO V_DESP,V_MDESP,V_YDESP
+         from dailytech_output where data_date=I_DT;
+     insert into   crs_daily_despatch_dtls VALUES( I_DT,702,'A02',9,2,'22',V_DESP,V_MDESP,V_YDESP);
+EXCEPTION
+    WHEN DUP_VAL_ON_INDEX THEN
+    null;
+     END ;
+
+
+
+ END;
+/
