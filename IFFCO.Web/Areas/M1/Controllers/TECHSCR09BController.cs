@@ -1,4 +1,5 @@
 ﻿
+using Devart.Data.Oracle;
 using IFFCO.HRMS.Service;
 using IFFCO.TECHPROD.Web.CommonFunctions;
 using IFFCO.TECHPROD.Web.Controllers;
@@ -7,7 +8,8 @@ using IFFCO.TECHPROD.Web.ViewModels;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
-
+using System.Collections.Generic;
+using System.Data;
 
 namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 {
@@ -39,59 +41,72 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
 
 
-        public ActionResult GenerateReport(DateTime Date, string ReportType,string Operation)
+        public ActionResult SendData(DateTime dt, string ReportType, string Operation)
         {
-            string Report = "";
-            string QueryString = String.Empty;
+
+
 
             if (Operation.ToLower() == "send-data")
             {
 
+                if (dt > DateTime.Now.Date)
+                {
+                    Alert alert = new Alert
+                    {
+                        name = "ERROR",
+                        message = "Date can not be greatter than Today's Date",
+                        type = "error"
+
+                    };
+                    return Json(alert);
+                }
+
+
+                List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+                oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "I_DT", OracleDbType = OracleDbType.VarChar, Value = dt.Date() });
+                oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+
+                try
+                {
+                    int a = _context.ExecuteProcedure("PMIS_MAIN", oracleParameterCollecion);
+
+                    if (a == -1)
+                    {
+                        Alert alert = new Alert
+                        {
+                            name = "SUCCESS",
+                            message = oracleParameterCollecion[4].Value.ToString(),
+                            type = "success"
+
+                        };
+                        return Json(alert);
+                    }
+                    else
+                    {
+                        Alert alert = new Alert
+                        {
+                            name = "NODATA",
+                            message = "No Data Found For This Period",
+                            type = "warning"
+                        };
+                        return Json(alert);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Alert alert = new Alert
+                    {
+                        name = "Error",
+                        message = "Internal Server error",
+                        type = "error"
+                    };
+                    return Json(alert);
+                }
+
+               
             }
-            else
-            {
-                Report reportobj = GenerateReportData(Date, ReportType);
-                string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
-                Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
-                CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
-                CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
-                CommonViewModel.Report = Report;
-            }
+
             return Json(CommonViewModel);
         }
-        public Report GenerateReportData(DateTime dt, string ReportType)
-        {
-            int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            Report ReportData = new Report();
-            ReportData.ReportFormat = "PDF";
-            ReportData.Query = "I_DT=" + dt.Date();
-            switch (ReportType)
-            {
-                case "TP6A1":
-                    
-                    ReportData.ReportName = "pmis_down.rep";
-                    break;
-                case "TP6A2":
-                   
-                    ReportData.ReportName = "pmis_prod.rep";
-                    break;
-                case "TP6A3":
-                  
-                    ReportData.ReportName = "pmis_desp.rep";
-                    break;
-                case "TP6A4":
-                   
-                    ReportData.ReportName = "pmis_stock.rep";
-                    break;
-                default:
-
-                    break;
-
-            }
-
-            return ReportData;
-        }
-
-
     }
 }
