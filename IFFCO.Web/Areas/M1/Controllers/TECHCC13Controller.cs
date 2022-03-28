@@ -12,19 +12,19 @@ using System.Collections.Generic;
 namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 {
     [Area("M1")]
-    public class TECHCC14Controller : BaseController<TECHCC04ViewModel>
+    public class TECHCC13Controller : BaseController<TECHCC13ViewModel>
     {
         private readonly ModelContext _context;
         private readonly TechnicalCommonService suggestionCommonService = null;
         private readonly DropDownListBindWeb dropDownListBindWeb = null;
         private readonly ReportRepositoryWithParameters reportRepository = null;
         private readonly PrimaryKeyGen primaryKeyGen = null;
-        CommonException<TECHCC04ViewModel> commonException = null;
+        CommonException<TECHCC13ViewModel> commonException = null;
 
-        public TECHCC14Controller(ModelContext context)
+        public TECHCC13Controller(ModelContext context)
         {
             _context = context;
-            commonException = new CommonException<TECHCC04ViewModel>();
+            commonException = new CommonException<TECHCC13ViewModel>();
             dropDownListBindWeb = new DropDownListBindWeb();
             suggestionCommonService = new TechnicalCommonService();
             reportRepository = new ReportRepositoryWithParameters();
@@ -87,13 +87,14 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             }
 
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "I_DT1", OracleDbType = OracleDbType.VarChar, Value = REP_DATE.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "I_DT2", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FRM_DATE", OracleDbType = OracleDbType.VarChar, Value = REP_DATE.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "T_DATE", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
-           
+          
+
             try
             {
-                int a = _context.ExecuteProcedure("F1_proc_ERP", oracleParameterCollecion);
+                int a = _context.ExecuteProcedure("WATER_NONPLANT", oracleParameterCollecion);
                 if (a == -1)
                 {
                     Alert alert = new Alert

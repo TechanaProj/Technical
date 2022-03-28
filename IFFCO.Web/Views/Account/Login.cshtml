@@ -64,8 +64,8 @@
                     <input type="password" id="Password" name="Password" required class="form-control" placeholder="Password">
                 </div>
                 <div class="form-group">
-                    <select class="form-control" required name="Module" id="ddlModules" onchange="Validate();"></select>
-                    <input type="hidden" name="ModuleId" id="ModuleHidden" />
+                    <select class="form-control" required name="ModuleId" id="ddlModules" onchange="Validate();"></select>
+                   @*<input type="hidden" name="ModuleId" id="ModuleHidden" />*@
                 </div>
                 <div class="row btn_bottom">
                     <div class="col-6">
@@ -150,11 +150,13 @@
         //    $(".modalLoader").show();
         //});
         function BindDdlModule(data, id) {
-            var strHtml = "<option value='0'>Select Modules</option>"
+           // var strHtml = "<option value='0'>Select Modules</option>"
+            var strHtml = ""
             $.each(data, function (index, Module) {
                 strHtml += "<option value=" + Module.value + ">" + Module.text + "</option>"
             })
             $("#ddlModules").html(strHtml);
+          //  $("#ModuleHidden").val($("#ddlModules").val());
         }
 
         function ForgotPassword() {

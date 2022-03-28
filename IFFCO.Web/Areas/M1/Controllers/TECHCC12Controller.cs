@@ -73,8 +73,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             }
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "REP_DATE", OracleDbType = OracleDbType.VarChar, Value = REP_DATE.Date() });
-            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TO_DATE", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FRM_DATE", OracleDbType = OracleDbType.VarChar, Value = REP_DATE.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "T_DATE", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
 
             try

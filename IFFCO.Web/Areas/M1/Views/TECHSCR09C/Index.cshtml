@@ -1,4 +1,6 @@
-﻿<script src="~/js/Common.js"></script>
+﻿
+
+<script src="~/js/Common.js"></script>
 <script src="~/js/TechnicalReporting.js"></script>
 <script type="text/javascript">
 
@@ -6,32 +8,20 @@
 
     });
 
-   // CommonAlert("Alert", "Enter Date  ", null, null, "Warning");
+
 
     $(".ctrlbtn").click(function (e) {
 
-        $(".modalLoader").css("display", "block");
-
-        setTimeout(function () {
-            CommonAjax('/M1/TECHCC12/Execute', "GET", false, "application/json", false, GetResponse, "",
-                {
-
-                    REP_DATE: $("#txtFromDate").val(),
-                    ToDate: $("#txtToDate").val(),
-
-                });
-            $(".modalLoader").hide();
-        }, 10)
+        CommonReportGenerateJS('M1/TECHSCR09C/GenerateReport', {
+             Date: $("#txtFromDate").val(),
+            Operation: $(this).attr('data-report-type'),
+            ReportType: $("#txtReportType").val(),
 
 
+        })
+
+        $(".modalLoader").hide();
     })
-
-    function GetResponse(data) {
-
-    CommonAlert(data.name, data.message, null, null, data.type)
-
-
-    }
 
 </script>
 
@@ -39,11 +29,9 @@
     <form asp-area="M1">
         <div class="plcholder-cn">
             <div class="small-frm">
-                <h3 class="sub-heading1"><span>Non-plant Elect.Computation</span></h3>
+                <h3 class="sub-heading1"><span>PMIS PDF</span></h3>
                 <div class="m-form">
                     <div class="m-form-bx">
-
-
                         <div class="row ">
                             <div class="col-sm-6 col-md-3">
                                 <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
@@ -55,31 +43,27 @@
                                 <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
                             </div>
                             <div class="col-sm-6 col-md-2">
-                                <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
+                                <label class="m-lbl1 m-lbl2">PMIS DATA <span style="color:red;">*</span></label>
                             </div>
                             <div class="col-sm-6 col-md-3">
-                                <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
-                            </div>
-
-                            <div class="col-sm-6 col-md-12 text-center">
-                                <div>
-                                    <hr style="margin-bottom:6px;margin-top:0" />
-                                    <input type="button" data-report-type="0" class="m-btn-1 execute ctrlbtn" value="Execute">
-
-                                </div>
+                                <select class="form-control" id="txtReportType">
+                                    <option value="TP6A1">pmis_down</option>
+                                    <option value="TP6A2">pmis_prod</option>
+                                    <option value="TP6A3">pmis_desp</option>
+                                    <option value="TP6A4">pmis_stock</option>
+                                </select>
                             </div>
                         </div>
+                        <div class="btn-area1">
+                           
+                            <input type="button" data-report-type="execute-query" class="m-btn-1 save ctrlbtn" value="Execute">
 
-
-
-
+                        </div>
                     </div>
-
                 </div>
             </div>
         </div>
     </form>
-
 </div>
 
 
@@ -92,6 +76,5 @@
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 }
-
 
 
