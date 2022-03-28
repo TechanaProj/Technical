@@ -94,7 +94,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 }
                 else
                 {
-                    count = _context.GetScalerFromDB("SELECT COUNT(*) FROM DAILY_TECH_INPUT WHERE DATA_DATE IN('" + FromDate + "','" + ToDate + "') AND FREEZE = 'Y'AND REVISED = 'N' AND SHIFT = 'G'");
+                    count = _context.GetScalerFromDB("SELECT COUNT(*) FROM DAILY_TECH_INPUT WHERE DATA_DATE IN('" + FromDate.Date() + "','" + ToDate.Date() + "') AND FREEZE = 'Y'AND REVISED = 'N' AND SHIFT = 'G'");
                     if (count > 0)
                     {
                         try
