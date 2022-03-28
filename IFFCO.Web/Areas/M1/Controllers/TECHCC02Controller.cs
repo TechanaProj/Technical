@@ -135,7 +135,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         return Json(alert);
                     }
                 }
-            }
+            }   
+
             else
             {
                 Alert alert = new Alert
