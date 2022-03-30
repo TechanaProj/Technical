@@ -101,7 +101,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         name = "SUCCESS",
                         message = "Compution have been completed successfully !",
                         type = "success"
-
+                          
                     };
                     return Json(alert);
                 //}
