@@ -62,7 +62,7 @@
 
                                     <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                 }
-                                else
+                                else if (item.InputType.ToLower() == "ddl")
                                 {
                                     string sel = "";
                                     if (item.InputValue.Trim().ToUpper() == "0")
@@ -79,6 +79,25 @@
                                             <option selected="selected" value="1">YES</option>
                                         </select>
                                     }
+                                }
+                                else if (item.InputType.ToLower() == "ddl-ng-prod")
+                                {
+                                string sel = "";
+                                if (item.InputValue.Trim().ToUpper() == "0")
+                                {
+
+                                <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                    <option selected="selected" value="0">NG</option>
+                                    <option value="1">PROD</option>
+                                </select>
+                                }
+                                else
+                                {
+                                <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                    <option value="0">NG</option>
+                                    <option selected="selected" value="1">PROD</option>
+                                </select>
+                                }
                                 }
 
 
