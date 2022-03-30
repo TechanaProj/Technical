@@ -39,64 +39,64 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public IActionResult Execute(DateTime FromDate, DateTime ToDate)
         {
-            if (FromDate > ToDate)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "From date can not be greatter than ToDate",
-                    type = "error"
+            //if (FromDate > ToDate)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "From date can not be greatter than ToDate",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
-            if (FromDate > DateTime.Now.Date)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "From date can not be greatter than Today's Date",
-                    type = "error"
+            //    };
+            //    return Json(alert);
+            //}
+            //if (FromDate > DateTime.Now.Date)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "From date can not be greatter than Today's Date",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
-            if (ToDate > DateTime.Now)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "ToDate can not be greatter than Today's Date",
-                    type = "error"
+            //    };
+            //    return Json(alert);
+            //}
+            //if (ToDate > DateTime.Now)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "ToDate can not be greatter than Today's Date",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
+            //    };
+            //    return Json(alert);
+            //}
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            if ( ToDate< DateTime.Now.AddDays(-5))
-            {
+            //if ( ToDate< DateTime.Now.AddDays(-5))
+            //{
                
-                    Alert alert = new Alert
-                    {
-                        name = "CANNOT",
-                        message = "Data Exists!Computation can't be done",
-                        type = "warning"
+            //        Alert alert = new Alert
+            //        {
+            //            name = "CANNOT",
+            //            message = "Data Exists!Computation can't be done",
+            //            type = "warning"
 
-                    };
-                    return Json(alert);
+            //        };
+            //        return Json(alert);
                 
-            }
+            //}
 
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "frm_date", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "t_date", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "per_no", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
 
-            try
-            {
+            //try
+            //{
                 int a = _context.ExecuteProcedure("MONTHLY_TECH_INPUTPROC", oracleParameterCollecion);
-                if (a == -1)
-                {
+                //if (a == -1)
+                //{
                     Alert alert = new Alert
                     {
                         name = "ALERT12",
@@ -105,22 +105,22 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     };
                     return Json(alert);
-                }
+                //}
                 
-            }
-            catch (Exception)
-            {
-                Alert alert = new Alert
-                {
-                    name = "Error",
-                    message = "Internal Server error",
-                    type = "error"
-                };
-                return Json(alert);
+            //}
+            //catch (Exception)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "Error",
+            //        message = "Internal Server error",
+            //        type = "error"
+            //    };
+            //    return Json(alert);
 
-            }
+            //}
 
-            return Json("");
+            //return Json("");
 
         }
     }

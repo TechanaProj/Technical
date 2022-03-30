@@ -38,53 +38,53 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public IActionResult Execute(DateTime REP_DATE, DateTime ToDate)
         {
-            if (REP_DATE > ToDate)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "From date can not be greatter than ToDate",
-                    type = "error"
+            //if (REP_DATE > ToDate)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "From date can not be greatter than ToDate",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
-            if (REP_DATE > DateTime.Now.Date)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "From date can not be greatter than Today's Date",
-                    type = "error"
+            //    };
+            //    return Json(alert);
+            //}
+            //if (REP_DATE > DateTime.Now.Date)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "From date can not be greatter than Today's Date",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
-            if (ToDate > DateTime.Now)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "ToDate can not be greatter than Today's Date",
-                    type = "error"
+            //    };
+            //    return Json(alert);
+            //}
+            //if (ToDate > DateTime.Now)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "ToDate can not be greatter than Today's Date",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
+            //    };
+            //    return Json(alert);
+            //}
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            if ((REP_DATE.ToString("yyyyMM") == DateTime.Now.AddMonths(-1).ToString("yyyyMM") && DateTime.Now.Day <= 10) || REP_DATE.ToString("yyyyMM") == DateTime.Now.AddMonths(0).ToString("yyyyMM"))
-            {
+            //if ((REP_DATE.ToString("yyyyMM") == DateTime.Now.AddMonths(-1).ToString("yyyyMM") && DateTime.Now.Day <= 10) || REP_DATE.ToString("yyyyMM") == DateTime.Now.AddMonths(0).ToString("yyyyMM"))
+            //{
 
-                Alert alert = new Alert
-                {
-                    name = "ALERT19",
-                    message = "Previous FY Date please check !",
-                    type = "warning"
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ALERT19",
+            //        message = "Previous FY Date please check !",
+            //        type = "warning"
 
-                };
-                return Json(alert);
+            //    };
+            //    return Json(alert);
 
-            }
+            //}
 
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "FRM_DATE", OracleDbType = OracleDbType.VarChar, Value = REP_DATE.Date() });
@@ -92,11 +92,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
           
 
-            try
-            {
+            //try
+            //{
                 int a = _context.ExecuteProcedure("WATER_NONPLANT", oracleParameterCollecion);
-                if (a == -1)
-                {
+                //if (a == -1)
+                //{
                     Alert alert = new Alert
                     {
                         name = "SUCCESS",
@@ -106,28 +106,28 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     };
                     return Json(alert);
                 }
-                else
-                {
-                    Alert alert = new Alert
-                    {
-                        name = "NODATA",
-                        message = "No Data Found For This Period",
-                        type = "warning"
-                    };
-                    return Json(alert);
-                }
-            }
-            catch (Exception)
-            {
-                Alert alert = new Alert
-                {
-                    name = "Error",
-                    message = "Internal Server error",
-                    type = "error"
-                };
-                return Json(alert);
+            //    else
+            //    {
+            //        Alert alert = new Alert
+            //        {
+            //            name = "NODATA",
+            //            message = "No Data Found For This Period",
+            //            type = "warning"
+            //        };
+            //        return Json(alert);
+            //    }
+            //}
+            //catch (Exception)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "Error",
+            //        message = "Internal Server error",
+            //        type = "error"
+            //    };
+            //    return Json(alert);
 
-            }
+            //}
 
 
 

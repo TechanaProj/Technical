@@ -39,39 +39,39 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public IActionResult Execute(DateTime FromDate, DateTime ToDate,string Compute)
         {
-            if (FromDate > ToDate)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "From date can not be greatter than ToDate",
-                    type = "error"
+            //if (FromDate > ToDate)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "From date can not be greatter than ToDate",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
-            if (FromDate > DateTime.Now.Date)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "From date can not be greatter than Today's Date",
-                    type = "error"
+            //    };
+            //    return Json(alert);
+            //}
+            //if (FromDate > DateTime.Now.Date)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "From date can not be greatter than Today's Date",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
-            if (ToDate > DateTime.Now)
-            {
-                Alert alert = new Alert
-                {
-                    name = "ERROR",
-                    message = "ToDate can not be greatter than Today's Date",
-                    type = "error"
+            //    };
+            //    return Json(alert);
+            //}
+            //if (ToDate > DateTime.Now)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "ERROR",
+            //        message = "ToDate can not be greatter than Today's Date",
+            //        type = "error"
 
-                };
-                return Json(alert);
-            }
+            //    };
+            //    return Json(alert);
+            //}
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             
 
@@ -81,11 +81,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PERSONAL_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "INPUT", OracleDbType = OracleDbType.Char, Value = Compute });
 
-            try
-            {
+            //try
+            //{
                 int a = _context.ExecuteProcedure("NAP_CV", oracleParameterCollecion);
-                if (a == -1)
-                {
+                //if (a == -1)
+                //{
                     Alert alert = new Alert
                     {
                         name = "ALERT12",
@@ -94,31 +94,31 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     };
                     return Json(alert);
-                }
-                else
-                {
-                    Alert alert = new Alert
-                    {
-                        name = "ALERT1",
-                        message = "Either Production Dept Or Techical Dept has not approved data ,Please Check it",
-                        type = "success"
+                //}
+            //    else
+            //    {
+            //        Alert alert = new Alert
+            //        {
+            //            name = "ALERT1",
+            //            message = "Either Production Dept Or Techical Dept has not approved data ,Please Check it",
+            //            type = "success"
 
-                    };
-                    return Json(alert);
-                }
+            //        };
+            //        return Json(alert);
+            //    }
 
-            }
-            catch (Exception)
-            {
-                Alert alert = new Alert
-                {
-                    name = "Error",
-                    message = "Internal Server error",
-                    type = "error"
-                };
-                return Json(alert);
+            //}
+            //catch (Exception)
+            //{
+            //    Alert alert = new Alert
+            //    {
+            //        name = "Error",
+            //        message = "Internal Server error",
+            //        type = "error"
+            //    };
+            //    return Json(alert);
 
-            }
+            //}
 
             
 
