@@ -57,7 +57,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     break;
                 case "save":
-                    break;
+                    CommonViewModel.alert = "Data Saved";
+                    return Json(CommonViewModel);
                 case "approve":
                     CommonViewModel.alert = TechnicalCommonService.ApproveRecordsMONTH(controller, EMP_ID.ToString(), FromDate, ToDate, Gas);
                    
@@ -88,8 +89,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
 
 
-            string alert = TechnicalCommonService.PostRecordsMONTH( FromDate,  ToDate, EMP_ID.ToString(),  Gas,  Input_Value,  Input_Name);
-            return Json(alert);
+            CommonViewModel.alert = TechnicalCommonService.PostRecordsMONTH( FromDate,  ToDate, EMP_ID.ToString(),  Gas,  Input_Value,  Input_Name);
+            return Json(CommonViewModel);
         }
         
     }

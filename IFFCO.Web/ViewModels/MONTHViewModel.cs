@@ -11,6 +11,8 @@ namespace IFFCO.TECHPROD.Web.ViewModels
         public string FromDate { get; set; }
         public string ToDate { get; set; }
         public string Shift { get; set; }
+        public string alert { get; set; }
+
 
     }
 }
