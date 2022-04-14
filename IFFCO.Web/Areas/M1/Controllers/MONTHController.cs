@@ -57,7 +57,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     break;
                 case "save":
-                    CommonViewModel.alert = "Data Saved";
+                    CommonViewModel.alert =  TechnicalCommonService.SumRecordsMONTH(FromDate, ToDate, Gas);
                     return Json(CommonViewModel);
                 case "approve":
                     CommonViewModel.alert = TechnicalCommonService.ApproveRecordsMONTH(controller, EMP_ID.ToString(), FromDate, ToDate, Gas);

@@ -1,0 +1,450 @@
+﻿
+@model IFFCO.DAILYWG.Web.ViewModels.ADMM01ViewModel
+@{
+    // ViewData["Title"] = "Index";
+    // Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style type="text/css">
+    .selected {
+        background: none repeat scroll 0 0 #FFCF8B !important;
+        color: #000000 !important;
+    }
+
+    .select2 {
+        width: -webkit - fill - available !important;
+    }
+</style>
+
+<script src="@Url.Content("~/js/Common.js")"></script>
+<script type="text/javascript">
+    var ProjectId;
+    var ModuleId;
+    var table;
+    $(document).ready(function () {
+        debugger;
+        table = $('#HrmsGrid').DataTable({
+            "order": [[0, "asc"]],
+            "pageLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        });
+        BindGrid([0, 1, 2], [0, 1, 2]);
+        table = $('#HrmsGridDetail').DataTable({
+            "order": [[0, "asc"]],
+            "pageLength": 5,
+            "lengthMenu": [[5, 10, 25, 50, -1], [5, 10, 25, 50, "All"]],
+        });
+        BindGridWithId([0, 1, 2, 3, 4], [0, 1, 2, 3, 4], "#HrmsGridDetail");
+        //var count = Array.from(Array(10).keys());
+        //BindGridWithId(count, count, "#HrmsGridDetail");
+    });
+
+    function GetSelect(id) {
+
+        if ($(id.parentNode.parentNode).hasClass('selected')) {
+            $(id.parentNode.parentNode).removeClass('selected');
+        }
+        else {
+            // $(id.parentNode.parentNode).removeClass('selected');
+            $(id.parentNode.parentNode).addClass('selected');
+            //table.$('id.selected').removeClass('selected');
+            //$(id).addClass('selected');
+
+        }
+
+    }
+    function SHOW_TR_Function1(e, e1, id) {
+        ;
+        var TRID = document.getElementById(e);
+        var TRID1 = document.getElementById(e1);
+        TRID.style.display = '';
+        TRID1.style.display = "none";
+
+    }
+    function HIDE_TR_Function(e) {
+        var TRID = document.getElementById(e); traddpanelCreateMsts
+        TRID.style.display = "none";
+    }
+
+    function Addrow() {
+        debugger;
+        $("#traddpanelCreateMsts").show();
+        $("#ProgramId").val("");
+        $("#txtprgname").val("");
+        $("#Moduleid").val($("#SelectedMod").val());
+        $("#DisplayOrder").val(Number('@Model.ListItem.OrderByDescending(x=>x.DisplayOrder).FirstOrDefault()?.DisplayOrder') + 1);
+        CommonAjax('/M2/ADMM01/SubMenuBind', "GET", false, "application/json", false, BindDropDownWithoutSelect, "#SubMenuName1", { SelectedMod: $("#SelectedMod").val() });
+        $("#diveditmsts").css("display", "block");
+        $("#traddpanelEditMaster").hide();        
+        $("#ProgramId").attr('readonly', false); 
+    }    
+
+     function Editrow(row) {
+         debugger;
+         CommonAjax('/M2/ADMM01/SubMenuBind', "GET", false, "application/json", false, BindDropDownWithoutSelect, "#SubMenuName", { SelectedMod: $("#SelectedMod").val() });
+         CommonAjax('/M2/ADMM01/EditListBind', "GET", false, "application/json", false, EditBindToText, null, { ProgramId: row, SelectedMod: $("#SelectedMod").val() });        
+    }   
+
+    function EditBindToText(data, i) {
+        debugger;
+        $("#EditFormMsts").trigger('reset');
+        $("#traddpanelEditMaster").show();
+        $("#ProgramId1").val(data.programid);
+        $("#txtprgname1").val(data.programname);
+        $("#Moduleid1").val(data.moduleid);
+        $("#DisplayOrder1").val(data.displayOrder);
+        $("#Programtype1").val(data.programtype);
+        $("#SubMenuName").val(data.subMenuName);        
+        $("#ddlstatus1").val(data.activeInactive);
+        $("#diveditmsts").css("display", "block");
+        $("#traddpanelCreateMsts").hide();        
+        $("#ProgramId1").attr('readonly', true); 
+    }
+
+</script>
+
+
+
+<div class="plcholder-cn">
+    <div class="table-area">
+        <div class="table-wrapper">
+
+
+            <div class="table-con">
+                <div class="tableUp">
+                    <div class="btn-area-tbl">
+
+                        <input type="button" class="m-btn-1 addnew @Model.Insert" onclick="GetIndex('/M2/ADMM01/Create?id=@Model.SelectedMod')" value="Add New Module">
+                    </div>
+                    <input asp-for="@Model.SelectedMod" maxlength="255" class="form-control" required type="hidden" id="SelectedMod"/>
+                    <table class="compact nowrap table table-striped table-hover" id="HrmsGrid">
+                        <thead>
+                            <tr>
+                                <th>
+                                    Module Id
+                                </th>
+                                <th>
+                                    Module Name
+                                </th>
+
+                                <th class="table_cell">Action</th>
+                            </tr>
+                            @if (Model.Status == "Create")
+                            {
+                                <tr id="traddpanel">
+                                    <td colspan="3">
+                                        <div>
+                                            <form id="CreateForm" asp-area="M2" asp-controller="ADMM01" asp-action="Create" method="post">
+                                                <table style="width:100%">
+                                                    <tr class="update-row odd">
+                                                        <td style="width:10%">
+                                                            <input asp-for="@Model.Msts.Moduleid" maxlength="20" type="text" id="ModuleId" placeholder="Module Id" onkeyup="this.value = this.value.toUpperCase();" class="form-control" required />
+                                                        </td>
+                                                        <td>
+                                                            <input asp-for="@Model.Msts.Modulename" maxlength="255" class="form-control" required />
+                                                        </td>
+
+
+                                                        <td>
+                                                            <input type="submit" id="createid" value="Save" class="m-btn-1 save" style="float:left;margin-right: 4px" />
+                                                            <input type="button" class="m-btn-1 close1" value="Close" onclick="HIDE_TR_Function('traddpanel')">
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                            @if (Model.Status == "edit")
+                            {
+                                <tr id="traddpanelEdit">
+                                    <td colspan="3">
+                                        <div>
+                                            <form id="EditForm" asp-area="M2" asp-controller="ADMM01" asp-action="Edit" method="post">
+                                                <table style="width:100%">
+                                                    <tr class="update-row odd">
+                                                        <td>
+                                                            <input asp-for="@Model.Msts.Moduleid" readonly maxlength="20" type="text" id="ModuleId" placeholder="Module Id" onkeyup="this.value = this.value.toUpperCase();" class="form-control" required />
+                                                            <input type="hidden" asp-for="@Model.Msts.CreatedBy" />
+                                                            <input type="hidden" asp-for="@Model.Msts.Projectid" />
+                                                        </td>
+                                                        <td>
+                                                            <input asp-for="@Model.Msts.Modulename" maxlength="255" class="form-control" required />
+                                                        </td>
+
+
+                                                        <td>
+                                                            <input type="submit" id="editid" value="Save" class="m-btn-1 save" style="float:left;margin-right: 4px" />
+                                                            <button type="button" class="m-btn-1 close1" onclick="HIDE_TR_Function('traddpanelEdit')">Close</button>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </form>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        </thead>
+                        <tbody>
+
+                            @foreach (var item in Model.List)
+                            {
+                                <tr>
+                                    <td onclick="GetIndex('@(Url.Action("ViewMsts","ADMM01",new { id=item.Moduleid,ProjId=item.Projectid}))')">
+                                        @Html.DisplayFor(modelItem => item.Moduleid)
+                                    </td>
+                                    <td onclick="GetIndex('@(Url.Action("ViewMsts","ADMM01",new { id=item.Moduleid,ProjId=item.Projectid}))')">
+                                        @Html.DisplayFor(modelItem => item.Modulename)
+                                    </td>
+
+                                    <td>
+                                        <a asp-area="M2" asp-controller="ADMM01" asp-action="Edit" asp-route-id="@item.Moduleid" asp-route-ProjId="@item.Projectid" class="addnewitem edit glpicon" data-toggle="modal"><i class="far fa-edit" data-toggle="tooltip" title="" data-original-title="Edit"></i></a>
+                                        @*<a style="cursor:pointer" class="Details glpicon select"  onclick="GenerateListTable('@item.Projectid','@item.Moduleid',this);" ><i class=" fa fa-eye" style='color: black' data-toggle="tooltip" title="View details" data-original-title="Details"></i></a>*@
+                                        <a style="cursor:pointer" class="addnewitem Details glpicon select" asp-area="M2" asp-controller="ADMM01" asp-action="ViewMsts" asp-route-id="@item.Moduleid" asp-route-ProjId="@item.Projectid"><i class=" fa fa-eye" data-toggle="tooltip" title="View details" data-original-title="Details"></i></a>
+                                        <a class="delete glpicon" style="cursor:pointer;" data-toggle="modal" onclick="divShow('/M2/ADMM01/DeleteConfirmed?id=@item.Moduleid&ProjId=@item.Projectid');"><i class="far fa-trash-alt" data-toggle="tooltip" title="" data-original-title="Delete"></i></a>
+
+                                        <input type="hidden" id="hdModuleid" value="@item.Moduleid" />
+                                        <input type="hidden" id="hdProjectid" value="@item.Projectid" />
+                                    </td>
+                                </tr>
+                            }
+
+                        </tbody>
+                    </table>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<div class="plcholder-cn" id="divprojmaster" style="display:none" >*@
+
+    <div class="plcholder-cn" id="divprojmaster">
+        <div class="table-area">
+            <div class="table-wrapper">
+
+
+
+                <div class="table-con">
+                    <div class="tableUp">
+
+                        <div class="btn-area-tbl">
+                            <input type="button" class="m-btn-1 addnew " onclick="Addrow()" value="Add New Program">
+                            @*<a asp-area="SECURITY" asp-controller="SESC55" asp-action="CreateMaster"><span class="m-btn-1 addnew"> Add New</span></a>*@
+                        </div>
+                        @*<div class="table-responsive" id="diveditmsts" style="display:none">*@
+
+                        <div class="table-responsive" id="diveditmsts">
+                            <table class="table table-striped table-hover compact nowrap" id="HrmsGridDetail">
+                                <thead>
+                                    <tr>
+                                        <th>Module Id</th>
+                                        <th>Program Type</th>
+                                        <th>Program Id</th>
+                                        <th>Program Name</th>
+
+
+                                        <th>Sub Menu Name</th>
+                                        <th>Display Order</th>
+
+                                        <th>Active</th>
+                                        <th>Action</th>
+                                    </tr>
+                                    <tr id="traddpanelCreateMsts" style="display:none">
+                                        <td colspan="8">
+                                            <div>
+                                                <form id="EditFormMsts" asp-area="M2" asp-controller="ADMM01" asp-action="CreateMsts" method="post">
+                                                    <table style="width:100%">
+                                                        <tr class="update-row odd">
+                                                            <td style="width:4%">
+                                                                <input value=@ViewBag.ModuleID asp-for="@Model.MstsItem.Moduleid" id="Moduleid" class="form-control" required readonly />
+                                                            </td>
+                                                            <td>
+                                                                <select id="Programtype" asp-for="@Model.MstsItem.Programtype" class="form-control" style="width:100%" required>
+                                                                    <option value="M" selected>Master</option>
+                                                                    <option value="F">Forms</option>
+                                                                    <option value="R">Reports</option>
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input asp-for="@Model.MstsItem.Programid" maxlength="20" type="text" id="ProgramId"  class="form-control UpperText" onkeyup="this.value = this.value.toUpperCase();"  required />
+                                                            </td>
+                                                            <td>
+                                                                <input asp-for="@Model.MstsItem.Programname" id="txtprgname" maxlength="255" class="form-control" required />
+                                                            </td>
+                                                            <td>
+                                                                <select id="SubMenuName1" asp-for="@Model.MstsItem.SubMenuName" class="form-control" style="width:100%">
+                                                                    <option value="">--Select--</option>
+                                                                </select>                                                              
+                                                            </td>
+                                                            <td style="width:4%">
+                                                                <input type="number" asp-for="@Model.MstsItem.DisplayOrder" placeholder="DisplayOrder" maxlength="20" id="DisplayOrder" class="form-control" required />
+                                                            </td>
+                                                            <td>
+                                                                <select id="ddlstatus" class="form-control" asp-for="@Model.MstsItem.ActiveInactive" style="width:100%" required>
+                                                                    <option value="">---Select---</option>
+                                                                    <option value="A">Active</option>
+                                                                    <option value="I">In-Active</option>
+
+                                                                </select>
+                                                            </td>
+                                                            <td>
+                                                                <input type="submit" id="createid" value="Save" class="m-btn-1 save" style="float:left;margin-right: 4px" />
+                                                                <button type="button" class="m-btn-1 close1" onclick="HIDE_TR_Function('traddpanelCreateMsts')">Close</button>
+                                                            </td>
+                                                        </tr>
+                                                    </table>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+
+                                        <tr id="traddpanelEditMaster" style="display:none">
+                                            <td colspan="8">
+                                                <div>
+                                                    <form id="EditFormMsts" asp-area="M2" asp-controller="ADMM01" asp-action="EditMsts" method="post">
+                                                        <table style="width:100%">
+                                                            <tr class="update-row odd">
+                                                                <td style="width:4%">
+                                                                    <input asp-for="@Model.MstsItem.Moduleid" maxlength="255" id="Moduleid1" class="form-control" required readonly />
+
+
+                                                                </td>
+                                                                <td>
+                                                                    <select id="Programtype1" asp-for="@Model.MstsItem.Programtype" class="form-control"  style="width:100%" required>
+                                                                        <option value="M" selected>Master</option>
+                                                                        <option value="F">Forms</option>
+                                                                        <option value="R">Reports</option>
+                                                                    </select>
+
+
+                                                                </td>
+
+                                                                <td>
+                                                                    <input asp-for="@Model.MstsItem.Programid" maxlength="20" type="text" id="ProgramId1" onkeyup="this.value = this.value.toUpperCase();" class="form-control" required readonly />
+                                                                    <input type="hidden" asp-for="@Model.MstsItem.Projectid" />
+                                                                </td>
+                                                                <td>
+                                                                    <input asp-for="@Model.MstsItem.Programname" maxlength="255" id="txtprgname1" class="form-control" required />
+                                                                </td>
+
+
+                                                                <td>
+                                                                    <select id="SubMenuName" asp-for="@Model.MstsItem.SubMenuName" class="form-control" style="width:100%">
+                                                                        <option value="">--Select--</option>
+                                                                    </select>
+                                                                    @*<input asp-for="@Model.admPrgMaster.SubMenuName" maxlength="20" placeholder="SubMenuName" type="text" id="SubMenuName" onkeyup="this.value = this.value.toUpperCase();" class="form-control" required />*@
+                                                                </td>
+                                                                <td style="width:4%">
+                                                                    <input type="number" asp-for="@Model.MstsItem.DisplayOrder" placeholder="DisplayOrder" maxlength="3" id="DisplayOrder1" onkeyup="this.value = this.value.toUpperCase();" class="form-control" required />
+                                                                </td>
+                                                                <td></td>
+                                                                <td></td>
+                                                                <td>
+                                                                    <select id="ddlstatus1" class="form-control" asp-for="@Model.MstsItem.ActiveInactive" style="width:100%" required>
+                                                                        <option value="">---Select---</option>
+                                                                        <option value="A">Active</option>
+                                                                        <option value="I">In-Active</option>
+
+                                                                    </select>
+                                                                </td>
+                                                                <td>
+                                                                    <input type="submit" id="createid" value="Save" class="m-btn-1 save" style="float:left;margin-right: 4px" />
+                                                                    <button type="button" class="m-btn-1 close1" onclick="HIDE_TR_Function('traddpanelEditMaster')">Close</button>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+
+
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var item in Model.ListItem)
+                                    {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Moduleid)
+                                        </td>
+                                        <td>
+                                            @if (item.Programtype == "M")
+                                            {
+                                                <span>Master</span>
+                                            }
+                                            else if (item.Programtype == "F")
+                                            {
+                                                <span>Form</span>
+                                            }
+                                            else if (item.Programtype == "R")
+                                            {
+                                                <span>Report</span>
+                                            }
+                                        </td>
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Programid)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Programname)
+                                        </td>
+
+
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.SubMenuName)
+                                        </td>
+                                        <td>
+                                            @*@Html.DisplayFor(modelItem => item.DisplayOrder)*@
+                                            @Html.Label("DisplayOrder", Convert.ToInt32(item.DisplayOrder).ToString(), new { @style = "color:black" })
+                                        </td>
+                                        <td>
+                                            @if (item.ActiveInactive == "A")
+                                            {
+                                                <span>Active</span>
+                                            }
+                                            else if (item.ActiveInactive == "I")
+                                            {
+                                                <span>In-Active</span>
+                                            }
+                                            @Html.HiddenFor(modelItem => item.ActiveInactive)
+                                            @Html.HiddenFor(modelItem => item.Projectid)
+                                        </td>
+                                        <td>
+                                            
+                                            <input type="button" class="m-btn-1 edit execute" value="edit" onclick="Editrow('@item.Programid');" />
+                                            <a class="delete glpicon " style="cursor:pointer;" data-toggle="modal" onclick="divShow('/M2/ADMM01/DeleteConfirmedChild?id=@item.Moduleid&ProjId=@item.Projectid&PrjType=@item.Programtype&ProgId=@item.Programid');"><i class="far fa-trash-alt" data-toggle="tooltip" title="" data-original-title="Delete"></i></a>
+                                            <input type="hidden" id="hdModuleid" value="@item.Moduleid" />
+                                            <input type="hidden" id="hdProjectid" value="@item.Projectid" />
+                                            <input type="hidden" id="hdProjType" value="@item.Programtype" />
+                                            <input type="hidden" id="hdProgId" value="@item.Programid" />
+
+                                        </td>
+                                    </tr>
+                                    }
+                                </tbody>
+
+                            </table>
+                        </div>
+
+                        @*<div class="table-responsive">
+                                <div id="Loadtable">
+
+                                </div>
+                            </div>*@
+                        <div style="text-align:center">
+                            <input type="button" class="m-btn-1 close1" onclick="GetIndex('/M2/ADMM01/Index')" value="Close" />
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>

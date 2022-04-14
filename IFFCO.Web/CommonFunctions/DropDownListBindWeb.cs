@@ -27,6 +27,40 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             //_unitOfWork = new UnitOfWork(_context, _repositoryProvider);
         }
 
+
+        public List<SelectListItem> GetUnitWithDespatchSecurity(string empid, string moduleid)
+        {
+            StringBuilder sqlquery = new StringBuilder();
+            sqlquery.Append(" select distinct x.unit_code,y.description from (select a.unit_code from adm_emp_unit_access a ");
+            sqlquery.Append(" where a.empid= " + empid + " ");
+            sqlquery.Append(" and   a.moduleid = '" + moduleid + "' ");
+            sqlquery.Append(" and   a.hier_yn = 'N' union Select b.unit_code from  eb_unit_msts b  "); //where b.unit_code = b.process_unit_code 
+            sqlquery.Append(" start with b.unit_code = (select min(c.unit_code) from adm_emp_unit_access c where  c.empid= " + empid + "   ");
+            sqlquery.Append("  and   c.moduleid =  '" + moduleid + "'  ");
+            sqlquery.Append("  and   c.hier_yn = 'Y' )  ");
+            sqlquery.Append("  connect by prior b.unit_code=b.unit_parent_code ) x, eb_unit_msts y  ");
+            sqlquery.Append("  where y.unit_code = x.unit_code order by 1 ");
+            DataTable dt = _context.GetSQLQuery(sqlquery.ToString());
+            var appUnitList = (from DataRow dr in dt.Rows
+                               select new SelectListItem
+                               {
+                                   Text = Convert.ToString(Convert.ToString(dr["UNIT_CODE"] + "-" + dr["DESCRIPTION"])),
+                                   Value = Convert.ToString(dr["unit_code"])
+                               }).ToList();
+
+            return appUnitList;
+        }
+        public List<SelectListItem> AdmSubMenuModuleLOVBind(string Projid)
+        {
+            List<SelectListItem> SubMenuCDLOV = new List<SelectListItem>();
+            SubMenuCDLOV = _context.AdmProjmodMaster.Where(x => x.Projectid == Projid).Select(x => new SelectListItem
+            {
+                Text = string.Concat(x.Moduleid, " || ", x.Modulename),
+                Value = x.Moduleid.ToString()
+            }).ToList();
+
+            return SubMenuCDLOV;
+        }
         public List<SelectListItem> GetSuggestionUnitWithSecurity(string empid, string moduleid)
         {
             StringBuilder sqlquery = new StringBuilder();
@@ -120,7 +154,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         public List<SelectListItem> GetEmpForSecurity(string unit)
         {
             StringBuilder sqlquery = new StringBuilder();
-            sqlquery.Append(" select EMP_NAME name, personal_no  from VW_GBL_SUGG_USER where unit_code = '" + unit + "' order by grade_code asc  ");
+            sqlquery.Append(" select EMP_NAME name, personal_no  from VW_EMPLOYEE_COMPLETE_DTLS_TBL where unit_code = '" + unit + "' order by grade_code asc  ");
             DataTable dt = _context.GetSQLQuery(sqlquery.ToString());
             var appUnitList = (from DataRow dr in dt.Rows
                                select new SelectListItem

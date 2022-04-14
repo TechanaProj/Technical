@@ -1,0 +1,474 @@
+﻿@model IFFCO.DAILYWG.Web.ViewModels.ADMSC01ViewModel
+
+@{
+    //ViewData["Title"] = "Index";
+}
+<script src="~/js/Common.js"></script>
+<script src="~/js/IFFCOToken.js"></script>
+<script>
+
+    function Validate() {
+        if ($('#BagNos').val() < 0 || $('#BagNos').val() > 50000) {
+            CommonAlert("Alert", "Number of Bags Cannot be less than 0 or greater than 50000  ", null, null, "Warning");
+            return false;
+        } else if ($('#FFromDate').val() == "=") {
+            CommonAlert("Alert", "Select From Date ", null, null, "Warning");
+            return false;
+        } else if ($('#FToDate').val() == "") {
+            CommonAlert("Alert", "Select To Date ", null, null, "Warning");
+            return false;
+        } else if ($('#OutDt').val() < $('#InDt').val()) {
+            CommonAlert("Alert", "OUT Date-time cannot be greater than IN Date-time ", null, null, "Warning");
+            return false;
+        }
+        else {
+            debugger;
+            $('#SeaTrfDate').val(Dateformate($('#SeaTrfDate').val())).removeClass("datetime");
+            $('#FFromDate').val(Dateformate($('#FFromDate').val())).removeClass("datetime");
+            $('#FToDate').val(Dateformate($('#FToDate').val())).removeClass("datetime");
+            return true;
+        }
+    }
+
+
+</script>
+<div class="plcholder-cn">
+    <form id="CreateForm" asp-area="M2" asp-controller="ADMSC01" asp-action="Edit" method="post">
+        <div class="table-responsive">
+            <div class="table-area">
+                <div class="table-title">
+                    <div class="btn-area-tbl">
+
+                    </div>
+                </div>
+                <div class="table-wrapper">
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            @*<div class="pd-form-area">*@
+                            <div class="content-box">
+                                <h3 class="sub-heading1"><span>PROGRAM-WISE EMPLOYEE ACCESS</span></h3>
+                                <div class="m-form">
+                                    @*<form asp-area="M5" asp-controller="SEASC02" asp-action="Query" method="post" onsubmit="return Validate();">*@
+
+                                    <div class="m-form">
+                                        <div class="m-form-bx">
+                                            <div class="row form-sm">
+                                                <div class="col-sm-1 col-md-0">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2">Unit Code</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <select id="UnitCD" asp-for="@Model.UnitCD" onchange="PopEmpLOV()" class="form-control select2" asp-items="@(new SelectList(Model.UnitLOV,"Value","Text")) "></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Employee :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-3">
+                                                    <div>
+                                                        <select class="form-control select2 PersonnelNumber" onchange="PopEmpDetail()" asp-for="@Model.PersonnelNumber" id="PersonnelNumber"></select>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.EmployeeName" id="EmployeeName" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Designation" id="Designation" class="form-control" />
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row form-sm">
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Unit :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Unit" id="Unit" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Department :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Department" id="Department" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Section :</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Section" id="Section" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Grade :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Grade" id="Grade" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            <div class="m-form">
+                                <div class="m-form-bx">
+                                    <div class="row form-sm">
+                                        <div class="col-sm-1 col-md-1">
+                                            <div>
+                                                <label class="m-lbl1 m-lbl2">Module :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2 col-md-2">
+                                            <div>
+                                                <select id="ModuleID" asp-for="@Model.ModuleID" asp-items="@(new SelectList(Model.ModuleLOV,"Value","Text")) " class="form-control select2"></select>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2 col-md-1">
+                                            <div>
+                                                <label class="m-lbl1 m-lbl2">Program Type :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2 col-md-2">
+                                            <div>
+                                                <select class="form-control select2" id="ProgramType" asp-for="@Model.ProgramType"><option value="M" selected>Masters</option><option value="F">Forms</option><option value="R">Reports</option></select>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-sm-2 col-md-6">
+                                            <div>
+                                                <input type="button" class="m-btn-1 execute" value="Query" onclick="QueryTable('Main');" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <table class="compact nowrap table table-striped table-hover">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%">
+                                            Program ID
+                                        </th>
+                                        <th>
+                                            Description
+                                        </th>
+                                        <th style="width:10%">
+                                            Type
+                                        </th>
+                                        <th style="text-align:center">
+                                            @{
+                                                string BoolSel = string.Empty;
+                                                if (Model.Select != "DisplayBlock") { BoolSel = "disabled"; }
+                                            }
+                                            <input type="button" class="m-btn-1 update" @BoolSel onclick="CheckUncheck(this.value)" value="Select" />
+                                        </th>
+                                        <th style="text-align:center">
+                                            @{
+                                                string BoolIns = string.Empty;
+                                                if (Model.Edit != "DisplayBlock") { BoolIns = "disabled"; }
+                                            }
+                                            <input type="button" class="m-btn-1 update" @BoolIns onclick="CheckUncheck(this.value)" value="Insert" />
+                                        </th>
+                                        <th style="text-align:center">
+                                            @{
+                                                string BoolUpd = string.Empty;
+                                                if (Model.Edit != "DisplayBlock") { BoolUpd = "disabled"; }
+                                            }
+                                            <input type="button" class="m-btn-1 update" @BoolUpd onclick="CheckUncheck(this.value)" value="Update" />
+                                        </th>
+                                        <th style="text-align:center">
+                                            @{
+                                                string BoolDel = string.Empty;
+                                                if (Model.Delete != "DisplayBlock") { BoolDel = "disabled"; }
+                                            }
+                                            <input type="button" class="m-btn-1 update" @BoolDel onclick="CheckUncheck(this.value)" value="Delete" />
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ProgramTable"></tbody>
+
+                            </table>
+
+                        </div>
+                        <div class="btn-area1">
+                            <input type="button" class="m-btn-1 save" onclick="SaveAccessToDB()" value="Save/Update!" />
+                            <input type="button" class="m-btn-1 clear" onclick="GetIndex('/M2/ADMSC01/Index')" value="Reset" />
+                        </div>
+                    </div>
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            @*<div class="pd-form-area">*@
+                            <div class="content-box">
+                                <h3 class="sub-heading1 sub-heading3"><span>ACCESS THROUGH REFERENCE</span></h3>
+                                <div class="m-form">
+                                    <div class="m-form">
+                                        <div class="m-form-bx">
+                                            <div class="row form-sm">
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Reference Employee :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-3">
+                                                    <div>
+                                                        <select class="form-control select2 PersonnelNumber" id="RefPersonnelNo"></select>
+                                                        @*<input type="number" maxlength="6" max="999999" id="RefPersonnelNo" class="form-control" />*@
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly id="RefEmployeeName" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly id="RefDesignation" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-0">
+                                                    <div>
+                                                        <input type="button" onclick="QueryTable('Ref');" id="RefBtn" class="m-btn-1 execute" value="Load Rights" />
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#UnitCD").select2();
+        PopEmpLOV();
+
+    });
+
+    function PopEmpLOV() {
+        debugger;
+        CommonAjax('/M2/ADMSC01/EmpLOVBind', "GET", false, "application/json", false, BindDropDown, ".PersonnelNumber", { Unit: $('#UnitCD').val() });
+        $("#PersonnelNumber").select2();
+        $("#RefPersonnelNo").select2();
+    }
+
+    function PopEmpDetail() {
+        debugger;       
+        CommonAjax('/M2/ADMSC01/EmpDetailBind', "GET", false, "application/json", false, EmpDetailBindView, null, { Personnel: $('#PersonnelNumber').val() });
+    }
+
+    function EmpDetailBindView(data, i) {
+        debugger;
+        $('#EmployeeName').val(data.employeeName);
+        $('#Designation').val(data.designation);
+        $('#Unit').val(data.unit);
+        $('#Department').val(data.department);
+        $('#Section').val(data.section);
+        $('#Grade').val(data.grade);
+    }
+
+    function RefEmpDetailBindView(data, i) {
+        debugger;
+        $('#RefEmployeeName').val(data.employeeName);
+        $('#RefDesignation').val(data.designation);
+    }
+
+    function QueryTable(i) {
+        debugger;
+        if (i == "Ref") {
+            if ($('#RefPersonnelNo').val().length != 6) {
+                CommonAlert("Alert", "Enter Valid Personnel No for Reference", null, null, "Warning");
+                return false;
+            } else {
+                CommonAjax('/M2/ADMSC01/EmpDetailBind', "GET", false, "application/json", false, RefEmpDetailBindView, null, { Personnel: $('#RefPersonnelNo').val() });
+                CommonAjax('/M2/ADMSC01/ProgramListAccessBind', "GET", false, "application/json", false, TableBind, null, { Personnel: $('#RefPersonnelNo').val(), ModuleID: $('#ModuleID').val(), ProgramType: $('#ProgramType').val(), QueryType: i });
+            }
+        } else {
+            if ($('#PersonnelNumber').val() == null) {
+                CommonAlert("Alert", "Select Valid Personnel Number", null, null, "Warning");
+                return false;
+            } else {
+                CommonAjax('/M2/ADMSC01/ProgramListAccessBind', "GET", false, "application/json", false, TableBind, null, { Personnel: $('#PersonnelNumber').val(), ModuleID: $('#ModuleID').val(), ProgramType: $('#ProgramType').val(), QueryType: i });
+            }
+
+        }
+
+    }
+
+    
+
+    function TableBind(data, i) {
+        debugger;
+        $("#ProgramTable").empty();
+        var trHTML = '';
+        var trClass = '';
+        var programtype = '';
+        if (data.queryType == "Ref") { trClass = 'class="update-row odd" '  }
+        $.each(data.listObj, function (i, item) {
+            var item = item;
+            var select = "";
+            var insert = "";
+            var Update = "";
+            var Delete = "";
+            var SelectReadonly = "disabled";
+            var InsertReadonly = "disabled";
+            var UpdateReadonly = "disabled";
+            var DeleteReadonly = "disabled";
+
+            if ('@Model.Select' == "DisplayBlock") { SelectReadonly = ""; }
+            if ('@Model.Insert' == "DisplayBlock") { InsertReadonly = ""; }
+            if ('@Model.Edit' == "DisplayBlock") {  UpdateReadonly = ""; }
+            if ('@Model.Delete' == "DisplayBlock") { DeleteReadonly = ""; }
+
+            if (item.privSelect == "Y") { select = 'checked="checked"'; }
+            if (item.privInsert == "Y") { insert = 'checked="checked"'; }
+            if (item.privUpdate == "Y") { Update = 'checked="checked"'; }
+            if (item.privDelete == "Y") { Delete = 'checked="checked"'; }
+
+            //Handling Program Type
+            if (item.programtype == "M") {
+                programtype = "Master";
+            } else if (item.programtype == "F") {
+                programtype = "Form";
+            }
+            else if (item.programtype == "R") {
+                programtype = "Report";
+            }
+
+
+            trHTML += '<tr ' + trClass + '>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control ProgramID" value="' + item.programid + '" /></td>';
+            trHTML += '<td><input type="text" readonly class="form-control" value="' + item.projectid + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control programType" value="' + programtype + '" /></td>';
+            trHTML += '<td><input type="checkbox" class="form-control Select"  ' + SelectReadonly+' ' + select + ' /></td>';
+            trHTML += '<td><input type="checkbox" class="form-control Insert"  ' + InsertReadonly+' ' + insert + ' /></td>';
+            trHTML += '<td><input type="checkbox" class="form-control Update"  ' + UpdateReadonly+' ' + Update + ' /></td>';
+            trHTML += '<td><input type="checkbox" class="form-control Delete"  ' + DeleteReadonly+' ' + Delete + ' /></td>';
+            trHTML += '</tr>'
+            $('#ProgramTable').html(trHTML);
+
+
+        });
+
+
+
+    }
+
+    
+ 
+
+    function CheckUncheck(row) {
+        debugger;
+        $("." + row).prop("checked", !$("." + row).prop("checked"));
+    }
+
+    function SaveWithAjax() {
+        debugger;
+        var a = $(row).parents('form').serialize();
+    }
+
+    function SaveAccessToDB() {
+        $(".modalLoader").css("display", "block");
+        var Access = new Array();
+        $("#ProgramTable TR").each(function () {
+            var row = $(this);
+            var AccessRow = {};
+            AccessRow.empid = $("#PersonnelNumber").val();
+            AccessRow.programid = row.find("td:eq(0) input").val();
+            AccessRow.ProgramType = row.find("td:eq(2) input").val();
+            AccessRow.privSelect = row.find('td:eq(3) input').is(':checked');
+            AccessRow.privInsert = row.find('td:eq(4) input').is(':checked');
+            AccessRow.privUpdate = row.find('td:eq(5) input').is(':checked');
+            AccessRow.privDelete = row.find('td:eq(6) input').is(':checked');
+            Access.push(AccessRow);
+
+        });
+
+        ModelDict = JSON.stringify({ 'personnelNumber': $('#PersonnelNumber').val(), 'select': '@Model.Select','insert': '@Model.Insert','edit': '@Model.Edit','delete': '@Model.Delete', 'listObj': Access });
+
+        //Send the JSON array to Controller using AJAX.
+        var a = 2;
+        $.ajax({
+            type: "POST",
+            url: "/M2/ADMSC01/Edit",
+            data: ModelDict,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (xhr, response, error) {
+                CommonAlert("Error", response, null, null, "error");
+            },
+            success: function (response) {
+                var url = window.location.origin + "/" + response.areaName + "/" + response.selectedMenu + "/" + response.selectedAction;
+
+                if (response.isAlertBox) {
+                    if (response.errorMessage != "") {
+                        CommonAlert(response.alert, response.message, SubmitPopup, "/M2/ADMSC01/Index", "error");
+                    } else {
+                        CommonAlert(response.alert, response.message, SubmitPopup, "/M2/ADMSC01/Index", "alert", "create");
+                    }
+                } else {
+                    $(".modalLoader").hide();
+                    GetIndex(url);
+                }
+
+            }
+        });
+
+    }
+
+
+</script>
+

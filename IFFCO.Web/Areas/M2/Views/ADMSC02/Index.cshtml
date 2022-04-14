@@ -1,0 +1,372 @@
+﻿@model IFFCO.DAILYWG.Web.ViewModels.ADMSC02ViewModel
+
+@{
+    //ViewData["Title"] = "Index";
+}
+<script src="~/js/Common.js"></script>
+<script>
+
+    function Validate() {
+        if ($('#BagNos').val() < 0 || $('#BagNos').val() > 50000) {
+            CommonAlert("Alert", "Number of Bags Cannot be less than 0 or greater than 50000  ", null, null, "Warning");
+            return false;
+        } else if ($('#FFromDate').val() == "=") {
+            CommonAlert("Alert", "Select From Date ", null, null, "Warning");
+            return false;
+        } else if ($('#FToDate').val() == "") {
+            CommonAlert("Alert", "Select To Date ", null, null, "Warning");
+            return false;
+        } else if ($('#OutDt').val() < $('#InDt').val() ) {
+            CommonAlert("Alert", "OUT Date-time cannot be greater than IN Date-time ", null, null, "Warning");
+            return false;
+        }
+        else {
+            debugger;
+            $('#SeaTrfDate').val(Dateformate($('#SeaTrfDate').val())).removeClass("datetime");
+            $('#FFromDate').val(Dateformate($('#FFromDate').val())).removeClass("datetime");
+            $('#FToDate').val(Dateformate($('#FToDate').val())).removeClass("datetime");
+            return true;
+        }
+    }
+
+
+</script>
+<div class="plcholder-cn">
+    <form id="CreateForm" asp-area="M2" asp-controller="ADMSC02" asp-action="Edit" method="post">
+        <div class="table-responsive">
+            <div class="table-area">
+                <div class="table-title">
+                    <div class="btn-area-tbl">
+
+                    </div>
+                </div>
+                <div class="table-wrapper">
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            @*<div class="pd-form-area">*@
+                            <div class="content-box">
+                                <h3 class="sub-heading1"><span>UNIT-PLANT-WISE EMPLOYEE ACCESS</span></h3>
+                                <div class="m-form">
+                                    @*<form asp-area="M5" asp-controller="SEASC02" asp-action="Query" method="post" onsubmit="return Validate();">*@
+
+                                    <div class="m-form">
+                                        <div class="m-form-bx">
+                                            <div class="row form-sm">
+                                                <div class="col-sm-1 col-md-0">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2">Unit Code</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <select id="UnitCD" asp-for="@Model.UnitCD" onchange="PopEmpLOV()" class="form-control select2"></select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Employee :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-3">
+                                                    <div>
+                                                        <select class="form-control select2 PersonnelNumber" onchange="PopEmpDetail()" asp-for="@Model.PersonnelNumber" id="PersonnelNumber"></select>
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.EmployeeName" id="EmployeeName" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Designation" id="Designation" class="form-control" />
+
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                            <div class="row form-sm">
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Unit :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Unit" id="Unit" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Department :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Department" id="Department" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Section :</label>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Section" id="Section" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2"> Grade :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-1">
+                                                    <div>
+                                                        <input type="text" readonly asp-for="@Model.Grade" id="Grade" class="form-control" />
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            <table class="compact nowrap table table-striped table-hover" id="ModuleTable">
+                                <thead id="ModuleHead">
+                                    <tr>
+                                        <th style="text-align:center" class="clearModuleHead" id="M1Head">
+                                        </th>
+                                        <th style="text-align:center" class="clearModuleHead" id="M2Head">
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ModuleBody">
+                                    <tr>
+                                        <td>
+                                            <input type="checkbox" class="form-control clearModule" id="M1Check" />
+                                        </td>
+                                        <td>
+                                            <input type="checkbox" class="form-control clearModule" id="M2Check" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+
+                        </div>
+                    </div>
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            @*<div class="pd-form-area">*@
+                            <div class="content-box">
+                                <h3 class="sub-heading1 sub-heading3"><span>UNIT ACCESS</span></h3>
+                                <table class="compact nowrap table table-striped table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align:center">
+                                                Personnel No
+                                            </th>
+                                            <th style="text-align:center">
+                                                UnitCode
+                                            </th>
+                                            <th style="text-align:center">
+                                                DefaultUnit
+                                            </th>
+                                            <th style="text-align:center">
+                                                HierYn
+                                            </th>
+                                            <th style="text-align:center">
+                                                OnlyAreaAccess
+                                            </th>
+                                            <th style="text-align:center">
+                                                AllDeptAccess
+                                            </th>
+                                            <th style="text-align:center">
+                                                AllSectionAccess
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ProgramTable"></tbody>
+                                </table>
+                            </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+
+                    <div class="btn-area1">
+                        <input type="button" class="m-btn-1 save" onclick="SaveAccessToDB()" value="Save/Update!" />
+                        <input type="button" class="m-btn-1 clear" onclick="GetIndex('/M2/ADMSC02/Index')" value="Reset" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        debugger;
+        $("#UnitCD").select2();
+        CommonAjax('/M2/ADMSC02/UnitLOVBind', "GET", false, "application/json", false, BindDropDownWithoutSelect, "#UnitCD", null);
+        PopEmpLOV();
+    });
+
+    function PopEmpLOV() {
+        debugger;
+        CommonAjax('/M2/ADMSC02/EmpLOVBind', "GET", false, "application/json", false, BindDropDownWithoutSelect, ".PersonnelNumber", { Unit: $('#UnitCD').val() });
+        $("#PersonnelNumber").select2();
+     }
+
+    function PopEmpDetail() {
+        debugger;
+        if ($('#PersonnelNumber').val().length != 6) {
+            CommonAlert("Alert", "Enter Valid Personnel No", null, null, "Warning");
+            return false;
+        } else {
+            CommonAjax('/M2/ADMSC02/EmpDetailBind', "GET", false, "application/json", false, EmpDetailBindView, null, { Personnel: $('#PersonnelNumber').val() });
+        } 
+        
+    }
+
+    function EmpDetailBindView(data, i) {
+        debugger;
+        $('#EmployeeName').val(data.employeeName);
+        $('#Designation').val(data.designation);
+        $('#Unit').val(data.unit);
+        $('#Department').val(data.department);
+        $('#Section').val(data.section);
+        $('#Grade').val(data.grade); 
+       
+        PopulateModuleTable(data.listModule);
+        PopulateUnitTable(data.listObj);
+    }
+
+   
+    function PopulateModuleTable(data, i) {
+        debugger;
+        $(".clearModule").prop("checked", false);
+        $(".clearModuleHead").val('');        
+        $.each(data, function (i, item) {
+            $("#" + item.key + "Head").html(item.name);
+            if (item.value) {
+
+                $("#" + item.key + "Check").prop("checked", "checked");
+            };
+        });
+    }
+
+    function PopulateUnitTable(data, i) {
+        debugger;
+        $("#ProgramTable").empty();
+        var trHTML = '';
+        var trClass = '';
+        var DelRemove = '';
+        var hierOption = '';
+        $.each(data, function (i, item) {
+            var item = item;
+            trHTML += '<tr>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control ProgramID" value="' + item.empid + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control" value="' + item.unitCode + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control programType" value="' + item.defaultUnit + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control programType" value="' + item.hierYn + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control programType" value="' + item.onlyAreaAccess + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control programType" value="' + item.allDeptAccess + '" /></td>';
+            trHTML += '<td style="width:10%"><input type="text" readonly class="form-control programType" value="' + item.allSectionAccess + '" /></td>';
+            trHTML += '</tr>'
+            $('#ProgramTable').html(trHTML);
+
+
+        });
+
+
+
+    }
+
+  
+    function RowRemove(row) {
+        $(row).parent().parent().remove();
+    }
+
+    function SaveAccessToDB() {
+        $(".modalLoader").css("display", "block");
+
+        var Module = new Array();
+        for (var i = 1; i < 9; i++) {
+            var ModuleRow = {};
+            ModuleRow.key = "M" + i;
+            ModuleRow.name = $("#M" + i + "Head").html();
+            ModuleRow.value = $("#M" + i + "Check").is(':checked');
+            Module.push(ModuleRow);
+        }
+
+
+                       
+        var Unit = new Array();
+        $("#ProgramTable TR").each(function () {
+            debugger;
+            var row = $(this);
+            var UnitRow = {};
+            UnitRow.empid = row.find("td:eq(0) input").val();
+            UnitRow.unitCode = row.find("td:eq(1) input").val();
+            UnitRow.defaultUnit = row.find("td:eq(2) input").val(); 
+            UnitRow.hierYn = row.find('td:eq(3) input').val(); 
+            UnitRow.onlyAreaAccess = row.find('td:eq(4) input').val(); 
+            UnitRow.allDeptAccess = row.find('td:eq(5) input').val(); 
+            UnitRow.allSectionAccess = row.find('td:eq(6) input').val(); 
+            Unit.push(UnitRow);
+
+        });
+
+        ModelDict = JSON.stringify({ 'personnelNumber': $('#PersonnelNumber').val(), 'select': '@Model.Select', 'insert': '@Model.Insert', 'edit': '@Model.Edit', 'delete': '@Model.Delete', 'listObj': Unit, 'listModule': Module });          
+
+            //Send the JSON array to Controller using AJAX.
+        var a = 2;
+        $.ajax({
+            type: "POST",
+            url: "/M2/ADMSC02/Edit",
+            data: ModelDict,
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            error: function (xhr, response, error) {
+                CommonAlert("Error", response, null, null, "error");
+            },
+            success: function (response) {
+                var url = window.location.origin + "/" + response.areaName + "/" + response.selectedMenu + "/" + response.selectedAction;
+
+                if (response.isAlertBox) {
+                    if (response.errorMessage != "") {
+                        CommonAlert(response.alert, response.message, SubmitPopup, "/M2/ADMSC02/Index", "error");
+                    } else {
+                        CommonAlert(response.alert, response.message, SubmitPopup, "/M2/ADMSC02/Index", "alert", "create");
+                    }
+                } else {
+                    $(".modalLoader").hide();
+                    GetIndex(url);
+                }
+
+            }
+        });
+
+    }
+
+   
+
+</script>
+

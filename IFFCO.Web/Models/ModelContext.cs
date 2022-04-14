@@ -26,6 +26,8 @@ namespace IFFCO.TECHPROD.Web.Models
             : base(options)
         {
         }
+       
+        public virtual DbSet<AdmProjmodMaster> AdmProjmodMaster { get; set; }
         public virtual DbSet<AdmEmpprgAccess> AdmEmpprgAccess { get; set; }
         public virtual DbSet<AdmEmpUnitAccess> AdmEmpUnitAccess { get; set; }
         public virtual DbSet<AdmPrgMaster> AdmPrgMaster { get; set; }
@@ -3190,6 +3192,73 @@ namespace IFFCO.TECHPROD.Web.Models
                     .HasColumnName("MODIFIED_DATETIME")
                     .HasColumnType("date");
             });
+
+            modelBuilder.Entity<AdmProjmodMaster>(entity =>
+            {
+                entity.HasKey(e => new { e.Projectid, e.Moduleid });
+
+                entity.ToTable("ADM_PROJMOD_MASTER");
+
+                entity.HasIndex(e => new { e.Projectid, e.Moduleid })
+                    .HasName("PK_ADMPROJMOD")
+                    .IsUnique();
+
+                entity.Property(e => e.Projectid)
+                    .HasColumnName("PROJECTID")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(10);
+
+                entity.Property(e => e.Moduleid)
+                    .HasColumnName("MODULEID")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(20);
+
+                entity.Property(e => e.CreatedBy)
+                    .HasColumnName("CREATED_BY")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.CreatedDate)
+                    .HasColumnName("CREATED_DATE")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.ErpPrefix)
+                    .HasColumnName("ERP_PREFIX")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(4);
+
+                entity.Property(e => e.GstCompliant)
+                    .HasColumnName("GST_COMPLIANT")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(1);
+
+                entity.Property(e => e.Migrated)
+                    .HasColumnName("MIGRATED")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(1);
+
+                entity.Property(e => e.ModifiedBy)
+                    .HasColumnName("MODIFIED_BY")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(30);
+
+                entity.Property(e => e.ModifiedDate)
+                    .HasColumnName("MODIFIED_DATE")
+                    .HasColumnType("date");
+
+                entity.Property(e => e.Modulename)
+                    .IsRequired()
+                    .HasColumnName("MODULENAME")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(255);
+
+                entity.Property(e => e.ReadOnly)
+                    .HasColumnName("READ_ONLY")
+                    .HasColumnType("varchar2")
+                    .HasMaxLength(1);
+            });
+
+
         }
 
     }

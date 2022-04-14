@@ -1,0 +1,236 @@
+﻿@model IFFCO.DAILYWG.Web.ViewModels.ADMM01ViewModel
+
+@{
+    //ViewData["Title"] = "Index";
+}
+<script src="~/js/Common.js"></script>
+<script>
+
+    function Validate() {
+
+
+        debugger;
+        if ($('#PlantCD').val() == "") {
+            CommonAlert("Alert", "select Plant CD  ", null, null, "Warning");
+            return false;
+        } else if ($('#FFromDate').val() == "=") {
+            CommonAlert("Alert", "Select From Date ", null, null, "Warning");
+            return false;
+        } else if ($('#FToDate').val() == "") {
+            CommonAlert("Alert", "Select To Date ", null, null, "Warning");
+            return false;
+        }
+        else {
+            $('#FFromDate').val(Dateformate($('#FFromDate').val())).removeClass("datetime");
+            $('#FToDate').val(Dateformate($('#FToDate').val())).removeClass("datetime");
+            return true;
+        }
+    }
+
+
+</script>
+<div class="plcholder-cn">
+
+    <div class="table-responsive">
+        <div class="table-area">
+            <div class="table-title">
+                <div class="btn-area-tbl">
+
+                </div>
+            </div>
+            <div class="table-wrapper">
+
+
+                <div class="table-con">
+                    <div class="tableUp">
+                        <div class="content-box">
+                            <h3 class="sub-heading1"><span>Sub-Menu Master</span></h3>
+                            <div class="m-form">
+                                <div class="m-form">
+                                    <div class="m-form-bx">
+                                        <div class="row form-sm">
+                                            <div class="col-sm-1 col-md-2">
+                                                <div>
+                                                    <label class="m-lbl1 m-lbl2">Module  <span style="color:red;">*</span></label>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 col-md-2">
+                                                <div>
+                                                    <select id="ParentMenuId" asp-for="@Model.SelectedSubModule" required onchange="PopDetail(this.value);" class="form-control" style="width:100%" asp-items="@(new SelectList(Model.SubLOV,"Value","Text")) "></select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="btn-area-tbl">
+                                <a class="m-btn-1 addnew @Model.Insert addnewitem" asp-area="M2" asp-route-id ="@Model.SelectedSubModule" asp-controller="ADMM02" asp-action="Create" method="Get"><i class="material-icons"></i><span>Add New Sub-Menu</span></a>
+                            </div>
+
+                        </div>
+                        <div class="pd-form-area">                            
+                           
+                            <table class="table table-striped table-hover" id="HrmsHrdGrid">
+                                <thead>
+                                    <tr>
+                                        <th>
+                                            Module ID
+                                        </th>
+                                        <th>
+                                            Sub Menu ID
+                                        </th>
+                                        <th>
+                                            Sub Menu Name
+                                        </th>
+                                        <th>
+                                            Parent Menu ID
+                                        </th>
+                                        <th>
+                                            Display Order
+                                        </th>
+                                        <th>Actions</th>
+                                    </tr>
+                                    @if (Model.Status == "Create")
+                                    {
+                                        <tr id="traddpanel">
+                                            <td colspan="6">
+                                                <div>
+                                                    <form id="CreateForm" asp-area="M2" asp-controller="ADMM02" asp-action="Create" method="post">
+
+                                                        <table style="width:100%">
+                                                            <tr class="update-row odd">
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.Moduleid" id="Moduleid" placeholder="Module ID" class="form-control" readonly />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.SubMenuId" id="SubMenuId" placeholder="Menu ID" class="form-control" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.SubMenuName" id="SubMenuName" placeholder="Menu Name" class="form-control" />
+                                                                </td>
+
+                                                                <td>
+                                                                    <select id="ParentMenuId" asp-for="@Model.SubMsts.ParentMenuId" required class="form-control" style="width:100%" asp-items="@(new SelectList(ViewBag.ParentLOV,"Value","Text")) "></select>
+
+                                                                </td>
+                                                                <td>
+                                                                    <input type="number" asp-for="@Model.SubMsts.DisplayOrder" id="DisplayOrder" placeholder="Display Order" class="form-control" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="submit" id="createid" value="Save" class="m-btn-1 save" style="float:left;margin-right: 4px" />
+                                                                    <button class="m-btn-1 close1" type="button" onclick="GetIndex('M2/ADMM02/Index')">Close</button>
+                                                                </td>
+                                                            </tr>
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                    @if (Model.Status == "Edit")
+                                    {
+                                        <tr id="traddpanelEdit">
+                                            <td colspan="6">
+                                                <div>
+                                                    <form asp-area="M2" asp-controller="ADMM02" asp-action="Edit"  method="post">
+                                                        <table style="width:100%">
+
+                                                            <tr class="update-row odd">
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.Moduleid" id="Moduleid" readonly placeholder="Module ID" class="form-control" />
+
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.SubMenuId" id="SubMenuId" readonly placeholder="SubMenu Id" class="form-control" />
+                                                                    <input type="hidden" asp-for="@Model.PrevSubMenuID" id="SubMenuHiddenID" placeholder="pro ID" class="form-control" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.SubMenuName" id="SubMenuName" placeholder="SubMenu Name" class="form-control" />
+                                                                </td>
+
+                                                                <td>
+                                                                    <select id="ParentMenuId" asp-for="@Model.SubMsts.ParentMenuId" required class="form-control" style="width:100%" asp-items="@(new SelectList(ViewBag.ParentLOV,"Value","Text")) "></select>
+
+                                                                </td>
+                                                                <td>
+                                                                    <input type="text" asp-for="@Model.SubMsts.DisplayOrder" id="DisplayOrder" placeholder="Display Order" class="form-control" />
+                                                                </td>
+                                                                <td>
+                                                                    <input type="submit" id="createid" value="Update" class="m-btn-1 update" style="float:left;margin-right: 4px" />
+                                                                    <button class="m-btn-1 close1" type="button" onclick="GetIndex('M2/ADMM02/Index')">Close</button>
+                                                                </td>
+                                                            </tr>
+
+                                                        </table>
+                                                    </form>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    }
+                                </thead>
+
+                                <tbody>
+                                    @foreach (var item in Model.SubList)
+                                    {
+                                        <tr>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.Moduleid)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.SubMenuId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.SubMenuName)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.ParentMenuId)
+                                            </td>
+                                            <td>
+                                                @Html.DisplayFor(modelItem => item.DisplayOrder)
+                                            </td>
+                                            <td style=" width: 5%;">
+                                                <a asp-area="M2" asp-controller="ADMM02" asp-action="Edit" asp-route-id="@item.SubMenuId" asp-route-mod="@item.Moduleid" class="edit @Model.Edit glpicon addnewitem" data-toggle="modal"><i class="far fa-edit" data-toggle="tooltip" title="" data-original-title="Edit" onclick="SHOW_TR_Function('traddpanelEdit','traddpanel')"></i></a>
+                                                <a style="cursor:pointer" class="delete @Model.Delete glpicon" data-toggle="modal" onclick="divShow('/M2/ADMM02/DeleteConfirmed?id=@item.SubMenuId&mod=@item.Moduleid');"><i class="far fa-trash-alt" data-toggle="tooltip" title="" data-original-title="Delete"></i></a>
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#HrmsHrdGrid').DataTable();
+        subMenuHiddenMarker();
+    });
+
+    function PopDetail(row) {
+        debugger;
+        $("#ParentMenuId").val(row);
+        GetIndex("/M2/ADMM02/ViewMsts?id=" + row);
+    }
+
+     function subMenuHiddenMarker() {
+         debugger;
+         var editVal = '@Model.Status';
+        var val = $("#SubMenuId").val();
+         if (val != null && editVal == "Edit") {
+            $("#SubMenuHiddenID").val(val);
+        }
+    }
+
+
+
+</script>
+

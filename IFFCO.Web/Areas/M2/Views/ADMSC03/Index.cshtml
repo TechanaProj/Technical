@@ -1,0 +1,350 @@
+﻿@model IFFCO.DAILYWG.Web.ViewModels.ADMSC03ViewModel
+
+@{
+    //ViewData["Title"] = "Index";
+}
+<script src="~/js/Common.js"></script>
+<script>
+
+    function Validate() {
+        if ($('#BagNos').val() < 0 || $('#BagNos').val() > 50000) {
+            CommonAlert("Alert", "Number of Bags Cannot be less than 0 or greater than 50000  ", null, null, "Warning");
+            return false;
+        } else if ($('#FFromDate').val() == "=") {
+            CommonAlert("Alert", "Select From Date ", null, null, "Warning");
+            return false;
+        } else if ($('#FToDate').val() == "") {
+            CommonAlert("Alert", "Select To Date ", null, null, "Warning");
+            return false;
+        } else if ($('#OutDt').val() < $('#InDt').val() ) {
+            CommonAlert("Alert", "OUT Date-time cannot be greater than IN Date-time ", null, null, "Warning");
+            return false;
+        }
+        else {
+            debugger;
+            $('#SeaTrfDate').val(Dateformate($('#SeaTrfDate').val())).removeClass("datetime");
+            $('#FFromDate').val(Dateformate($('#FFromDate').val())).removeClass("datetime");
+            $('#FToDate').val(Dateformate($('#FToDate').val())).removeClass("datetime");
+            return true;
+        }
+    }
+
+
+</script>
+<div class="plcholder-cn">
+    <form id="CreateForm" asp-area="M2" asp-controller="ADMSC03" asp-action="Edit" method="post">
+        <div class="table-responsive">
+            <div class="table-area">
+                <div class="table-title">
+                    <div class="btn-area-tbl">
+
+                    </div>
+                </div>
+                <div class="table-wrapper">
+
+                    <div class="table-con">
+                        <div class="tableUp">
+                            @*<div class="pd-form-area">*@
+                            <div class="content-box">
+                                <h3 class="sub-heading1"><span>UNT-PROGRAM-WISE EMPLOYEE ACCESS</span></h3>
+                                <div class="m-form">
+                                    @*<form asp-area="M5" asp-controller="SEASC02" asp-action="Query" method="post" onsubmit="return Validate();">*@
+
+                                    <div class="m-form">
+                                        <div class="m-form-bx">
+                                            <div class="row form-sm">
+                                                <div class="col-sm-1 col-md-0">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2">Unit Code</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <select id="UnitCD" asp-for="@Model.UnitCD"  class="form-control select2" asp-items="@(new SelectList(Model.UnitLOV,"Value","Text")) ">
+                                                            <option value="">--SELECT--</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-1 col-md-0">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2">Module</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <select id="ModuleID" asp-for="@Model.SelectedModule"  class="form-control select2" asp-items="@(new SelectList(Model.ModuleLOV,"Value","Text")) ">
+                                                            <option value="">--SELECT--</option>    
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-1 col-md-0">
+                                                    <div>
+                                                        <label class="m-lbl1 m-lbl2">Program</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-sm-2 col-md-2">
+                                                    <div>
+                                                        <select id="ProgramID" asp-for="@Model.SelectedProgram" class="form-control select2">
+                                                            <option value="">--SELECT--</option>
+                                                        </select>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                            @*</div>*@
+                        </div>
+                    </div>
+
+                    <div class="table-con">
+                        <div class="tableUp">
+
+                            <table class="compact nowrap table table-striped table-hover" id="HrmsHrdGrid">
+                                <thead>
+                                    <tr>
+                                        <th style="width:10%">
+                                            EMP ID
+                                        </th>
+                                        <th>
+                                            NAME
+                                        </th>
+                                        <th style="width:10%">
+                                            MODULE ID
+                                        </th>
+                                        <th>
+                                            MODULE NAME
+                                        </th>
+                                        <th style="width:10%">
+                                            PROGRAM ID
+                                        </th>
+                                        <th>
+                                            DESCRIPTION
+                                        </th>
+                                        <th style="width:10%">
+                                            SELECT
+                                        </th>
+                                        <th style="width:10%">
+                                            INSERT
+                                        </th>
+                                        <th style="width:10%">
+                                            UPDATE
+                                        </th>
+                                        <th style="width:10%">
+                                            DELETE
+                                        </th>
+                                        <th style="width:10%">
+                                            UNIT CODE
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody id="ProgramTable"></tbody>
+
+                            </table>
+
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <div class="table-con">
+                            <div class="tableUp">
+                                <div class="content-box">
+                                    <h3 class="sub-heading1 sub-heading3"><span>UNIT ACCESS</span></h3>
+                                    <div class="table-con">
+                                        <div class="tableUp">
+
+                                            <table class="compact nowrap table table-striped table-hover" id="EmpUnitTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:10%">
+                                                            UNIT CODE
+                                                        </th>
+                                                        <th>
+                                                            NAME
+                                                        </th>                                                       
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="UnitTable"></tbody>
+
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-sm-6 col-md-6">
+                        <div class="table-con">
+                            <div class="tableUp">
+                                <div class="content-box">
+                                    <h3 class="sub-heading1 sub-heading2"><span>PLANT ACCESS</span></h3>
+                                    <div class="table-con">
+                                        <div class="tableUp">
+
+                                            <table class="compact nowrap table table-striped table-hover" id="EmpPlantTable">
+                                                <thead>
+                                                    <tr>
+                                                        <th style="width:10%">
+                                                            PLANT CODE
+                                                        </th>
+                                                        <th>
+                                                            STATUS
+                                                        </th>                                                       
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="PlantTable"></tbody>
+
+                                            </table>
+
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                </div>
+        </div>
+    </form>
+</div>
+<div id="commonModalbinder" class="modal" style="display:none!important;z-index:99999999 !important;"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        BindGridWithIdCol([0, 1, 2, 3, 4, 5, 6, 7], [0, 1, 2, 3, 4, 5, 6, 7], '#HrmsHrdGrid', "Acces");
+        $("#UnitCD").select2();
+       
+
+    });
+
+    $(".select2").on('change', function (event) {
+        debugger;
+        $(".modalLoader").css("display", "block");
+        var unit = $("#UnitCD").val();
+        var module = $("#ModuleID").val();
+        var proList= Number($('#ProgramID > option').length);    
+        var program = $("#ProgramID").val();
+        CommonAjax('/M2/ADMSC03/ProgramUnitPlantListBind', "GET", false, "application/json", false, TableBind, null,
+            { Unit: unit, ModuleID: module, ProgramID: program });
+        CommonAjax('/M2/ADMSC03/ProgramLOVBind', "GET", false, "application/json", false, BindDropDownWithSelectAsNull, "#ProgramID", { Module: module });
+        $("#ProgramID").select2();
+        
+        $(".modalLoader").hide();
+    });
+
+    function TableBind(data, i) {
+        debugger;
+        if (data.listObj != null) {
+            EmpAccessTableBind(data.listObj, i);
+            $("#HrmsHrdGrid tbody tr:first").addClass('update-row odd');
+        }        
+        EmpUnitTableBind(data.objDetail, i);
+          
+    }
+
+    function EmpAccessTableBind(data, i) {
+        debugger;
+        LoadHrdDatatable('HrmsHrdGrid');
+        if ($.fn.DataTable.isDataTable('#HrmsHrdGrid')) {
+            $('#HrmsHrdGrid').DataTable().destroy();
+        }
+        $('#HrmsHrdGrid').empty();
+        var table = $('#HrmsHrdGrid').DataTable({
+            order: [[0, "asc"]],
+            data: data,
+            "columns": [
+                { "title": "EMPID", "data": "personnelNo" },
+                { "title": "NAME", "data": "name" },
+                { "title": "MODULE ID", "data": "moduleID" },
+                { "title": "MODULE NAME", "data": "moduleName" },
+                { "title": "PROGRAM ID", "data": "programID" },
+                { "title": "DESCRIPTION", "data": "programName" },
+                { "title": "SELECT", "data": "selectAccess" },
+                { "title": "INSERT", "data": "insertAccess" },
+                { "title": "UPDATE", "data": "updateAccess"},
+                { "title": "DELETE", "data": "deleteAccess" },
+                { "title": "UNIT", "data": "unitCode" }
+            ],
+            "rowCallback": function (row, data) {
+                $('td:eq(6)', row).html('' + ReturnCheckCross(data.selectAccess) + '');
+                $('td:eq(7)', row).html('' + ReturnCheckCross(data.insertAccess) + '');
+                $('td:eq(8)', row).html('' + ReturnCheckCross(data.updateAccess) + '');
+                $('td:eq(9)', row).html('' + ReturnCheckCross(data.deleteAccess) + ''); 
+                }
+            
+        });
+
+        BindGridWithIdCol([0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10], [0, 1, 2, 3, 4, 5, 6, 7, 8, 9,10], '#HrmsHrdGrid', "Unit-Plant-Access");
+    }
+
+    function EmpUnitTableBind(data, i) {
+        debugger;
+        LoadHrdDatatable('EmpUnitTable');
+        if ($.fn.DataTable.isDataTable('#EmpUnitTable')) {
+            $('#EmpUnitTable').DataTable().destroy();
+        }
+        $('#EmpUnitTable').empty();
+        var table = $('#EmpUnitTable').DataTable({
+            order: [[1, "asc"]],
+            data: data,
+            "columns": [
+                { "title": "EMPID", "data": "empid" },
+                { "title": "UNIT", "data": "unitCode" },
+                { "title": "DEFAULT UNIT", "data": "defaultUnit" },
+                { "title": "HIER (Y/N)", "data": "hierYn" }
+            ],
+            "rowCallback": function (row, data) {
+                $('td:eq(2)', row).html('' + ReturnCheckCross(data.defaultUnit) + '');
+                $('td:eq(3)', row).html('' + ReturnCheckCross(data.hierYn) + '');
+            }
+
+        });
+
+        BindGridWithIdCol([0, 1, 2, 3], [0, 1, 2, 3], '#EmpUnitTable', "Unit--Access");
+    }
+
+   
+    $("#HrmsHrdGrid").on("click", "td", function () {
+        debugger;
+        $(".modalLoader").css("display", "block");
+        $('#HrmsHrdGrid tr').removeClass("update-row odd'");
+        $(this).parent('tr').addClass('update-row odd');
+        var pno = $(this).parents().children().first().text();
+        CommonAjax('/M2/ADMSC03/UnitPlantListBind', "GET", false, "application/json", false, TableBind, null,
+            { PersonnelNo: pno });
+        $(".modalLoader").hide();
+
+    });
+
+    function LoadHrdDatatable(table) {
+        $("#LoadHrdstable").empty();
+        var strHml = "";
+        strHml += "<table class='compact nowrap table table-striped table-hover' style='width:100%' id='" + table+"'></table>";
+        $("#LoadHrdstable").append(strHml);
+    }
+
+    function ReturnCheckCross(data) {
+        if (data.trim() == 'Y') {
+            return '<i class="fa fa-check-circle"></i>';
+        }
+        else {
+            return '<i class="fa fa-times-circle"></i>';
+        }
+    }
+
+    function ReturnCheckCrossForBool(data) {
+        if (data) {
+            return '<i class="fa fa-check-circle"></i>';
+        }
+        else {
+            return '<i class="fa fa-times-circle"></i>';
+        }
+    }
+
+</script>
+

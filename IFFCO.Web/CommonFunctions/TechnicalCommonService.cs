@@ -1830,6 +1830,19 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return alert;
 
         }
+        public string SumRecordsMONTH(DateTime dt1, DateTime dt2, string Gas)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });           
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+            var data = _context.ExecuteProcedureForRefCursor("MONTH_SUM", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[4].Value.ToString();
+            return alert;
+
+        }
+
         public string PostShutdownMONTH(string Shift, DateTime DataDate, string Reason, string ReasonCode, string sd_plant, DateTime? FromDate, DateTime? ToDate, string FormName, string Pno, string InputType)
         {
 
