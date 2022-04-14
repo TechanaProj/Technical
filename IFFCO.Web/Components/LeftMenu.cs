@@ -2,6 +2,7 @@
 using IFFCO.HRMS.Service;
 using IFFCO.HRMS.Shared.CommonFunction;
 using IFFCO.HRMS.Shared.Entities;
+using IFFCO.TECHPROD.Web.CommonFunctions;
 using IFFCO.TECHPROD.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -17,12 +18,12 @@ namespace IFFCO.TECHPROD.Web.Components
     public class LeftMenu : ViewComponent
     {
         CommonService commonService = null;
-        DropDownListBind dropDownListBind = null;
+        DropDownListBindWeb dropDownListBind = null;
         public AccountService accountService = null;
         public LeftMenu()
         {
             commonService = new CommonService();
-            dropDownListBind = new DropDownListBind();
+            dropDownListBind = new DropDownListBindWeb();
             accountService = new AccountService();
         }
         public async Task<IViewComponentResult> InvokeAsync()

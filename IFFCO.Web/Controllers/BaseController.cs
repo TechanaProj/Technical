@@ -8,6 +8,7 @@ using IFFCO.HRMS.Entities.Models;
 using IFFCO.HRMS.Service;
 using IFFCO.HRMS.Shared.CommonFunction;
 using IFFCO.HRMS.Shared.Entities;
+using IFFCO.TECHPROD.Web.CommonFunctions;
 using IFFCO.TECHPROD.Web.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ namespace IFFCO.TECHPROD.Web.Controllers
     {
         CommonService commonService = null;
         public AccountService accountService = null;
-        DropDownListBind dropDownListBind = null;
+        DropDownListBindWeb dropDownListBind = null;
         public dynamic CommonViewModel = default(T);
         string controllerName = string.Empty;
         private int EMP_ID = 0;
@@ -71,7 +72,7 @@ namespace IFFCO.TECHPROD.Web.Controllers
             CommonViewModel = (dynamic)Activator.CreateInstance(typeof(T));
             accountService = new AccountService();
             commonService = new CommonService();
-            dropDownListBind = new DropDownListBind();
+            dropDownListBind = new DropDownListBindWeb();
         }
 
         public BaseController(IHttpContextAccessor accessor)
