@@ -16,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace IFFCO.TECHPROD.Web.Areas.M2.Controllers
 {
+
     [Area("M2")]
     public class ADMSC02Controller : BaseController<ADMSC02ViewModel>
     {
