@@ -1356,6 +1356,20 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             return cd;
 
         }
+
+        public string SUMRecordsGASCV(string pno, DateTime dt1, DateTime dt2)
+        {
+            List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FROM_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_TO_DATE", OracleDbType = OracleDbType.VarChar, Value = dt2.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PNO", OracleDbType = OracleDbType.VarChar, Value = pno });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
+
+            var data = _context.ExecuteProcedureForRefCursor("GASCV_SUM", oracleParameterCollecion);
+            string alert = oracleParameterCollecion[3].Value.ToString();
+            return alert;
+
+        }
         public string PostRecordsGASCV(string pno, DateTime dt1, DateTime dt2, string Input_Value, string Input_Name)
         {
 

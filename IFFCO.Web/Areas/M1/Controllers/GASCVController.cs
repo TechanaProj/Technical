@@ -55,13 +55,12 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     break;
                 case "save":
+                    CommonViewModel.alert= TechnicalCommonService.SUMRecordsGASCV(EMP_ID.ToString(), FromDate, ToDate);
+                    return Json(CommonViewModel);
 
-                    break;
+                    
                 case "approve":
-                    //TechnicalCommonService.ApproveRecordsGASCV(controller, Shift, EMP_ID.ToString(), FromDate);
-                    //List<CommonData> data1 = TechnicalCommonService.GetRecordsGASCV(controller, Shift, EMP_ID.ToString(), FromDate);
-                    //ViewBag.reason = TechnicalCommonService.GetReason();
-                    //ViewBag.records = data1;
+                    
 
                     break;
                 default:
