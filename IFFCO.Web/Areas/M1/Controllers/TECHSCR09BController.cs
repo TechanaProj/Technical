@@ -75,7 +75,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         Alert alert = new Alert
                         {
                             name = "SUCCESS",
-                            message = oracleParameterCollecion[4].Value.ToString(),
+                            message = oracleParameterCollecion[1].Value.ToString(),
+                            //message = "Successful",
                             type = "success"
 
                         };
