@@ -11,17 +11,31 @@
 
 
     $(".ctrlbtn").click(function (e) {
+        var op = $(this).attr('data-report-type');
+
+        $(".modalLoader").css("display", "block");
+
+        setTimeout(function () {
+            CommonAjax('/M1/TECHSCR09B/SendData', "GET", false, "application/json", false, GetResponse, "",
+                {
+                    dt: $("#txtFromDate").val(),
+                    Operation: op,
+                    ReportType: $("#txtReportType").val(),
+
+
+                });
+            $(".modalLoader").hide();
+        }, 10)
+
         
-        CommonReportGenerateJS('M1/TECHSCR09B/SendData', {
-            dt: $("#txtFromDate").val(),            
-             Operation: $(this).attr('data-report-type'),
-             ReportType: $("#txtReportType").val(),
-
-
-        })
-
-        $(".modalLoader").hide();
+       
     })
+    function GetResponse(data) {
+
+        CommonAlert(data.name, data.message, null, null, data.type)
+
+
+    }
 
 </script>
 
@@ -40,7 +54,7 @@
                                 @{
                                     var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
                                 }
-                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                                <input class="form-control" id="txtFromDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
                             </div>
                            
                         </div>
