@@ -381,7 +381,11 @@
         script.src = readCookie("U")  + "/js/Common.js";
         document.body.appendChild(script);
         $(".modalLoader").hide();
+       
     }
+
+    
+
     $("#ddlModules").change(function () {
         $(".modalLoader").show();
         //CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetMouldeResult?ModuleId=' + $("#ddlModules option:selected").val(), "GET", true, "application/json", false, BindLeftMenu2, "#ParentUL");
