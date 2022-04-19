@@ -28,9 +28,9 @@
             }
             $(".modalLoader").hide();
             if (response.report != null) {
-                var x = window.open(response.report, '_blank')
-               // window.open(response.report, 'winname', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=1000,height=1000');
-               // $("#reportEmbed").attr("src", response.report)
+                //var x = window.open(response.report, '_blank')
+                //window.open(response.report, 'winname', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=1000,height=1000');
+                //$("#reportEmbed").attr("src", response.report)
                 
                    //var win = window.open(response.report, '_blank');
                    // win.document.head.innerHTML = '<title>Hi</title></head>';                   
@@ -38,19 +38,19 @@
                    // script.innerHTML = "window.onload = function () {history.pushState(null, null, '');}"
                    // win.document.head.appendChild(script);
 
-                //var x = window.open("", '_blank');
-                //x.document.write('<body></body>');
-                //x.location.hash = response.selectedMenu;
-                //var embedtag = x.document.createElement('embed');
-                //embedtag.id = 'reportEmbed';
-                //embedtag.src = response.report;
-                //embedtag.style = "width:100%; height:100%;";
-                //embedtag.alt = "pdf";
-                //embedtag.title = "Report";
-                //embedtag.type = "application/pdf";
-                //embedtag.pluginspage = "http://www.adobe.com/products/acrobat/readstep2.html";
-                //x.document.body.appendChild(embedtag);
-                //x.document.title = response.selectedMenu;
+                var x = window.open("", '_blank');
+                x.document.write('<body></body>');
+                x.location.hash = response.selectedMenu;
+                var embedtag = x.document.createElement('embed');
+                embedtag.id = 'reportEmbed';
+                embedtag.src = response.report;
+                embedtag.style = "width:100%; height:100%;";
+                embedtag.alt = "pdf";
+                embedtag.title = "Report";
+                embedtag.type = "application/pdf";
+                embedtag.pluginspage = "http://www.adobe.com/products/acrobat/readstep2.html";
+                x.document.body.appendChild(embedtag);
+                x.document.title = response.selectedMenu;
 
 
                 

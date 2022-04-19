@@ -15,7 +15,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         private readonly ModelContext _context;
 
         //private readonly string reportURL = new AppConfiguration().ReportURL;
-        private readonly string reportURL = "http://140.238.253.16/reports/rwservlet?cmdkey=techprod_rep";
+        //private readonly string reportURL = "http://140.238.253.16/reports/rwservlet?cmdkey=techprod_rep";
+        private readonly string reportURL = "https://wlsan.iffco.coop/reports/rwservlet?cmdkey=techprod_rep";
         //private readonly string reportURLFrame = "http://";
         private readonly string reportURLFrame2 = "reports/rwservlet?cmdkey=techprod_rep";
 
