@@ -36,7 +36,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-            List<CommonData> data = TechnicalCommonService.GetRecordsGASCV(EMP_ID.ToString(),  new DateTime(2021,10,01), new DateTime(2021, 10, 01));           
+            List<CommonData> data = TechnicalCommonService.GetRecordsGASCV(EMP_ID.ToString(), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15));           
             ViewBag.records = data;
 
             return View(CommonViewModel);

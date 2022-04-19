@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Http;
 using IFFCO.TECHPROD.Web.Areas.M1.Controllers;
 using IFFCO.HRMS.Entities.AppConfig;
 using System.Net;
+using Microsoft.AspNetCore.Http.Extensions;
 
 namespace IFFCO.TECHPROD.Web.Controllers
 {
@@ -158,7 +159,13 @@ namespace IFFCO.TECHPROD.Web.Controllers
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
-            return RedirectToAction("Login", "Account");
+            //return RedirectToAction("Login", "Account");
+            var url = this.HttpContext.Request.GetDisplayUrl();
+            var index = url.IndexOf(this.HttpContext.Request.Path.Value);
+            var newurl = url.Substring(0, index);
+
+
+            return Redirect(newurl);
         }
 
     }

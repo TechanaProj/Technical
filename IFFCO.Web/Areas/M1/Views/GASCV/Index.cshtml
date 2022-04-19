@@ -139,7 +139,7 @@
                             <div>
                                 @{
                                     DateTime dt;
-                                    dt = new DateTime(2021, 10, 01);
+                                    dt = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
                                 }
                                 <input class="form-control" value="@dt.ToString("yyyy-MM-dd")" id="txtFromDate" type="date" />
                             </div>
@@ -153,7 +153,7 @@
                             <div>
                                 @{
                                     DateTime dt1;
-                                    dt1 = new DateTime(2021, 10, 15);
+                                    dt1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15);
                                 }
                                 <input class="form-control" value="@dt1.ToString("yyyy-MM-dd")" id="txtToDate" type="date" />
                             </div>

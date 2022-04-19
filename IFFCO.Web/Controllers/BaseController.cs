@@ -11,6 +11,7 @@ using IFFCO.HRMS.Shared.Entities;
 using IFFCO.TECHPROD.Web.CommonFunctions;
 using IFFCO.TECHPROD.Web.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Extensions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 using Microsoft.AspNetCore.Mvc.Rendering;
@@ -28,6 +29,7 @@ namespace IFFCO.TECHPROD.Web.Controllers
         string controllerName = string.Empty;
         private int EMP_ID = 0;
         private IHttpContextAccessor _accessor;
+        
         public override void OnActionExecuting(ActionExecutingContext context)
         {
             try
@@ -39,10 +41,15 @@ namespace IFFCO.TECHPROD.Web.Controllers
                 CommonViewModel.Select = "DisplayNone";
 
                 EMP_ID = Convert.ToInt32(context.HttpContext.Session.GetInt32("EmpID"));
+                var url = this.HttpContext.Request.GetDisplayUrl();
+                var index = url.IndexOf(this.HttpContext.Request.Path.Value);
+                var newurl = url.Substring(0, index);
+
                 if (EMP_ID == 0)
                 {
                     HttpContext.Session.Clear();
-                    context.Result = new RedirectResult("/Account/Login");
+                    
+                    context.Result = new RedirectResult(newurl);
                     return;
                 }
                 else if (EMP_ID != 0)// && controllerName!="")
