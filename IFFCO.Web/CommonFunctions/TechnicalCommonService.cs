@@ -47,7 +47,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
         public string GetScreenAccess(int pno, string formName, DateTime dt)
         {
-            return _context.GetCharScalerFromDB("SELECT TECHANA.Get_Time_Based_Screen_Acess(" + pno + ", '" + formName + "','" + dt.Date() + "') FROM DUAL ");
+            return _context.GetCharScalerFromDB("SELECT Get_Time_Based_Screen_Acess(" + pno + ", '" + formName + "','" + dt.Date() + "') FROM DUAL ");
         }
         public double GetFrValue(DateTime dt)
         {

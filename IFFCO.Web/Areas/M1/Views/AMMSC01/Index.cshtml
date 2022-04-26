@@ -50,7 +50,7 @@
 
     })
 
-    $(document).on("change", ".shutdown", function (e) {
+    $(document).on("blur", ".shutdown", function (e) {
         debugger;
         var cls = $(this).attr("class").split(' ')[0];
         var ddl = document.getElementsByClassName(cls)[0];
@@ -89,7 +89,7 @@
         // Refresh();
     })
 
-    $(document).on("change", ".ammonia", function (e) {
+    $(document).on("blur", ".ammonia", function (e) {
         debugger;
         var name = $(this).attr("id");
         var val = $(this).val();
@@ -120,7 +120,7 @@
 
 
 
-    $(document).on("change", ".techRemark", function (e) {
+    $(document).on("blur", ".techRemark", function (e) {
         debugger;
         var cls = $(this).attr("class").split(' ')[0];
         var name = document.getElementsByClassName(cls)[0].id
