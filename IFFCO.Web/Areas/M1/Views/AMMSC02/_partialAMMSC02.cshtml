@@ -2,6 +2,7 @@
     List<CommonData> data = ViewBag.records;
 
     var Arrheader = data.Where(e => e.Category != "SHUTDOWN DETAILS").Select(e => e.Category).Distinct().ToArray();
+    var rights = ViewBag.rights;
 
 }
 
@@ -246,7 +247,31 @@
             </div>
         </div>
     </div>
+    <script>
+                $(document).ready(function () {
+                    debugger;
+                        var r='@rights';
+                    if (r == "N") {
+                        $("input:not(.non),textarea").addClass("disable");
+                        $('input[type="button"]:not(.non)').addClass("btn-disable");
+                        $('select').addClass("sel-disable");
+                        $('.disable').prop("readonly", true);
+                        $('.btn-disable').hide();
+                        $('.sel-disable').prop('disabled', true);
+                    }
+                    else {
+                        $('.disable').prop("readonly", false);
+                        $('.btn-disable').show();
+                        $('.sel-disable').prop('disabled', false);
+                        $("input:not(.non),textarea").removeClass("disable");
+                        $('input[type="button"]:not(.non)').removeClass("btn-disable");
+                        $('select').removeClass("sel-disable");
 
+                    }
+                    })
+
+
+    </script>
 
 </div>
 

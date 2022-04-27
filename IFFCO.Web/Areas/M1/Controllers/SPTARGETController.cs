@@ -68,7 +68,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     case "query":
                         List<CommonData> data = TechnicalCommonService.GetRecordsSPTARGET(controller, Shift, EMP_ID.ToString(), FromDate, ToDate);                       
                         ViewBag.records = data;
-
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         break;
                     case "save":
                         CommonViewModel.alert = "Data Saved";

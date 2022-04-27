@@ -39,6 +39,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 List<CommonData> data = TechnicalCommonService.GetRecordsPHSC02(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1));
                 ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.reason = TechnicalCommonService.GetReason();
+
                 ViewBag.records = data;
             }
             catch (Exception ex)

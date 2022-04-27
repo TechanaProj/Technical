@@ -49,6 +49,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             {
                 case "query":
                     List<CommonData> data = TechnicalCommonService.GetRecordsEREMARK(FromDate, ToDate, EMP_ID.ToString());
+                    ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                     ViewBag.reason = TechnicalCommonService.GetReason();
                     ViewBag.records = data;
 

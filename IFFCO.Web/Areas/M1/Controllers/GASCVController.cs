@@ -36,7 +36,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-            List<CommonData> data = TechnicalCommonService.GetRecordsGASCV(EMP_ID.ToString(), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15));           
+            List<CommonData> data = TechnicalCommonService.GetRecordsGASCV(EMP_ID.ToString(), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 15));
+            ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
             ViewBag.records = data;
 
             return View(CommonViewModel);
@@ -52,7 +53,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     List<CommonData> data = TechnicalCommonService.GetRecordsGASCV(EMP_ID.ToString(), FromDate, ToDate);
                     ViewBag.reason = TechnicalCommonService.GetReason();
                     ViewBag.records = data;
-
+                    ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                     break;
                 case "save":
                     CommonViewModel.alert= TechnicalCommonService.SUMRecordsGASCV(EMP_ID.ToString(), FromDate, ToDate);

@@ -37,6 +37,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
             TotalSDPower data = TechnicalCommonService.GetRecordsPWRSC01(controller, "G", EMP_ID.ToString(), DateTime.Now.AddDays(-1));
             ViewBag.reason = TechnicalCommonService.GetReason();
+            ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
             ViewBag.records = data;
 
             return View(CommonViewModel);
@@ -53,7 +54,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     TotalSDPower data = TechnicalCommonService.GetRecordsPWRSC01(controller, Shift, EMP_ID.ToString(), FromDate);
                     ViewBag.reason = TechnicalCommonService.GetReason();
                     ViewBag.records = data;
-
+                    ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                     break;
                 case "save":
                     CommonViewModel.alert = "Data Saved";

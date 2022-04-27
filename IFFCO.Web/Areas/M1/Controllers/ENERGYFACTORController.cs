@@ -40,7 +40,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
                 DateTime dt1 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
                 DateTime dt2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
-                List<EnergyFactor> data = TechnicalCommonService.GetRecordsENERGYFACTOR(dt1, dt2);               
+                List<EnergyFactor> data = TechnicalCommonService.GetRecordsENERGYFACTOR(dt1, dt2);
+                ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.records =data;
             }
             catch (Exception ex)
@@ -137,6 +138,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 {
                     case "query":
                         List<EnergyFactor> data = TechnicalCommonService.GetRecordsENERGYFACTOR(FromDate, ToDate);
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         ViewBag.records = data;
 
                         break;

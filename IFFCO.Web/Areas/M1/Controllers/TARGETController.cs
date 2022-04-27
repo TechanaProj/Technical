@@ -40,6 +40,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
                 List<CommonData> data = TechnicalCommonService.GetRecordsTARGET(EMP_ID.ToString(), "2022-02", "2021-2022");
                 ViewBag.reason = TechnicalCommonService.GetReason();
+                ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.records = data;
             }
             catch (Exception ex)
@@ -68,7 +69,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     case "query":
                         List<CommonData> data = TechnicalCommonService.GetRecordsTARGET(EMP_ID.ToString(), MonthYear, FYear);
                         ViewBag.records = data;
-
+                        //ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         break;
                     case "save":
                         CommonViewModel.alert = "Data Saved";

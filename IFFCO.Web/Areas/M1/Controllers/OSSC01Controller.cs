@@ -71,7 +71,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         ViewBag.records = data;
                         ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         ViewBag.frValue = TechnicalCommonService.GetFrValue(FromDate);
-
+                        
                         break;
                     case "save":
                         CommonViewModel.alert = "Data Saved";

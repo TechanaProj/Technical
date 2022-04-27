@@ -42,6 +42,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 DateTime dt2 = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month));
                 List<ENERGYRECORD> data = TechnicalCommonService.GetRecordsENERGYRECORD();
                 ViewBag.ListItem = TechnicalCommonService.GetPlantList();
+                ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.records = data;
             }
             catch (Exception ex)
@@ -108,6 +109,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 {
                     case "query":
                         List<ENERGYRECORD> data = TechnicalCommonService.GetRecordsENERGYRECORD();
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         ViewBag.records = data;
 
                         break;

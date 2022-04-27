@@ -40,6 +40,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
                 List<CommonData> data = TechnicalCommonService.GetRecordsNONPLANT(controller, "G", EMP_ID.ToString(), new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01), new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.DaysInMonth(DateTime.Now.Year, DateTime.Now.Month)));
                 ViewBag.reason = TechnicalCommonService.GetReason();
+                ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.records = data;
             }
             catch (Exception ex)
@@ -69,7 +70,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         List<CommonData> data = TechnicalCommonService.GetRecordsNONPLANT(controller, Shift, EMP_ID.ToString(), FromDate,ToDate);
                         ViewBag.reason = TechnicalCommonService.GetReason();
                         ViewBag.records = data;
-
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         break;
                     case "save":
                         CommonViewModel.alert = "Data Saved";

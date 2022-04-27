@@ -9,85 +9,86 @@
 {
     var AmmProd = data.CommonData.Where(e => e.Category == head).ToList();
 
-<div class="content-box">
-    <h3 class="sub-heading1"><span>@head</span></h3>
-    <div class="m-form">
-        <div class="m-form-bx">
-            <div class="row form-sm">
-                @foreach (var item in AmmProd)
-                {
-                    <div class="col-sm-2 col-md-4">
-                        <div>
-                            <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+    <div class="content-box">
+        <h3 class="sub-heading1"><span>@head</span></h3>
+        <div class="m-form">
+            <div class="m-form-bx">
+                <div class="row form-sm">
+                    @foreach (var item in AmmProd)
+                    {
+                        <div class="col-sm-2 col-md-4">
+                            <div>
+                                <label class="m-lbl1 m-lbl2"> @item.InputLabel</label>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-sm-2 col-md-2">
-                        <div>
-                            @if (item.InputType == "number")
-                            {
-                                if (item.Readonly.ToLower() == "yes")
+                        <div class="col-sm-2 col-md-2">
+                            <div>
+                                @if (item.InputType == "number")
                                 {
-                                    <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                    if (item.Readonly.ToLower() == "yes")
+                                    {
+                                        <input data-operation="@item.OperationType" readonly="readonly" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+                                    }
+                                    else
+                                    {
+                                        <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
+
+                                    }
+                                }
+                                else if (item.InputType.ToLower() == "datetime-local")
+                                {
+                                    string v = "";
+                                    if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                    {
+                                        v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
+                                    }
+
+
+                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
+                                }
+                                else if (item.InputType.ToLower() == "date")
+                                {
+                                    string v = "";
+                                    if (!string.IsNullOrEmpty(item.InputValue.Trim()))
+                                    {
+                                        v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
+                                    }
+
+
+                                    <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
                                 }
                                 else
                                 {
-                                    <input data-operation="@item.OperationType" class="form-control text-right ammonia" id="@item.InputText" step="any" type="number" value="@item.InputValue" />
-
+                                    string sel = "";
+                                    if (item.InputValue.Trim().ToUpper() == "0")
+                                    {
+                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                            <option selected="selected" value="0">NO</option>
+                                            <option value="1">YES</option>
+                                        </select>
+                                    }
+                                    else
+                                    {
+                                        <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
+                                            <option value="0">NO</option>
+                                            <option selected="selected" value="1">YES</option>
+                                        </select>
+                                    }
                                 }
-                            }
-                            else if (item.InputType.ToLower() == "datetime-local")
-                            {
-                                string v = "";
-                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
-                                {
-                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-ddTHH:mm");
-                                }
-
-
-                                <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="datetime-local" value="@v" />
-                            }
-                            else if (item.InputType.ToLower() == "date")
-                            {
-                                string v = "";
-                                if (!string.IsNullOrEmpty(item.InputValue.Trim()))
-                                {
-                                    v = Convert.ToDateTime(item.InputValue).ToString("yyyy-MM-dd");
-                                }
-
-
-                                <input data-operation="@item.OperationType" class="form-control ammonia" id="@item.InputText" step="any" type="date" value="@v" />
-                            }
-                            else
-                            {
-                                string sel = "";
-                                if (item.InputValue.Trim().ToUpper() == "0")
-                                {
-                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
-                                        <option selected="selected" value="0">NO</option>
-                                        <option value="1">YES</option>
-                                    </select>
-                                }
-                                else
-                                {
-                                    <select id="@item.InputText" data-operation="@item.OperationType" class="form-control ammonia">
-                                        <option value="0">NO</option>
-                                        <option selected="selected" value="1">YES</option>
-                                    </select>
-                                }
-                            }
+                            </div>
                         </div>
-                    </div>
-                }
+                    }
+                </div>
             </div>
         </div>
     </div>
-</div>
 }
 
 @{
     var PowerCat = data.ShutDownPower.Select(e => e.Category).Distinct().ToArray();
 
     List<SelectListItem> listItems = ViewBag.reason;
+    var rights = ViewBag.rights;
 }
 
 
@@ -290,3 +291,29 @@
         }
     }
 }
+
+<script>
+                $(document).ready(function () {
+                    debugger;
+                        var r='@rights';
+                    if (r == "N") {
+                        $("input:not(.non),textarea").addClass("disable");
+                        $('input[type="button"]:not(.non)').addClass("btn-disable");
+                        $('select').addClass("sel-disable");
+                        $('.disable').prop("readonly", true);
+                        $('.btn-disable').hide();
+                        $('.sel-disable').prop('disabled', true);
+                    }
+                    else {
+                        $('.disable').prop("readonly", false);
+                        $('.btn-disable').show();
+                        $('.sel-disable').prop('disabled', false);
+                        $("input:not(.non),textarea").removeClass("disable");
+                        $('input[type="button"]:not(.non)').removeClass("btn-disable");
+                        $('select').removeClass("sel-disable");
+
+                    }
+                    })
+
+
+</script>

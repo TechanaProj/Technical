@@ -67,6 +67,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     case "query":
                         List<CommonData> data = TechnicalCommonService.GetRecordsAMMSC02(controller, Shift, EMP_ID.ToString(), FromDate);
                         ViewBag.reason = TechnicalCommonService.GetReason();
+                        ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         ViewBag.records = data;
 
                         break;
