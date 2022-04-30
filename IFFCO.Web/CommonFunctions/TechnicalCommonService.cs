@@ -1852,7 +1852,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });           
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
             var data = _context.ExecuteProcedureForRefCursor("MONTH_SUM", oracleParameterCollecion);
-            string alert = oracleParameterCollecion[4].Value.ToString();
+            string alert = oracleParameterCollecion[3].Value.ToString();
             return alert;
 
         }
