@@ -38,39 +38,39 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public IActionResult Execute(DateTime FromDate, DateTime ToDate, string Gas)
         {
-           // if (FromDate > ToDate)
-           // {
-           //     Alert alert = new Alert
-           //     {
-           //         name = "ERROR",
-           //         message = "From date can not be greatter than ToDate",
-           //         type = "error"
+            if (FromDate > ToDate)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "From date can not be greatter than ToDate",
+                    type = "error"
 
-           //     };
-           //     return Json(alert);
-           // }
-           // if (FromDate > DateTime.Now.Date)
-           // {
-           //     Alert alert = new Alert
-           //     {
-           //         name = "ERROR",
-           //         message = "From date can not be greatter than Today's Date",
-           //         type = "error"
+                };
+                return Json(alert);
+            }
+            if (FromDate > DateTime.Now.Date)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "From date can not be greatter than Today's Date",
+                    type = "error"
 
-           //     };
-           //     return Json(alert);
-           // }
-           // if (ToDate > DateTime.Now)
-           // {
-           //     Alert alert = new Alert
-           //     {
-           //         name = "ERROR",
-           //         message = "ToDate can not be greatter than Today's Date",
-           //         type = "error"
+                };
+                return Json(alert);
+            }
+            if (ToDate > DateTime.Now)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "ToDate can not be greatter than Today's Date",
+                    type = "error"
 
-           //     };
-           //     return Json(alert);
-           // }
+                };
+                return Json(alert);
+            }
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
            int count = _context.GetScalerFromDB("SELECT COUNT(*) FROM MONTHLY_TECH_INPUT WHERE FROM_DATE BETWEEN '"+FromDate.Date()+"' AND '"+ToDate.Date()+ "' AND REVISED = 'N' AND AND TYPE_OF_GAS='"+Gas+"'");
            
@@ -80,17 +80,17 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "ID2", OracleDbType = OracleDbType.VarChar, Value = ToDate.Date() });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "PER_NO", OracleDbType = OracleDbType.VarChar, Value = EMP_ID });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
-            
-
-            //try
-            //{
 
 
-            //    if (count>0)
-            //    {
+            try
+            {
+
+
+                if (count > 0)
+                {
                     int a = _context.ExecuteProcedure("CUMULATIVE_NORMS", oracleParameterCollecion);
-                    //if (a == -1)
-                    //{
+                    if (a == -1)
+                    {
                         Alert alert = new Alert
                         {
                             name = "SUCCESS",
@@ -99,41 +99,41 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                         };
                         return Json(alert);
-            //        }
-            //        else
-            //        {
-            //            Alert alert = new Alert
-            //            {
-            //                name = "NODATA",
-            //                message = "No Data Found For This Period",
-            //                type = "warning"
-            //            };
-            //            return Json(alert);
-            //        }
-            //    }
-            //    else
-            //    {
-            //        Alert alert = new Alert
-            //        {
-            //            name = "NODATA",
-            //            message = "No Data Found For This Period",
-            //            type = "warning"
-            //        };
-            //        return Json(alert);
-            //    }
-                
-            //}
-            //catch (Exception)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "Error",
-            //        message = "Internal Server error",
-            //        type = "error"
-            //    };
-            //    return Json(alert);
+                    }
+                    else
+                    {
+                        Alert alert = new Alert
+                        {
+                            name = "NODATA",
+                            message = "No Data Found For This Period",
+                            type = "warning"
+                        };
+                        return Json(alert);
+                    }
+                }
+                else
+                {
+                    Alert alert = new Alert
+                    {
+                        name = "NODATA",
+                        message = "No Data Found For This Period",
+                        type = "warning"
+                    };
+                    return Json(alert);
+                }
 
-            //}
+            }
+            catch (Exception)
+            {
+                Alert alert = new Alert
+                {
+                    name = "Error",
+                    message = "Internal Server error",
+                    type = "error"
+                };
+                return Json(alert);
+
+            }
 
 
 

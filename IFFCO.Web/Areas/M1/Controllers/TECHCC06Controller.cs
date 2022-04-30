@@ -38,53 +38,53 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public IActionResult Execute(DateTime FromDate, DateTime ToDate, string Gas, string ForReport)
         {
-            //if (FromDate > ToDate)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ERROR",
-            //        message = "From date can not be greatter than ToDate",
-            //        type = "error"
+            if (FromDate > ToDate)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "From date can not be greatter than ToDate",
+                    type = "error"
 
-            //    };
-            //    return Json(alert);
-            //}
-            //if (FromDate > DateTime.Now.Date)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ERROR",
-            //        message = "From date can not be greatter than Today's Date",
-            //        type = "error"
+                };
+                return Json(alert);
+            }
+            if (FromDate > DateTime.Now.Date)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "From date can not be greatter than Today's Date",
+                    type = "error"
 
-            //    };
-            //    return Json(alert);
-            //}
-            //if (ToDate > DateTime.Now)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ERROR",
-            //        message = "ToDate can not be greatter than Today's Date",
-            //        type = "error"
+                };
+                return Json(alert);
+            }
+            if (ToDate > DateTime.Now)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "ToDate can not be greatter than Today's Date",
+                    type = "error"
 
-            //    };
-            //    return Json(alert);
-            //}
+                };
+                return Json(alert);
+            }
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            //if ((FromDate.ToString("yyyyMM") == DateTime.Now.AddMonths(-1).ToString("yyyyMM") && DateTime.Now.Day <= 10) || FromDate.ToString("yyyyMM") == DateTime.Now.AddMonths(0).ToString("yyyyMM"))
-            //{
+            if ((FromDate.ToString("yyyyMM") == DateTime.Now.AddMonths(-1).ToString("yyyyMM") && DateTime.Now.Day <= 10) || FromDate.ToString("yyyyMM") == DateTime.Now.AddMonths(0).ToString("yyyyMM"))
+            {
 
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ALERT19",
-            //        message = "Previous FY Date please check !",
-            //        type = "warning"
+                Alert alert = new Alert
+                {
+                    name = "ALERT19",
+                    message = "Previous FY Date please check !",
+                    type = "warning"
 
-            //    };
-            //    return Json(alert);
+                };
+                return Json(alert);
 
-            //}
+            }
 
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "ID1", OracleDbType = OracleDbType.VarChar, Value = FromDate.Date() });
@@ -93,11 +93,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "GAS", OracleDbType = OracleDbType.VarChar, Value = Gas });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "TPE", OracleDbType = OracleDbType.VarChar, Value = ForReport });
 
-            //try
-            //{
+            try
+            {
                 int a = _context.ExecuteProcedure("MONTHLY_NORMS_COMBINE_GAS", oracleParameterCollecion);
-                //if (a == -1)
-                //{
+                if (a == -1)
+                {
                     Alert alert = new Alert
                     {
                         name = "SUCCESS",
@@ -106,29 +106,29 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                     };
                     return Json(alert);
-            //    }
-            //    else
-            //    {
-            //        Alert alert = new Alert
-            //        {
-            //            name = "NODATA",
-            //            message = "No Data Found For This Period",
-            //            type = "warning"
-            //        };
-            //        return Json(alert);
-            //    }
-            //}
-            //catch (Exception)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "Error",
-            //        message = "Internal Server error",
-            //        type = "error"
-            //    };
-            //    return Json(alert);
+                }
+                else
+                {
+                    Alert alert = new Alert
+                    {
+                        name = "NODATA",
+                        message = "No Data Found For This Period",
+                        type = "warning"
+                    };
+                    return Json(alert);
+                }
+            }
+            catch (Exception)
+            {
+                Alert alert = new Alert
+                {
+                    name = "Error",
+                    message = "Internal Server error",
+                    type = "error"
+                };
+                return Json(alert);
 
-            //}
+            }
 
 
 

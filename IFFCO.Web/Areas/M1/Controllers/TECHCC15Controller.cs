@@ -38,51 +38,51 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public IActionResult Execute(DateTime FROM_DATE, DateTime TO_DATE)
         {
-            //if (FROM_DATE > TO_DATE)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ERROR",
-            //        message = "From date can not be greatter than ToDate",
-            //        type = "error"
+            if (FROM_DATE > TO_DATE)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "From date can not be greatter than ToDate",
+                    type = "error"
 
-            //    };
-            //    return Json(alert);
-            //}
-            //if (FROM_DATE > DateTime.Now.Date)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ERROR",
-            //        message = "From date can not be greatter than Today's Date",
-            //        type = "error"
+                };
+                return Json(alert);
+            }
+            if (FROM_DATE > DateTime.Now.Date)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "From date can not be greatter than Today's Date",
+                    type = "error"
 
-            //    };
-            //    return Json(alert);
-            //}
-            //if (TO_DATE > DateTime.Now)
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "ERROR",
-            //        message = "ToDate can not be greatter than Today's Date",
-            //        type = "error"
+                };
+                return Json(alert);
+            }
+            if (TO_DATE > DateTime.Now)
+            {
+                Alert alert = new Alert
+                {
+                    name = "ERROR",
+                    message = "ToDate can not be greatter than Today's Date",
+                    type = "error"
 
-            //    };
-            //    return Json(alert);
-            //}
-            //int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
-            //if ((TO_DATE.ToString("DD/MM/YYYY") == new DateTime(FROM_DATE.Year,FROM_DATE.Month,DateTime.DaysInMonth(FROM_DATE.Year,FROM_DATE.Month)).ToString("DD/MM/YYYY")))
-            //{
+                };
+                return Json(alert);
+            }
+            int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
+            if ((TO_DATE.ToString("DD/MM/YYYY") == new DateTime(FROM_DATE.Year, FROM_DATE.Month, DateTime.DaysInMonth(FROM_DATE.Year, FROM_DATE.Month)).ToString("DD/MM/YYYY")))
+            {
                 List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
                 oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "fr_date", OracleDbType = OracleDbType.VarChar, Value = FROM_DATE.Date() });
                 oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "t_date", OracleDbType = OracleDbType.VarChar, Value = TO_DATE.Date() });
-                
-                //try
-                //{
+
+                try
+                {
                     int a = _context.ExecuteProcedure("XIIAB_PROC", oracleParameterCollecion);
-            //        if (a == -1)
-            //        {
+                    if (a == -1)
+                    {
                         Alert alert = new Alert
                         {
                          name = "ALERT17",
@@ -91,39 +91,39 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
                         };
                          return Json(alert);
-            //        }
-            //    }
-            //    catch (Exception)
-            //    {
+                    }
+                }
+                catch (Exception)
+                {
 
-            //        Alert alert = new Alert
-            //        {
-            //            name = "Error",
-            //            message = "Internal Server error",
-            //            type = "error"
-            //        };
-            //        return Json(alert);
-            //    }
+                    Alert alert = new Alert
+                    {
+                        name = "Error",
+                        message = "Internal Server error",
+                        type = "error"
+                    };
+                    return Json(alert);
+                }
 
-            //    Alert ale = new Alert
-            //    {
-            //        name = "Error",
-            //        message = "Internal Server error",
-            //        type = "error"
-            //    };
-            //    return Json(ale);
+                Alert ale = new Alert
+                {
+                    name = "Error",
+                    message = "Internal Server error",
+                    type = "error"
+                };
+                return Json(ale);
 
-            //}
-            //else
-            //{
-            //    Alert alert = new Alert
-            //    {
-            //        name = "Error",
-            //        message = "From Date and To Date Should not exceed One Month Please check!",
-            //        type = "error"
-            //    };
-            //    return Json(alert);
-            //}
+            }
+            else
+            {
+                Alert alert = new Alert
+                {
+                    name = "Error",
+                    message = "From Date and To Date Should not exceed One Month Please check!",
+                    type = "error"
+                };
+                return Json(alert);
+            }
 
 
 
