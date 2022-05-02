@@ -2079,7 +2079,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             }
             else
             {
-                 query = "update factor_master set Fr_Unit='" + Unit + "',Fr_Value='" + Value + "',Effective_To_Date='" + ToDate.Value.Date() + "' created_by='" + createdby + "',creation_datetime=SYSDATE where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
+                 query = "update factor_master set Fr_Unit='" + Unit + "',Fr_Value='" + Value + "',Effective_To_Date='" + ToDate.Value.Date() + "', created_by='" + createdby + "',creation_datetime=SYSDATE where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
 
             }
 
