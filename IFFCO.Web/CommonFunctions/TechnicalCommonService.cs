@@ -2071,10 +2071,19 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         }
         public int UpdateRecordsFACTORMASTER(string Code, string Unit, string Name, string Value, DateTime FromDate, DateTime? ToDate, string createdby)
         {
-            
-              string  query = "update factor_master set Fr_Unit='"+Unit+"',Fr_Value='"+Value+ "', created_by='" + createdby + "',creation_datetime=SYSDATE where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
+            string query = "";
+            if (ToDate is null)
+            {
+              query = "update factor_master set Fr_Unit='"+Unit+"',Fr_Value='"+Value+ "', created_by='" + createdby + "',creation_datetime=SYSDATE where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
 
-           
+            }
+            else
+            {
+                 query = "update factor_master set Fr_Unit='" + Unit + "',Fr_Value='" + Value + "',Effective_To_Date='" + ToDate.Value.Date() + "' created_by='" + createdby + "',creation_datetime=SYSDATE where Effective_From_Date = '" + FromDate.Date() + "' and Fr_Code='" + Code + "'";
+
+            }
+
+
             var i = _context.insertUpdateToDB(query);
             return i;
 
