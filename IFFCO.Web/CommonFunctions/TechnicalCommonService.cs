@@ -1925,7 +1925,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             string query = "";
             string alert = "";
-            query = "SELECT COUNT("+Input_Name+") FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
+            query = "SELECT COUNT(*) FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
             int RES = _context.GetScalerFromDB(query);
             if (RES == 0)
             {
