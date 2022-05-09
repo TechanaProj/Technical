@@ -666,7 +666,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_SHIFT", OracleDbType = OracleDbType.VarChar, Value = shift });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_FORM_NAME", OracleDbType = OracleDbType.VarChar, Value = formName });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_OUTPUT_MESSAGE", OracleDbType = OracleDbType.VarChar, Direction = ParameterDirection.Output });
-            var data = _context.ExecuteProcedureForRefCursor("TECHANA.OSSC11_APPROVE", oracleParameterCollecion);
+            var data = _context.ExecuteProcedureForRefCursor("OSSC11_APPROVE", oracleParameterCollecion);
             string alert = oracleParameterCollecion[4].Value.ToString();
             return alert;
 
@@ -1925,7 +1925,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             string query = "";
             string alert = "";
-            query = "SELECT COUNT("+Input_Name+") FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
+            query = "SELECT COUNT(*) FROM TECH_REMARKS WHERE DATA_DATE='" + dt1.Date() + "'";
             int RES = _context.GetScalerFromDB(query);
             if (RES == 0)
             {
