@@ -73,7 +73,9 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                         ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);
                         break;
                     case "save":
-                        break;
+                        //break;
+                        CommonViewModel.alert = "Data Saved";
+                        return Json(CommonViewModel);
                     case "approve":
                         //TechnicalCommonService.ApproveRecordsSPENERGY(controller, Shift, EMP_ID.ToString(), FromDate);
                         //List<CommonData> data1 = TechnicalCommonService.GetRecordsSPENERGY(controller, Shift, EMP_ID.ToString(), FromDate);

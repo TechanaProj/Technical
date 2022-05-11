@@ -98,10 +98,23 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
             string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
+            try
+            {
+                CommonViewModel.alert = TechnicalCommonService.PostShutdownUREASC01(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
+                return Json(CommonViewModel);
+            }
+            catch (Exception ex)
+            {
 
+                commonException.GetCommonExcepton(CommonViewModel, ex);
+                CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
+                CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
+                return Json(CommonViewModel);
 
-            CommonViewModel.alert = TechnicalCommonService.PostShutdownUREASC01(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
-            return Json(CommonViewModel);
+            }
+
+            //CommonViewModel.alert = TechnicalCommonService.PostShutdownUREASC01(Shift, DataDate, Reason, ReasonCode, SD_PLANT, FromDate, ToDate, controller, EMP_ID.ToString(), InputType);
+            //return Json(CommonViewModel);
 
 
 
