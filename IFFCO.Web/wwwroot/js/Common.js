@@ -839,6 +839,7 @@ $("input[type='submit']").click(function (e) {
                         CommonAlert(status, error, SubmitPopup, url, "error");
                     },
                     success: function (response) {
+                        debugger;
                         var contentId = "/" + response.areaName + "/" + response.selectedMenu + "/GenerateReport";
                         url = window.location.origin + contentId;
 

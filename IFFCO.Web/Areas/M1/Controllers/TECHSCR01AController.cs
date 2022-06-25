@@ -71,8 +71,6 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     break;
             }
 
-            //ReportData.Query = "P_Idt=" + ReportDate.Date();
-            //ReportData.ReportName = "MDtelexN.rep";
             return ReportData;
         }
 

@@ -234,6 +234,27 @@ namespace IFFCO.TECHPROD.Web.Controllers
             //string Emp_ID2 = Request.Cookies["EmpID2"].ToString();
             return Json(leftMenuViewModel);
         }
+
+        public string SetReporServer(string value)
+        {
+            string Status = string.Empty;
+            try
+            {
+                if (!string.IsNullOrWhiteSpace(value))
+                {
+                    HttpContext.Session.SetString("ReportServer", value);
+                }
+            }
+            catch (Exception ex)
+            {
+                Status = string.Empty;
+            }
+
+            //string Emp_ID2 = Request.Cookies["EmpID2"].ToString();
+            return Status;
+        }
+
+
         //[HttpGet]
         //public IActionResult Logout()
         //{

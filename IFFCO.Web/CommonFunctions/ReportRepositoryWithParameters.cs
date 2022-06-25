@@ -75,6 +75,15 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             //report = "data:application/vnd.ms-excel;base64," + report;
             return report;
         }
+        public string GenerateReportRdlc(string reportrdlcUrl, string querystring, string reportname, string module, string name, string personalNo, string fullClientIp, string clientIp)
+        {
+            string report = "";
+
+            //report = reportrdlcUrl + "/" + module + "/" + reportname + "?" + Encclass.GetEncryptedQueryString(querystring.Replace("''", ""));
+            report = reportrdlcUrl + "/" + reportname + "?" + Encclass.GetEncryptedQueryString(querystring.Replace("''", ""));
+            //Encclass.ReportLog(module, reportname, name, querystring, personalNo, fullClientIp, clientIp);
+            return report;
+        }
 
 
 

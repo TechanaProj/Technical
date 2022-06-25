@@ -54,31 +54,62 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public ActionResult GenerateReport(TECHSCR10ViewModel tECHSCR10ViewModel)
         {
+            bool rdlc = false;
+            string separator = "+";
+            string extension = "rep";
+            var fullClientIp = HttpContext.Session.GetString("fullClientIp");
+            var clientIp = HttpContext.Session.GetString("clientIp");
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+                
+                rdlc = true;
+                separator = "&";
+                extension = "aspx";
+               
+            }
+
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(tECHSCR10ViewModel);
-            string data = reportobj.ReportName + "+destype=cache+desformat=" + tECHSCR10ViewModel.SelectedReportFormat;
+            tECHSCR10ViewModel.CallingReport = tECHSCR10ViewModel.CallingReport.Split(".")[0] + "." + extension;
+            tECHSCR10ViewModel.SelectedReportFormat = "PDF";
+            if (tECHSCR10ViewModel.CallingReport.Contains("RECORDS") || tECHSCR10ViewModel.CallingReport.Contains("MILESTONES"))
+            {
+                Report reportobj = GenerateReportData(tECHSCR10ViewModel, separator);
+                string data = reportobj.ReportName + "+destype=cache+desformat=" + tECHSCR10ViewModel.SelectedReportFormat;
 
-            Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
-            CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
-            CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
-            CommonViewModel.Report = Report;
+
+                if (rdlc)
+                {
+                    Report = reportRepository.GenerateReportRdlc(HttpContext.Session.GetString("ReportServer"),
+                          reportobj.Query,
+                          reportobj.ReportName,
+                          this.ControllerContext.RouteData.Values["area"].ToString(),
+                          this.ControllerContext.RouteData.Values["controller"].ToString(),
+                          HttpContext.Session.GetInt32("EmpID").ToString(), fullClientIp, clientIp);
+                }
+                else
+                {
+
+                    Report = reportRepository.GenerateReport(reportobj.Query, data);
+
+                }
+                CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
+                CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
+                CommonViewModel.Report = Report;
+            }
             return Json(CommonViewModel);
         }
 
        
-        public Report GenerateReportData(TECHSCR10ViewModel tECHSCR10ViewModel)
+        public Report GenerateReportData(TECHSCR10ViewModel tECHSCR10ViewModel, string seprator)
         {
             Report ReportData = new Report();
             int unit = Convert.ToInt32(HttpContext.Session.GetString("UnitCode"));
             ReportData.ReportName = tECHSCR10ViewModel.CallingReport;
-            tECHSCR10ViewModel.SelectedReportFormat = "PDF";
-            if (tECHSCR10ViewModel.CallingReport == "RECORDS.rep" || tECHSCR10ViewModel.CallingReport == "MILESTONES.rep")
-            {
-                ReportData.Query = "FR_DATE=" + Convert.ToDateTime(tECHSCR10ViewModel.FromDate).ToString("dd/MMM/yyyy") + "+" +
-                "T_DATE=" + Convert.ToDateTime(tECHSCR10ViewModel.ToDate).ToString("dd/MMM/yyyy") + "+" +
+            ReportData.Query = "FR_DATE=" + Convert.ToDateTime(tECHSCR10ViewModel.FromDate).ToString("dd/MMM/yyyy") + seprator +
+                "T_DATE=" + Convert.ToDateTime(tECHSCR10ViewModel.ToDate).ToString("dd/MMM/yyyy") + seprator +
                  "D=" + Convert.ToDateTime(tECHSCR10ViewModel.ToDate).ToString("dd/MMM/yyyy");
-            }
+            
             return ReportData;
            
         }
