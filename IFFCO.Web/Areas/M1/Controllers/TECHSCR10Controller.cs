@@ -90,7 +90,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 else
                 {
 
-                    Report = reportRepository.GenerateReport(reportobj.Query, data);
+                    Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
 
                 }
                 CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
