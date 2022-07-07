@@ -40,20 +40,53 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public ActionResult GenerateReport(DateTime ReportDate, string ReportType)
         {
+            bool rdlc = false;
+            string separator = "+";
+            string extension = "rep";
+            var fullClientIp = HttpContext.Session.GetString("fullClientIp");
+            var clientIp = HttpContext.Session.GetString("clientIp");
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+
+                rdlc = true;
+                separator = "&";
+                extension = "aspx";
+
+            }
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(ReportDate, ReportType);
-            //Report reportobj2 = GenerateReportData2(ReportDate);
+            Report reportobj = GenerateReportData( ReportDate, ReportType,separator);
             string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
+            if (rdlc)
+            {
+                Report = reportRepository.GenerateReportRdlc(HttpContext.Session.GetString("ReportServer"),
+                      reportobj.Query,
+                      reportobj.ReportName,
+                      this.ControllerContext.RouteData.Values["area"].ToString(),
+                      this.ControllerContext.RouteData.Values["controller"].ToString(),
+                      HttpContext.Session.GetInt32("EmpID").ToString(), fullClientIp, clientIp);
+            }
+            else
+            {
 
-            Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
+                Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
+
+            }
             CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
             CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
             CommonViewModel.Report = Report;
             return Json(CommonViewModel);
         }
-        public Report GenerateReportData(DateTime ReportDate, string ReportType)
+        public Report GenerateReportData(DateTime ReportDate, string ReportType , string seprator)
         {
+            bool rdlc = false;
+            string extension = "rep";
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+                rdlc = true;
+                extension = "aspx";
+            }
+
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
@@ -62,12 +95,12 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             {
                 case "A":
                     ReportData.Query = "P_Idt=" + ReportDate.Date();
-                    ReportData.ReportName = "PPR.rep";
+                    ReportData.ReportName = "PPR."+ extension;
                     break;
                 default:
                 case "B":
                     ReportData.Query = "P_Idt=" + ReportDate.Date();
-                    ReportData.ReportName = "Respected_report.rep";
+                    ReportData.ReportName = "Respected_report."+extension;
                     break;
             }
 

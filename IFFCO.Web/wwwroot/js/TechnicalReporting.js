@@ -60,16 +60,8 @@
                     embedtag.pluginspage = "http://www.adobe.com/products/acrobat/readstep2.html";
                     x.document.body.appendChild(embedtag);
                     x.document.title = response.selectedMenu;
-                }
-
-                
-
-
-                
-                
+                }               
             }
-
-
         }
     });
 
