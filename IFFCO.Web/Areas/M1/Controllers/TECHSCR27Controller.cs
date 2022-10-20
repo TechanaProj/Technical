@@ -40,20 +40,55 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public ActionResult GenerateReport(DateTime FromDate, DateTime ToDate, string ReportType)
         {
+            bool rdlc = false;
+            string separator = "+";
+            string extension = "rep";
+            var fullClientIp = HttpContext.Session.GetString("fullClientIp");
+            var clientIp = HttpContext.Session.GetString("clientIp");
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+                rdlc = true;
+                separator = "&";
+                extension = "aspx";
+
+            }
+
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(FromDate, ToDate, ReportType);
-            //Report reportobj2 = GenerateReportData2(ReportDate);
+            Report reportobj = GenerateReportData(FromDate, ToDate, ReportType, separator);
             string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
 
-            Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
+            if (rdlc)
+            {
+                Report = reportRepository.GenerateReportRdlc(HttpContext.Session.GetString("ReportServer"),
+                      reportobj.Query,
+                      reportobj.ReportName,
+                      this.ControllerContext.RouteData.Values["area"].ToString(),
+                      this.ControllerContext.RouteData.Values["controller"].ToString(),
+                      HttpContext.Session.GetInt32("EmpID").ToString(), fullClientIp, clientIp);
+            }
+            else
+            {
+
+                Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
+
+            }
             CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
             CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
             CommonViewModel.Report = Report;
             return Json(CommonViewModel);
+
         }
-        public Report GenerateReportData(DateTime FromDate, DateTime ToDate, string ReportType)
+        public Report GenerateReportData(DateTime FromDate, DateTime ToDate, string ReportType,string seprator)
         {
+            bool rdlc = false;
+            string extension = "rep";
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+                rdlc = true;
+                extension = "aspx";
+            }
+
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
@@ -61,17 +96,17 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             switch (ReportType)
             {
                 case "Am":
-                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + "+" + "P_TO_DATE=" + ToDate.Date();
-                    ReportData.ReportName = "AMM_RG.rep";
+                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                    ReportData.ReportName = "AMM_RG."+extension;
                     break;
                 default:
                 case "Sa":
-                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + "+" + "P_TO_DATE=" + ToDate.Date();
-                    ReportData.ReportName = "SULP(H2SO4)_RG.rep";
+                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                    ReportData.ReportName = "SULP(H2SO4)_RG."+extension;
                     break;
                 case "Na":
-                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + "+" + "P_TO_DATE=" + ToDate.Date();
-                    ReportData.ReportName = "NAPHTHA_RG.rep";
+                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                    ReportData.ReportName = "NAPHTHA_RG."+extension;
                     break;
             }
 

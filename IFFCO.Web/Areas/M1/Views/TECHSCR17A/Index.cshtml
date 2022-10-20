@@ -47,37 +47,38 @@
                 <div class="m-form">
                     <div class="m-form-bx">
                         <div class="row ">
-                            <div class="col-sm-6 col-md-2">
+                            <div class="col-sm-2 col-md-2">
                                 <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
                             </div>
-                            <div class="col-sm-6 col-md-2">
+                            <div class="col-sm-2 col-md-2">
                                 @{
                                     var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
                                 }
                                 <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
                             </div>
 
-                            <div class="col-sm-6 col-md-2">
+                            <div class="col-sm-2 col-md-2">
                                 <label class="m-lbl1 m-lbl2">To Date <span style="color:red;">*</span></label>
                             </div>
-                            <div class="col-sm-6 col-md-2">
+                            <div class="col-sm-2 col-md-2">
                                 <input class="form-control" id="txtToDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
                             </div>
 
-                            <div class="col-sm-6 col-md-1">
+                            <div class="col-sm-2 col-md-1">
                                 <label class="m-lbl1 m-lbl2">Report <span style="color:red;">*</span></label>
                             </div>
-                            <div class="col-sm-6 col-md-3">
+                            <div class="col-sm-2 col-md-3">
                                 <select id="txtReport" class="form-control">
                                     <option value="N">Norms (w/o Non-Plant)</option>
                                     <option value="NP">Norms (with plant)</option>
                                 </select>
                             </div>
-
-                            <div class="col-sm-6 col-md-2">
+                        </div>
+                        <div class="row ">
+                            <div class="col-sm-3 col-md-2">
                                 <label class="m-lbl1 m-lbl2">For the Gas <span style="color:red;">*</span></label>
                             </div>
-                            <div class="col-sm-6 col-md-4">
+                            <div class="col-sm-3 col-md-4">
                                 <select id="txtGas" class="form-control">
                                     <option value="COMPOSITE">COMPOSITE</option>
                                     <option value="NG">NG</option>
@@ -93,11 +94,11 @@
                                 </select>
                             </div>
 
-                            <div class="col-sm-6 col-md-2">
+                            <div class="col-sm-3 col-md-2">
                                 <label class="m-lbl1 m-lbl2">For Report <span style="color:red;">*</span></label>
                             </div>
 
-                            <div class="col-sm-6 col-md-4">
+                            <div class="col-sm-3 col-md-4">
                                 <select id="txtForReport" class="form-control">
                                     <option value="M">Monthly Basis</option>
                                     <option value="W">Weekly Basis </option>
