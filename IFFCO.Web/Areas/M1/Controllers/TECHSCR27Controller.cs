@@ -92,24 +92,44 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
-
-            switch (ReportType)
+            if (rdlc==true)
             {
-                case "Am":
-                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
-                    ReportData.ReportName = "AMM_RG."+extension;
-                    break;
-                default:
-                case "Sa":
-                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
-                    ReportData.ReportName = "SULP(H2SO4)_RG."+extension;
-                    break;
-                case "Na":
-                    ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
-                    ReportData.ReportName = "NAPHTHA_RG."+extension;
-                    break;
+                switch (ReportType)
+                {
+                    case "Am":
+                        ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "AMM_RG." + extension;
+                        break;
+                    default:
+                    case "Sa":
+                        ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "SULP_H2SO4_RG." + extension;
+                        break;
+                    case "Na":
+                        ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "NAPHTHA_RG." + extension;
+                        break;
+                }
             }
+            else {
+                switch (ReportType)
+                {
+                    case "Am":
+                        ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "AMM_RG." + extension;
+                        break;
+                    default:
+                    case "Sa":
+                        ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "SULP(H2SO4)_RG." + extension;
+                        break;
+                    case "Na":
+                        ReportData.Query = "P_FR_DATE=" + FromDate.Date() + seprator + "P_TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "NAPHTHA_RG." + extension;
+                        break;
+                }
 
+            }
             //ReportData.Query = "P_Idt=" + ReportDate.Date();
             //ReportData.ReportName = "MDtelexN.rep";
             return ReportData;
