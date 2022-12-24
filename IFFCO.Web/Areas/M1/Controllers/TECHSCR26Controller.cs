@@ -93,12 +93,14 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             switch (ReportType)
             {
                 case "A1":
-                    ReportData.Query = "FIN=" + FinYear;
+                    ReportData.Query = "FIN=" + FinYear+ seprator +
+                                  "UNIT=" + ReportType; 
                     ReportData.ReportName = "TOP3_A1."+extension;
                     break;
                 default:
                 case "A2":
-                    ReportData.Query = "FIN=" + FinYear;
+                    ReportData.Query = "FIN=" + FinYear + seprator +
+                                  "UNIT=" + ReportType; 
                     ReportData.ReportName = "TOP3_A2."+extension;
                     break;
             }
