@@ -51,10 +51,7 @@
                                 <label class="m-lbl1 m-lbl2">From Date <span style="color:red;">*</span></label>
                             </div>
                             <div class="col-sm-2 col-md-2">
-                                @{
-                                    var d = new DateTime(DateTime.Now.Year, DateTime.Now.Month, 01);
-                                }
-                                <input class="form-control" id="txtFromDate" type="date" value="@d.ToString("yyyy-MM-dd")" />
+                               input class="form-control" id="txtFromDate" type="date" value="@DateTime.Now.AddDays(-1).ToString("yyyy-MM-dd")" />
                             </div>
 
                             <div class="col-sm-2 col-md-2">

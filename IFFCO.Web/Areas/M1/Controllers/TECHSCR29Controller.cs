@@ -1,5 +1,4 @@
-﻿
-using IFFCO.HRMS.Service;
+﻿using IFFCO.HRMS.Service;
 using IFFCO.TECHPROD.Web.CommonFunctions;
 using IFFCO.TECHPROD.Web.Controllers;
 using IFFCO.TECHPROD.Web.Models;
