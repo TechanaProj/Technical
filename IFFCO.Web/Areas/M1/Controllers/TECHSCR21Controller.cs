@@ -84,61 +84,66 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
         {
             bool rdlc = false;
             string extension = "rep";
-            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
-            {
-                rdlc = true;
-                extension = "aspx";
-            }
 
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
             ReportData.ReportFormat = "PDF";
             ReportData.Query = "FRM_DATE=" + FromDate.Date() + seprator + "T_DATE=" + ToDate.Date();
+            var prefix = "12";
+
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+                rdlc = true;
+                extension = "aspx";
+                prefix = "XII";
+                
+            }
+
 
             switch (Plant)
             {
                 case "A1":
-                    ReportData.ReportName = "12AReport1."+extension;
+                    ReportData.ReportName = prefix+"AReport1."+extension;
                     break;
                 case "A2":
-                    ReportData.ReportName = "12AReport2."+extension;
+                    ReportData.ReportName = prefix+"AReport2."+extension;
                     break;
                 case "A1R":
-                    ReportData.ReportName = "12AReport1r2."+extension;
+                    ReportData.ReportName = prefix+"AReport1r2."+extension;
                     break;
                 case "A2R":
-                    ReportData.ReportName = "12AReport2r2."+extension;
+                    ReportData.ReportName = prefix+"AReport2r2."+extension;
                     break;
                 case "PP":
-                    ReportData.ReportName = "12AReport1r2_N."+extension;
+                    ReportData.ReportName = prefix+"AReport1r2_N."+extension;
                     break;
                
                 case "A3":
-                    ReportData.ReportName = "12AReportrec."+extension;
+                    ReportData.ReportName = prefix+"AReportrec."+extension;
                     break;
                 case "AB":
                     ReportData.ReportName = "Amm_balance."+extension;
                     break;
                 case "SH23":
-                    ReportData.ReportName = "12Acheck23_A1."+extension;
+                    ReportData.ReportName = prefix+"Acheck23_A1."+extension;
                     break;
                 case "SH232":
-                    ReportData.ReportName = "12Acheck23_A2."+extension;
+                    ReportData.ReportName = prefix+"Acheck23_A2."+extension;
                     break;
                 case "A1N":
-                    ReportData.ReportName = "12AReport1_N."+extension;
+                    ReportData.ReportName = prefix+"AReport1_N."+extension;
                     break;
                 case "A2N":
-                    ReportData.ReportName = "12AReport2_N."+extension;
+                    ReportData.ReportName = prefix+"AReport2_N."+extension;
                     break;
                 case "A3N":
-                    ReportData.ReportName = "12AReportrec_N."+extension;
+                    ReportData.ReportName = prefix+"AReportrec_N."+extension;
                     break;
                 case "A1RN":
-                    ReportData.ReportName = "12AReport1r2_N."+extension;
+                    ReportData.ReportName = prefix+"AReport1r2_N."+extension;
                     break;
                 case "A2RN":
-                    ReportData.ReportName = "12AReport2r2_N."+extension;
+                    ReportData.ReportName = prefix+"AReport2r2_N."+extension;
                     break;
                 default:
 
