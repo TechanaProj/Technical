@@ -36,7 +36,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsTOP9CPP(DateTime.Now.AddDays(-1), "SG");
+                List<CommonData> data = TechnicalCommonService.GetRecordsTOP9CPP(DateTime.Now.AddDays(-1), "CPP1");
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.records = data;
@@ -65,7 +65,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 switch (OperationType)
                 {
                     case "query":
-                        List<CommonData> data = TechnicalCommonService.GetRecordsTOP9CPP(FromDate, "SG");
+                        List<CommonData> data = TechnicalCommonService.GetRecordsTOP9CPP(FromDate, Plant);
                         ViewBag.reason = TechnicalCommonService.GetReason();
                         ViewBag.records = data;
                         ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, FromDate);

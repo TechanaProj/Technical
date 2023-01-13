@@ -2479,11 +2479,12 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         {
             List<OracleParameter> oracleParameterCollecion = new List<OracleParameter>();
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_DATE", OracleDbType = OracleDbType.VarChar, Value = dt1.Date() });
+            oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_PLANT", OracleDbType = OracleDbType.VarChar, Value = plant });
             oracleParameterCollecion.Add(new OracleParameter() { ParameterName = "P_RESPONSE_CUR", OracleDbType = OracleDbType.Cursor, Direction = ParameterDirection.Output });
 
             var data = _context.ExecuteProcedureForRefCursor("TOP9_CPP_QUERY", oracleParameterCollecion);
 
-            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[1].Value).GetDataReader();
+            OracleDataReader reader = ((OracleCursor)oracleParameterCollecion[2].Value).GetDataReader();
 
             List<CommonData> cd = new List<CommonData>();
             while (reader.Read())
