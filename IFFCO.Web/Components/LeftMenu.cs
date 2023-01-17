@@ -37,7 +37,15 @@ namespace IFFCO.TECHPROD.Web.Components
 
             List<ModulesMenu> Menues = commonService.GetModulesMenus(EMP_ID).Where(x => x.Menulevel == 1).ToList();
             List<SelectListItem> Units = dropDownListBind.GetUnitWithSecurity(Convert.ToString(EMP_ID), moduleid);
-            if(Menues.Count>0 && Units.Count > 0)
+            List<SelectListItem> RepServ = dropDownListBind.GetReportServers();
+            if (RepServ.Count > 0)
+            {
+                string ip = RepServ.OrderBy(x => x.Text).FirstOrDefault().Value.ToString();
+                HttpContext.Session.SetString("ReportServer", ip);
+            }
+
+
+            if (Menues.Count>0 && Units.Count > 0)
             {
                 HttpContext.Session.SetObject("GetModulesMenus", Menues);
                 HttpContext.Session.SetObject("GetUnitDropDown", Units);
@@ -47,6 +55,7 @@ namespace IFFCO.TECHPROD.Web.Components
                     Modules = commonService.GetModules(EMP_ID),
                     ModulesMenu = Menues,
                     Units = Units,
+                    RepServ = RepServ,
                     FilterModulesMenu = null//FilterMenues
                 };
             }
@@ -64,6 +73,7 @@ namespace IFFCO.TECHPROD.Web.Components
                     Modules = commonService.GetModules(EMP_ID),
                     ModulesMenu = Menues,
                     Units = Units,
+                    RepServ = RepServ,
                     FilterModulesMenu = null//FilterMenues
                 };
             }

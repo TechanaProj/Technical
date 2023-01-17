@@ -16,6 +16,7 @@
 <div class="selection">
     <div class="row"><select class="form-control" id="ddlModules" asp-items="Model.Modules"></select></div>
     <div class="row"><select class="form-control" id="ddlUnits" asp-items="Model.Units"></select></div>
+    <div class="row"><select class="form-control" id="ddlReports" asp-items="Model.RepServ"></select></div>
 </div>
 <div class="menu-area">
     <div class="main-menu">
@@ -381,10 +382,10 @@
         script.src = readCookie("U")  + "/js/Common.js";
         document.body.appendChild(script);
         $(".modalLoader").hide();
-       
+
     }
 
-    
+
 
     $("#ddlModules").change(function () {
         $(".modalLoader").show();
@@ -396,6 +397,10 @@
         $(".modalLoader").show();
         CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/GetUnitResult?UnitId=' + $("#ddlUnits option:selected").val(), "GET", true, "application/json", false, RedirectDashboardOnUnits, "#ParentUL");
     });
+    $("#ddlReports").change(function () {
+        CommonAjax('@ViewContext.RouteData.Values["area"].ToString()/@ViewContext.RouteData.Values["Controller"].ToString()/SetReporServer?value=' + $("#ddlReports option:selected").val(), "GET", true, "application/json", false, null, null);
+    });
+
 
     function BindLeftMenu2(data, Id) {
         $("#ParentUL").html("");

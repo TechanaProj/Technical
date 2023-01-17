@@ -31,10 +31,10 @@
                 //var x = window.open(response.report, '_blank')
                 //window.open(response.report, 'winname', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=1000,height=1000');
                 //$("#reportEmbed").attr("src", response.report)
-                
+
                    //var win = window.open(response.report, '_blank');
-                   // win.document.head.innerHTML = '<title>Hi</title></head>';                   
-                   // var script = document.createElement('script');               
+                   // win.document.head.innerHTML = '<title>Hi</title></head>';
+                   // var script = document.createElement('script');
                    // script.innerHTML = "window.onload = function () {history.pushState(null, null, '');}"
                    // win.document.head.appendChild(script);
 
@@ -71,11 +71,10 @@
                 //}
 
 
-                
-                
+
+
             }
-
-
+             
         }
     });
 

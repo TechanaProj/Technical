@@ -12,6 +12,7 @@ namespace IFFCO.TECHPROD.Web.Models
     {
         public List<SelectListItem> Modules { get; set; }
         public List<SelectListItem> Units { get; set; }
+        public List<SelectListItem> RepServ { get; set; } //RDLC Server Selection
         public List<ModulesMenu> ModulesMenu { get; set; }
         public List<ModulesMenu> FilterModulesMenu { get; set; }
 

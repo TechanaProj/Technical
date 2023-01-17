@@ -18,6 +18,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
         //private readonly string reportURL = "http://140.238.253.16/reports/rwservlet?cmdkey=techprod_rep";
         //private readonly string reportURL = "https://wlsan.iffco.coop/reports/rwservlet?cmdkey=techprod_rep";
         private readonly string reportURL = "https://wlsaonla.iffco.coop/reports/rwservlet?cmdkey=techprod_rep";
+
         //private readonly string reportURLFrame = "http://";
         private readonly string reportURLFrame2 = "reports/rwservlet?cmdkey=techprod_rep";
 
@@ -74,6 +75,15 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             string report = "";
             report = reportURL + "+module=" + reportname + "+" + querystring;
             //report = "data:application/vnd.ms-excel;base64," + report;
+            return report;
+        }
+        public string GenerateReportRdlc(string reportrdlcUrl, string querystring, string reportname, string module, string name, string personalNo, string fullClientIp, string clientIp)
+        {
+            string report = "";
+
+            //report = reportrdlcUrl + "/" + module + "/" + reportname + "?" + Encclass.GetEncryptedQueryString(querystring.Replace("''", ""));
+            report = reportrdlcUrl + "/" + reportname + "?" + Encclass.GetEncryptedQueryString(querystring.Replace("''", ""));
+            //Encclass.ReportLog(module, reportname, name, querystring, personalNo, fullClientIp, clientIp);
             return report;
         }
 

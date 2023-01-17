@@ -839,6 +839,7 @@ $("input[type='submit']").click(function (e) {
                         CommonAlert(status, error, SubmitPopup, url, "error");
                     },
                     success: function (response) {
+                        debugger;
                         var contentId = "/" + response.areaName + "/" + response.selectedMenu + "/GenerateReport";
                         url = window.location.origin + contentId;
 
@@ -868,19 +869,23 @@ $("input[type='submit']").click(function (e) {
                         //x.document.head.appendChild(script);
                         //x.document.title = response.selectedMenu;
 
-                        var x = window.open('', '_blank');
-                        x.document.write('<body></body>');
-                        x.location.hash = response.selectedMenu;
-                        var embedtag = x.document.createElement('embed');
-                        embedtag.id = 'reportEmbed';
-                        embedtag.src = response.report;
-                        embedtag.style = "width:100%; height:100%;";
-                        embedtag.alt = "pdf";
-                        embedtag.title = "Report";
-                        embedtag.type = "application/pdf";
-                        embedtag.pluginspage = "http://www.adobe.com/products/acrobat/readstep2.html";
-                        x.document.body.appendChild(embedtag);
-                        x.document.title = response.selectedMenu;
+                        if (response.report.includes('aspx')) {
+                            window.open(response.report, '_blank').focus();
+                        } else {
+                            var x = window.open("", '_blank');
+                            x.document.write('<body></body>');
+                            x.location.hash = response.selectedMenu;
+                            var embedtag = x.document.createElement('embed');
+                            embedtag.id = 'reportEmbed';
+                            embedtag.src = response.report;
+                            embedtag.style = "width:100%; height:100%;";
+                            embedtag.alt = "pdf";
+                            embedtag.title = "Report";
+                            embedtag.type = "application/pdf";
+                            embedtag.pluginspage = "http://www.adobe.com/products/acrobat/readstep2.html";
+                            x.document.body.appendChild(embedtag);
+                            x.document.title = response.selectedMenu;
+                        }
                     }
                 });
                 return false;

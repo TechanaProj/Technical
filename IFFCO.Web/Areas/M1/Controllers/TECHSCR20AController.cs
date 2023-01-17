@@ -54,12 +54,38 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
         public ActionResult GenerateReport(TECHSCR20AViewModel TECHSCR20AViewModel)
         {
+            bool rdlc = false;
+            string separator = "+";
+            string extension = "rep";
+            var fullClientIp = HttpContext.Session.GetString("fullClientIp");
+            var clientIp = HttpContext.Session.GetString("clientIp");
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+
+                rdlc = true;
+                separator = "&";
+                extension = "aspx";
+
+            }
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(TECHSCR20AViewModel);
-            string data = reportobj.ReportName + "+destype=cache+desformat=" + TECHSCR20AViewModel.SelectedReportFormat;
+            Report reportobj = GenerateReportData(TECHSCR20AViewModel, separator);
+            string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
+            if (rdlc)
+            {
+                Report = reportRepository.GenerateReportRdlc(HttpContext.Session.GetString("ReportServer"),
+                      reportobj.Query,
+                      reportobj.ReportName,
+                      this.ControllerContext.RouteData.Values["area"].ToString(),
+                      this.ControllerContext.RouteData.Values["controller"].ToString(),
+                      HttpContext.Session.GetInt32("EmpID").ToString(), fullClientIp, clientIp);
+            }
+            else
+            {
 
-            Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
+                Report = reportRepository.GenerateReport(reportobj.Query, data, "NotEncode");
+
+            }
             CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
             CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
             CommonViewModel.Report = Report;
@@ -67,14 +93,22 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
         }
 
 
-        public Report GenerateReportData(TECHSCR20AViewModel TECHSCR20AViewModel)
+        public Report GenerateReportData(TECHSCR20AViewModel TECHSCR20AViewModel, string seprator)
         {
+            bool rdlc = false;
+            string extension = "rep";
+            if (HttpContext.Session.GetString("ReportServer").ToLower().Contains("tech"))
+            {
+                rdlc = true;
+                extension = "aspx";
+            }
+
             Report ReportData = new Report();
             int unit = Convert.ToInt32(HttpContext.Session.GetString("UnitCode"));
             ReportData.ReportName = TECHSCR20AViewModel.CallingReport;
             TECHSCR20AViewModel.SelectedReportFormat = "PDF";
-            ReportData.ReportName = "Mnpwr.rep";
-            ReportData.Query = "FR_DATE=" + Convert.ToDateTime(TECHSCR20AViewModel.FromDate).ToString("dd/MMM/yyyy") + "+" +
+            ReportData.ReportName = "Mnpwr."+extension;
+            ReportData.Query = "FR_DATE=" + Convert.ToDateTime(TECHSCR20AViewModel.FromDate).ToString("dd/MMM/yyyy") + seprator +
                                "TO_DATE=" + Convert.ToDateTime(TECHSCR20AViewModel.ToDate).ToString("dd/MMM/yyyy");
                                //"P_UNIT=" + TECHSCR20AViewModel.PlantType;
             return ReportData;
