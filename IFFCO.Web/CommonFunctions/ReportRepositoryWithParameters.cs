@@ -58,7 +58,8 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
             else
             {
                 report = NotEncode + reportURLFrame2 + "+module=" + reportname + "+" + querystring;
-            }                      
+            }
+            Encclass.ReportLog("", reportname, "", querystring, "", "", "");
             return report;
         }
 
@@ -83,7 +84,7 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
             //report = reportrdlcUrl + "/" + module + "/" + reportname + "?" + Encclass.GetEncryptedQueryString(querystring.Replace("''", ""));
             report = reportrdlcUrl + "/" + reportname + "?" + Encclass.GetEncryptedQueryString(querystring.Replace("''", ""));
-            //Encclass.ReportLog(module, reportname, name, querystring, personalNo, fullClientIp, clientIp);
+            Encclass.ReportLog(module, reportname, name, querystring, personalNo, fullClientIp, clientIp);
             return report;
         }
 

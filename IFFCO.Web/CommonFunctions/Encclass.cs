@@ -129,48 +129,48 @@ namespace IFFCO.TECHPROD.Web.CommonFunctions
 
         }
 
-        //public static void ReportLog(string modulename, string reportname, string name, string QueryString, string personalNo, string fullClientIp, string clientIp)
-        //{
-        //    try
-        //    {
-        //        string connstring = new AppConfiguration().ConnectionString;
-        //        string runtime = Convert.ToDateTime(DateTime.Now).ToString();
+        public static void ReportLog(string modulename, string reportname, string name, string QueryString, string personalNo, string fullClientIp, string clientIp)
+        {
+            try
+            {
+                string connstring = new AppConfiguration().ConnectionString;
+                string runtime = Convert.ToDateTime(DateTime.Now).ToString();
 
-        //        using (OracleConnection con = new OracleConnection(connstring))
-        //        {
-        //            string str = "insert into DESP_REPORT_LOG (MODULENAME, REPORTNAME, RUNTIME, R_NAME,REPORT_PARAMETERS,PERSONAL_NO,FULLCLIENTIP,CLIENTIP)Values('" + modulename + "','" + reportname + "',sysdate,'" + name + "','" + QueryString + "','" + personalNo + "','" + fullClientIp + "','" + clientIp + "' )";
+                using (OracleConnection con = new OracleConnection(connstring))
+                {
+                    string str = "insert into TECH_REPORT_LOG (MODULENAME, REPORTNAME, RUNTIME, R_NAME,REPORT_PARAMETERS,PERSONAL_NO,FULLCLIENTIP,CLIENTIP)Values('" + modulename + "','" + reportname + "',sysdate,'" + name + "','" + QueryString + "','" + personalNo + "','" + fullClientIp + "','" + clientIp + "' )";
 
-        //            con.Open();
-        //            OracleCommand cmd = new OracleCommand(str, con);
-        //            cmd.CommandType = CommandType.Text;
-        //            cmd.ExecuteNonQuery();
-        //            con.Close();
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        try
-        //        {
-        //            string connstring = new AppConfiguration().ConnectionString;
-        //            string runtime = Convert.ToDateTime(DateTime.Now).ToString();
+                    con.Open();
+                    OracleCommand cmd = new OracleCommand(str, con);
+                    cmd.CommandType = CommandType.Text;
+                    cmd.ExecuteNonQuery();
+                    con.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                try
+                {
+                    string connstring = new AppConfiguration().ConnectionString;
+                    string runtime = Convert.ToDateTime(DateTime.Now).ToString();
 
-        //            using (OracleConnection con = new OracleConnection(connstring))
-        //            {
-        //                string str = "insert into DESP_REPORT_LOG (MODULENAME, REPORTNAME, R_NAME,PERSONAL_NO,FULLCLIENTIP,CLIENTIP) Values ('" + modulename + "','" + reportname + "','" + name + "','" + personalNo + "','" + fullClientIp + "','" + clientIp + "')";
+                    using (OracleConnection con = new OracleConnection(connstring))
+                    {
+                        string str = "insert into TECH_REPORT_LOG (MODULENAME, REPORTNAME, R_NAME,PERSONAL_NO,FULLCLIENTIP,CLIENTIP) Values ('" + modulename + "','" + reportname + "','" + name + "','" + personalNo + "','" + fullClientIp + "','" + clientIp + "')";
 
 
-        //                con.Open();
-        //                OracleCommand cmd = new OracleCommand(str, con);
-        //                cmd.CommandType = CommandType.Text;
-        //                cmd.ExecuteNonQuery();
-        //                con.Close();
-        //            }
-        //        }
-        //        catch (Exception excep)
-        //        {
-        //        }
-        //   }
-        //}
+                        con.Open();
+                        OracleCommand cmd = new OracleCommand(str, con);
+                        cmd.CommandType = CommandType.Text;
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+                catch (Exception excep)
+                {
+                }
+            }
+        }
 
     }
 
