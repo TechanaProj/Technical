@@ -70,7 +70,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string Report = "";
             string QueryString = String.Empty;
             Report reportobj = GenerateReportData(tECHSCR22ViewModel, separator);
-            string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
+            string data = reportobj.ReportName + "+destype=cache+desformat=" + tECHSCR22ViewModel.SelectedReportFormat;
             if (rdlc)
             {
                 Report = reportRepository.GenerateReportRdlc(HttpContext.Session.GetString("ReportServer"),

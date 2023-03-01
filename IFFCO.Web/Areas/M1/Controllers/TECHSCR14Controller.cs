@@ -56,7 +56,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             string Report = "";
             string QueryString = String.Empty;
             Report reportobj = GenerateReportData(tECHSCR14ViewModel, separator);
-            string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
+            string data = reportobj.ReportName + "+destype=cache+desformat=" + tECHSCR14ViewModel.SelectedReportFormat;
             if (rdlc)
             {
                 Report = reportRepository.GenerateReportRdlc(HttpContext.Session.GetString("ReportServer"),

@@ -111,15 +111,15 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     break;
                 case "TP6A2":
 
-                    ReportData.ReportName = "pmis_prod.rep."+extension;
+                    ReportData.ReportName = "pmis_prod."+extension;
                     break;
                 case "TP6A3":
 
-                    ReportData.ReportName = "pmis_desp.rep."+extension;
+                    ReportData.ReportName = "pmis_desp."+extension;
                     break;
                 case "TP6A4":
 
-                    ReportData.ReportName = "pmis_stock.rep."+extension;
+                    ReportData.ReportName = "pmis_stock."+extension;
                     break;
                 default:
 

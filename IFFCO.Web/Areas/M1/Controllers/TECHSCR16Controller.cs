@@ -104,7 +104,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                     ReportData.ReportName = "F1report."+extension;
                     break;
                 case "F":
-                    ReportData.Query = "I_DT1=" + FromDate.Date() + seprator + "I_DT2=" + ToDate.Date() + "+" + "TPE=" + InputType;
+                    ReportData.Query = "I_DT1=" + FromDate.Date() + seprator + "I_DT2=" + ToDate.Date() + seprator + "TPE=" + InputType;
                     ReportData.ReportName = "F1report_finance."+extension;
                     break;
                 default:
