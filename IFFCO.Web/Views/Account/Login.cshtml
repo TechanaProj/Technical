@@ -383,7 +383,10 @@
                 CommonAlert("Alert", "Please select module", null, null, "warning");
                 return false;
             } else {
+                /* Security Setting Rt Click 01-MAR-2023 START */
+                $('#Password').val(btoa($('#Password').val()));
                 return true;
+                /* Security Setting Rt Click 01-MAR-2023 STOP */
             }
         }
     </script>

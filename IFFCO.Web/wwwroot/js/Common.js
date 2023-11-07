@@ -185,6 +185,30 @@ function ConvertDDLtoCombo(data, id) {
     $(id).select2();
 }
 
+/* Security Setting Rt Click 01-MAR-2023 START */
+$(document).keydown(function (event) {
+    if (event.keyCode == 123) { // Prevent F12
+        CommonAlert("Error", "Operation restricted", null, null, "error");
+        return false;
+    } else if (event.ctrlKey && event.shiftKey && event.keyCode == 73) { // Prevent Ctrl+Shift+I
+        CommonAlert("Error", "Operation restricted", null, null, "error");
+        return false;
+    }
+});
+
+/* To Disable Inspect Element */
+$(document).bind("contextmenu", function (e) {
+    e.preventDefault();
+});
+
+$(document).keydown(function (e) {
+    if (e.which === 123) {
+        CommonAlert("Error", "Operation restricted", null, null, "error");
+        return false;
+    }
+});
+/* Security Setting Rt Click 01-MAR-2023 STOP */
+
 function accessrights(btnselect, btninsert, btnupdate, btndelete) {
     if (btnselect !== "N") {
         $('#Select').removeAttr('disabled');

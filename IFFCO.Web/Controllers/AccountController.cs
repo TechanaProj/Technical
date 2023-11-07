@@ -35,6 +35,14 @@ namespace IFFCO.TECHPROD.Web.Controllers
             ViewBag.Message = "";
             return View();
         }
+        /* SECURITY SETTING RT CLICK 01-MAR-2023 START*/
+        public string Base64Decode(string base64EncodedData)
+        {
+            var base64EncodedBytes = System.Convert.FromBase64String(base64EncodedData);
+            var a = System.Text.Encoding.UTF8.GetString(base64EncodedBytes);
+            return a;
+        }
+        /* SECURITY SETTING RT CLICK 01-MAR-2023 STOP*/
         [HttpPost]
         public IActionResult Login(LoginViewModel loginViewModel)
         {
@@ -42,7 +50,10 @@ namespace IFFCO.TECHPROD.Web.Controllers
             {
                 HttpContext.Session.SetString("ProjectId", new AppConfiguration().ProjectId);
                 CommonViewModel.ModuleId = loginViewModel.ModuleId;
-                CommonViewModel.Password = loginViewModel.Password;
+                /* SECURITY SETTING RT CLICK 01-MAR-2023 START*/
+                //CommonViewModel.Password = loginViewModel.Password;
+                CommonViewModel.Password = Base64Decode(loginViewModel.Password);
+                /* SECURITY SETTING RT CLICK 01-MAR-2023 STOP*/
                 CommonViewModel.PersonalNo = loginViewModel.PersonalNo;
                 CommonViewModel.ProjectId = HttpContext.Session.GetString("ProjectId");
                 string clientIp = "";
