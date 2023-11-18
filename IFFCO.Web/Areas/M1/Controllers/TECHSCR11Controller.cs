@@ -57,7 +57,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
 
             string Report = "";
             string QueryString = String.Empty;
-            Report reportobj = GenerateReportData(FromDate, ToDate, ReportType,separator);            
+            Report reportobj = GenerateReportData(FromDate, ToDate, ReportType, separator);
             string data = reportobj.ReportName + "+destype=cache+desformat=" + reportobj.ReportFormat;
 
             if (rdlc)
@@ -78,8 +78,8 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             CommonViewModel.AreaName = this.ControllerContext.RouteData.Values["area"].ToString();
             CommonViewModel.SelectedMenu = this.ControllerContext.RouteData.Values["controller"].ToString();
             CommonViewModel.Report = Report;
-        
-         return Json(CommonViewModel);
+
+            return Json(CommonViewModel);
         }
 
 
@@ -95,7 +95,7 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 rdlc = true;
                 extension = "aspx";
             }
-            
+
 
             int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
             Report ReportData = new Report();
@@ -104,21 +104,31 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
             {
                 case "0":
                     ReportData.Query = "FROM_DT=" + FromDate.Date() + seprator + "TO_DT=" + ToDate.Date();
-                    ReportData.ReportName = "Energy_report."+extension ;
+                    ReportData.ReportName = "Energy_report." + extension;
                     break;
                 case "1":
                     ReportData.Query = "P_Idt=" + ToDate.Date();
-                    ReportData.ReportName = "BL_ENERGY."+extension;
+                    ReportData.ReportName = "BL_ENERGY." + extension;
                     break;
                 case "2":
-                    ReportData.Query = "FROM_DT=" + FromDate.Date() + seprator+ "TO_DT=" + ToDate.Date();
-                    ReportData.ReportName = "SGPG_EFF."+extension;
+                    ReportData.Query = "FROM_DT=" + FromDate.Date() + seprator + "TO_DT=" + ToDate.Date();
+                    ReportData.ReportName = "SGPG_EFF." + extension;
                     break;
                 case "3":
-                    ReportData.Query = "FROM_DT=" + FromDate.Date() + seprator + "TO_DT=" + ToDate.Date();
-                    ReportData.ReportName = "Electrical_balabce_daily."+extension;
-                    break;
-                
+                    if (rdlc)
+                    {
+                        ReportData.Query = "FROM_DATE=" + FromDate.Date() + seprator + "TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "Electrical_balance_daily." + extension;
+                        break;
+                    }
+                    else
+                    {
+                        ReportData.Query = "FROM_DATE=" + FromDate.Date() + seprator + "TO_DATE=" + ToDate.Date();
+                        ReportData.ReportName = "Electrical_balabce_daily." + extension;
+                        break;
+                    }
+
+
                 default:
 
                     break;
