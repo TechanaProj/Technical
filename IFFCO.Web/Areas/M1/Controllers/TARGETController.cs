@@ -38,7 +38,11 @@ namespace IFFCO.TECHPROD.Web.Areas.M1.Controllers
                 int EMP_ID = Convert.ToInt32(HttpContext.Session.GetInt32("EmpID"));
                 string moduleid = Convert.ToString(HttpContext.Session.GetString("ModuleID"));
                 string controller = this.ControllerContext.RouteData.Values["controller"].ToString();
-                List<CommonData> data = TechnicalCommonService.GetRecordsTARGET(EMP_ID.ToString(), "2022-02", "2021-2022");
+                var yearMonth = DateTime.Now.ToString("yyyy-MM");
+                var currentYear = DateTime.Now.Year;
+                var previousYear = currentYear - 1;
+                var financialYear = $"{previousYear}-{currentYear}";
+                List<CommonData> data = TechnicalCommonService.GetRecordsTARGET(EMP_ID.ToString(), yearMonth, financialYear);
                 ViewBag.reason = TechnicalCommonService.GetReason();
                 ViewBag.rights = TechnicalCommonService.GetScreenAccess(EMP_ID, controller, DateTime.Now.AddDays(-1));
                 ViewBag.records = data;
